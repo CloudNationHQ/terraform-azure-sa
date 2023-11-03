@@ -1,10 +1,10 @@
 variable "storage" {
   description = "storage account details"
-  type = any
+  type        = any
 }
 
 variable "naming" {
   description = "contains naming convention"
-  type    = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
 }
