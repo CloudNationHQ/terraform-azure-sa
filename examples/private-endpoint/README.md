@@ -26,7 +26,7 @@ To enable private link, the below private dns submodule can be employed:
 
 ```hcl
 module "private_dns" {
-  source  = "cloudnationhq/sa/modules/private-dns/azure"
+  source  = "cloudnationhq/sa/azure//modules/private-dns"
   version = "~> 0.1"
 
   providers = {
