@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.2.0...v0.3.0) (2023-11-07)
+
+
+### Features
+
+* add support for network rules ([#5](https://github.com/CloudNationHQ/terraform-azure-sa/issues/5)) ([9b63cde](https://github.com/CloudNationHQ/terraform-azure-sa/commit/9b63cde7723d26082525eb1027735582b95f9701))
+
 ## [0.2.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.1.0...v0.2.0) (2023-11-03)
 
 
