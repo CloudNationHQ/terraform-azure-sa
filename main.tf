@@ -11,7 +11,7 @@ resource "azurerm_storage_account" "sa" {
 
   allow_nested_items_to_be_public  = try(var.storage.enable.allow_public_nested_items, true)
   shared_access_key_enabled        = try(var.storage.enable.shared_access_key, true)
-  public_network_access_enabled    = try(var.storage.enable.public_network_access, false)
+  public_network_access_enabled    = try(var.storage.enable.public_access, true)
   is_hns_enabled                   = try(var.storage.enable.is_hns, false)
   nfsv3_enabled                    = try(var.storage.enable.nfsv3, false)
   cross_tenant_replication_enabled = try(var.storage.enable.cross_tenant_replication, true)
@@ -22,6 +22,17 @@ resource "azurerm_storage_account" "sa" {
     try(var.storage.enable.sftp, false)
     : true
   )
+
+  dynamic "network_rules" {
+    for_each = try(var.storage.network_rules, null) != null ? { "default" = var.storage.network_rules } : {}
+
+    content {
+      bypass                     = try(network_rules.value.bypass, ["AzureServices"])
+      default_action             = try(network_rules.value.default_action, "Deny")
+      ip_rules                   = try(network_rules.value.ip_rules, null)
+      virtual_network_subnet_ids = try(network_rules.value.virtual_network_subnet_ids, null)
+    }
+  }
 
   blob_properties {
     last_access_time_enabled      = try(var.storage.blob_properties.last_access_time, false)
