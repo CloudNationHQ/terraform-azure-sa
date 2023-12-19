@@ -5,7 +5,7 @@ This example shows how to use network rules to enhance security with secure acce
 ```hcl
 module "sa" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 0.1"
+  version = "~> 0.4"
 
   storage = {
     name          = module.naming.storage_account.name_unique

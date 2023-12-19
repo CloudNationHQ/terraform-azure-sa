@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.3.0...v0.4.0) (2023-12-19)
+
+
+### Features
+
+* **deps:** bump github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/storage/armstorage ([#10](https://github.com/CloudNationHQ/terraform-azure-sa/issues/10)) ([b393565](https://github.com/CloudNationHQ/terraform-azure-sa/commit/b3935652c8ec5cb203f7c8c78e521e44d0ba54fe))
+* **deps:** bump github.com/gruntwork-io/terratest in /tests ([#11](https://github.com/CloudNationHQ/terraform-azure-sa/issues/11)) ([cf34c3b](https://github.com/CloudNationHQ/terraform-azure-sa/commit/cf34c3b768257863fb0eea75746456d115e0454a))
+* **deps:** bump github.com/gruntwork-io/terratest in /tests ([#7](https://github.com/CloudNationHQ/terraform-azure-sa/issues/7)) ([101829f](https://github.com/CloudNationHQ/terraform-azure-sa/commit/101829fc4a8a347d91f54b7a4425f57a25084dde))
+* **deps:** bump golang.org/x/crypto from 0.14.0 to 0.17.0 in /tests ([#12](https://github.com/CloudNationHQ/terraform-azure-sa/issues/12)) ([7b07c5a](https://github.com/CloudNationHQ/terraform-azure-sa/commit/7b07c5aaf08d2dbf7442f6d8f6556ebc9d611d4f))
+
 ## [0.3.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.2.0...v0.3.0) (2023-11-07)
 
 
