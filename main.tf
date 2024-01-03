@@ -65,10 +65,10 @@ resource "azurerm_storage_account" "sa" {
     }
 
     dynamic "restore_policy" {
-      for_each = try(var.storage.blob_properties.restore_policy, null) == null ? [1] : []
+      for_each = try(var.storage.blob_properties.restore_policy, false) == true ? [1] : []
 
       content {
-        days = try(var.storage.blob_properties.restore_policy.days, null)
+        days = try(var.storage.blob_properties.restore_in_days, 5)
       }
     }
 
