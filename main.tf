@@ -60,7 +60,7 @@ resource "azurerm_storage_account" "sa" {
       for_each = try(var.storage.blob_properties.delete_retention_policy, null) != null ? [1] : []
       
       content {
-        days = try(var.storage.blob_properties.delete_retention_policy.days, 7)
+        days = try(var.storage.blob_properties.delete_retention_policy.days, null)
       }
     }
 
@@ -68,7 +68,7 @@ resource "azurerm_storage_account" "sa" {
       for_each = try(var.storage.blob_properties.restore_policy, null) == null ? [1] : []
 
       content {
-        days = try(var.storage.blob_properties.restore_policy.days, 5)
+        days = try(var.storage.blob_properties.restore_policy.days, null)
       }
     }
 
