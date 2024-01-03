@@ -57,7 +57,7 @@ resource "azurerm_storage_account" "sa" {
     }
 
     dynamic "delete_retention_policy" {
-      for_each = try(var.storage.blob_properties.delete_retention_policy, true) != null ? [1] : []
+      for_each = try(var.storage.blob_properties.delete_retention_policy, null) != null ? [1] : []
       
       content {
         days = try(var.storage.blob_properties.delete_retention_policy.days, 7)
