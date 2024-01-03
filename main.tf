@@ -8,6 +8,7 @@ resource "azurerm_storage_account" "sa" {
   account_tier             = try(var.storage.sku.tier, "Standard")
   account_replication_type = try(var.storage.sku.type, "GRS")
   account_kind             = try(var.storage.kind, "StorageV2")
+  access_tier              = try(var.storage.access_tier, "Hot")
 
   allow_nested_items_to_be_public  = try(var.storage.enable.allow_public_nested_items, true)
   shared_access_key_enabled        = try(var.storage.enable.shared_access_key, true)
