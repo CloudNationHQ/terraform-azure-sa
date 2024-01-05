@@ -19,7 +19,7 @@ module "rg" {
 
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 0.1"
+  version = "~> 0.5"
 
   naming = local.naming
 
@@ -28,14 +28,24 @@ module "storage" {
     location          = module.rg.groups.demo.location
     resourcegroup     = module.rg.groups.demo.name
     threat_protection = true
+    access_tier       = "Hot"
 
     blob_properties = {
-      versioning               = true
-      last_access_time         = true
-      change_feed              = true
-      restore_policy           = true
-      delete_retention_in_days = 8
-      restore_in_days          = 7
+      versioning       = true
+      last_access_time = true
+      change_feed      = true
+
+      restore_policy = {
+        days = 8
+      }
+
+      delete_retention_policy = {
+        days = 9
+      }
+
+      container_delete_retention_policy = {
+        days = 9
+      }
 
       cors_rules = {
         rule1 = {
