@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.4.0...v0.5.0) (2024-01-12)
+
+
+### Features
+
+* Improved name property flexibility with manual and default options ([#16](https://github.com/CloudNationHQ/terraform-azure-sa/issues/16)) ([c101a0f](https://github.com/CloudNationHQ/terraform-azure-sa/commit/c101a0fc712df97fcd03584e9a32eef8a2e4c5c4))
+
 ## [0.4.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.3.0...v0.4.0) (2023-12-19)
 
 
