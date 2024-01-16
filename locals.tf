@@ -20,6 +20,8 @@ locals {
       quota                = fs.quota
       storage_account_name = azurerm_storage_account.sa.name
       metadata             = try(fs.metadata, {})
+      access_tier          = try(fs.access_tier, "Hot")
+      enabled_protocol     = try(fs.protocol, "SMB")
     }
   ])
 }
