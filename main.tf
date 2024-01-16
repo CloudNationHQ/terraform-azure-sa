@@ -63,20 +63,27 @@ resource "azurerm_storage_account" "sa" {
       }
     }
 
-    delete_retention_policy {
-      days = try(var.storage.blob_properties.delete_retention_in_days, 7)
-    }
-
-    dynamic "restore_policy" {
-      for_each = try(var.storage.blob_properties.restore_policy, false) == true ? [1] : []
-
+    dynamic "delete_retention_policy" {
+      for_each = lookup(var.storage.blob_properties, "delete_retention_in_days", null) != null ? [1] : []
       content {
-        days = try(var.storage.blob_properties.restore_in_days, 5)
+        days = lookup(var.storage.blob_properties, "delete_retention_in_days", 7)
       }
     }
 
-    container_delete_retention_policy {
-      days = try(var.storage.blob_properties.container_delete_retention_in_days, 7)
+    dynamic "restore_policy" {
+      for_each = lookup(var.storage.blob_properties, "restore_policy", false) ? [1] : []
+
+      content {
+        days = lookup(var.storage.blob_properties, "restore_in_days", 5)
+      }
+    }
+
+    dynamic "container_delete_retention_policy" {
+      for_each = lookup(var.storage.blob_properties, "container_delete_retention_in_days", null) != null ? [1] : []
+
+      content {
+        days = lookup(var.storage.blob_properties, "container_delete_retention_in_days", 7)
+      }
     }
   }
 
