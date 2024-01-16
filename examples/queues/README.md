@@ -5,7 +5,7 @@ This example highlights setting up storage queues, streamlining message handling
 ```hcl
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 0.5"
+  version = "~> 0.6"
 
   naming = local.naming
 
