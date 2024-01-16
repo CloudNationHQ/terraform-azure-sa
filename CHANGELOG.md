@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.6.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.5.0...v0.6.0) (2024-01-16)
+
+
+### Features
+
+* add several missing properties ([#19](https://github.com/CloudNationHQ/terraform-azure-sa/issues/19)) ([b0b9597](https://github.com/CloudNationHQ/terraform-azure-sa/commit/b0b95972c58ad15c00c6bbc74ad1500dc2b8f0fa))
+* **deps:** bump github.com/gruntwork-io/terratest in /tests ([#18](https://github.com/CloudNationHQ/terraform-azure-sa/issues/18)) ([758d745](https://github.com/CloudNationHQ/terraform-azure-sa/commit/758d745d3e9ccffb35b122484fa16471e7024e38))
+* retention and restore policies are fully optional now ([#20](https://github.com/CloudNationHQ/terraform-azure-sa/issues/20)) ([1e94788](https://github.com/CloudNationHQ/terraform-azure-sa/commit/1e947883d294b875ed9d26f43c3abc55989542d5))
+
 ## [0.5.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.4.0...v0.5.0) (2024-01-12)
 
 
