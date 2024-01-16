@@ -2,20 +2,28 @@ data "azurerm_subscription" "current" {}
 
 # storage accounts
 resource "azurerm_storage_account" "sa" {
-  name                     = var.storage.name
-  resource_group_name      = var.storage.resourcegroup
-  location                 = var.storage.location
-  account_tier             = try(var.storage.sku.tier, "Standard")
-  account_replication_type = try(var.storage.sku.type, "GRS")
-  account_kind             = try(var.storage.kind, "StorageV2")
-
-  allow_nested_items_to_be_public  = try(var.storage.enable.allow_public_nested_items, true)
-  shared_access_key_enabled        = try(var.storage.enable.shared_access_key, true)
-  public_network_access_enabled    = try(var.storage.enable.public_access, true)
-  is_hns_enabled                   = try(var.storage.enable.is_hns, false)
-  nfsv3_enabled                    = try(var.storage.enable.nfsv3, false)
-  cross_tenant_replication_enabled = try(var.storage.enable.cross_tenant_replication, true)
-  default_to_oauth_authentication  = try(var.storage.enable.default_to_oauth_authentication, false)
+  name                              = var.storage.name
+  resource_group_name               = var.storage.resourcegroup
+  location                          = var.storage.location
+  account_tier                      = try(var.storage.sku.tier, "Standard")
+  account_replication_type          = try(var.storage.sku.type, "GRS")
+  account_kind                      = try(var.storage.kind, "StorageV2")
+  access_tier                       = try(var.storage.access_tier, "Hot")
+  infrastructure_encryption_enabled = try(var.storage.infrastructure_encryption_enabled, false)
+  enable_https_traffic_only         = try(var.storage.enable_https_traffic_only, true)
+  min_tls_version                   = try(var.storage.min_tls_version, "TLS1_2")
+  edge_zone                         = try(var.storage.edge_zone, null)
+  table_encryption_key_type         = try(var.storage.table_encryption_key_type, null)
+  queue_encryption_key_type         = try(var.storage.queue_encryption_key_type, null)
+  allowed_copy_scope                = try(var.storage.allowed_copy_scope, null)
+  large_file_share_enabled          = try(var.storage.large_file_share_enabled, false)
+  allow_nested_items_to_be_public   = try(var.storage.enable.allow_public_nested_items, true)
+  shared_access_key_enabled         = try(var.storage.enable.shared_access_key, true)
+  public_network_access_enabled     = try(var.storage.enable.public_access, true)
+  is_hns_enabled                    = try(var.storage.enable.is_hns, false)
+  nfsv3_enabled                     = try(var.storage.enable.nfsv3, false)
+  cross_tenant_replication_enabled  = try(var.storage.enable.cross_tenant_replication, true)
+  default_to_oauth_authentication   = try(var.storage.enable.default_to_oauth_authentication, false)
 
   sftp_enabled = (
     try(var.storage.enable.is_hns, false) == false ?
@@ -239,6 +247,8 @@ resource "azurerm_storage_share" "sh" {
   storage_account_name = each.value.storage_account_name
   quota                = each.value.quota
   metadata             = each.value.metadata
+  access_tier          = each.value.access_tier
+  enabled_protocol     = each.value.enabled_protocol
 }
 
 # tables
@@ -334,16 +344,18 @@ resource "azurerm_advanced_threat_protection" "prot" {
 resource "azurerm_private_endpoint" "endpoint" {
   for_each = contains(keys(var.storage), "private_endpoint") ? { "default" = var.storage.private_endpoint } : {}
 
-  name                = var.storage.private_endpoint.name
-  location            = var.storage.location
-  resource_group_name = var.storage.resourcegroup
-  subnet_id           = var.storage.private_endpoint.subnet
+  name                          = var.storage.private_endpoint.name
+  location                      = var.storage.location
+  resource_group_name           = var.storage.resourcegroup
+  subnet_id                     = var.storage.private_endpoint.subnet
+  custom_network_interface_name = try(var.storage.private_endpoint.custom_network_interface_name, null)
 
   private_service_connection {
-    name                           = "endpoint"
-    is_manual_connection           = try(each.value.is_manual_connection, false)
-    private_connection_resource_id = azurerm_storage_account.sa.id
-    subresource_names              = each.value.subresources
+    name                              = "endpoint"
+    is_manual_connection              = try(each.value.is_manual_connection, false)
+    private_connection_resource_id    = azurerm_storage_account.sa.id
+    subresource_names                 = each.value.subresources
+    private_connection_resource_alias = try(each.value.private_connection_resource_alias, null)
   }
 
   private_dns_zone_group {
