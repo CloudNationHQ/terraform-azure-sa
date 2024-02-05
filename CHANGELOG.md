@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.7.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.6.0...v0.7.0) (2024-02-05)
+
+
+### Features
+
+* change default value cross tenant replication to false ([#23](https://github.com/CloudNationHQ/terraform-azure-sa/issues/23)) ([1dadbfd](https://github.com/CloudNationHQ/terraform-azure-sa/commit/1dadbfdcbf91794e5dfa8a7751ef741abc5ac16a))
+* change defaults bypass property network rules ([#30](https://github.com/CloudNationHQ/terraform-azure-sa/issues/30)) ([f4147ba](https://github.com/CloudNationHQ/terraform-azure-sa/commit/f4147bace32f39dbffe546a230926f5cced72ea8))
+* **deps:** bump github.com/Azure/azure-sdk-for-go/sdk/azidentity ([#26](https://github.com/CloudNationHQ/terraform-azure-sa/issues/26)) ([9be36c1](https://github.com/CloudNationHQ/terraform-azure-sa/commit/9be36c1bdedc9c3a2121a251bfdb5ee20957be81))
+* **deps:** bump github.com/gruntwork-io/terratest in /tests ([#27](https://github.com/CloudNationHQ/terraform-azure-sa/issues/27)) ([b739c64](https://github.com/CloudNationHQ/terraform-azure-sa/commit/b739c6422b99d9846b94dff38c16df1586962f5e))
+* small refactor workflows ([#25](https://github.com/CloudNationHQ/terraform-azure-sa/issues/25)) ([7d27e7f](https://github.com/CloudNationHQ/terraform-azure-sa/commit/7d27e7fff07d8a1909118dcdf577a982bec4d8e9))
+
+
+### Bug Fixes
+
+* make blob properties fully optional again ([#31](https://github.com/CloudNationHQ/terraform-azure-sa/issues/31)) ([340a882](https://github.com/CloudNationHQ/terraform-azure-sa/commit/340a882337406a99e97d471d7a1b0201a088d871))
+
 ## [0.6.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.5.0...v0.6.0) (2024-01-16)
 
 
