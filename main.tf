@@ -35,7 +35,7 @@ resource "azurerm_storage_account" "sa" {
     for_each = try(var.storage.network_rules, null) != null ? { "default" = var.storage.network_rules } : {}
 
     content {
-      bypass                     = try(network_rules.value.bypass, ["AzureServices"])
+      bypass                     = try(network_rules.value.bypass, ["None"])
       default_action             = try(network_rules.value.default_action, "Deny")
       ip_rules                   = try(network_rules.value.ip_rules, null)
       virtual_network_subnet_ids = try(network_rules.value.virtual_network_subnet_ids, null)
