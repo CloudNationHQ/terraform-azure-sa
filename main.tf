@@ -64,14 +64,15 @@ resource "azurerm_storage_account" "sa" {
     }
 
     dynamic "delete_retention_policy" {
-      for_each = lookup(var.storage.blob_properties, "delete_retention_in_days", null) != null ? [1] : []
+      for_each = try(var.storage.blob_properties.delete_retention_in_days, null) != null ? [1] : []
+
       content {
         days = lookup(var.storage.blob_properties, "delete_retention_in_days", 7)
       }
     }
 
     dynamic "restore_policy" {
-      for_each = lookup(var.storage.blob_properties, "restore_policy", false) ? [1] : []
+      for_each = try(var.storage.blob_properties.restore_policy, false) ? [1] : []
 
       content {
         days = lookup(var.storage.blob_properties, "restore_in_days", 5)
@@ -79,7 +80,7 @@ resource "azurerm_storage_account" "sa" {
     }
 
     dynamic "container_delete_retention_policy" {
-      for_each = lookup(var.storage.blob_properties, "container_delete_retention_in_days", null) != null ? [1] : []
+      for_each = try(var.storage.blob_properties.container_delete_retention_in_days, null) != null ? [1] : []
 
       content {
         days = lookup(var.storage.blob_properties, "container_delete_retention_in_days", 7)
