@@ -5,7 +5,7 @@ This example details a storage account setup with a private endpoint, enhancing 
 ```hcl
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 0.6"
+  version = "~> 0.7"
 
   storage = {
     name          = module.naming.storage_account.name_unique
