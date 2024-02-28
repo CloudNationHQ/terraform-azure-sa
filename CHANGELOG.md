@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.7.0...v0.8.0) (2024-02-28)
+
+
+### Features
+
+* improved alignment for several properties and added some missing ones ([#32](https://github.com/CloudNationHQ/terraform-azure-sa/issues/32)) ([fb7a1a9](https://github.com/CloudNationHQ/terraform-azure-sa/commit/fb7a1a96063428bf79c26b45c1bed1da24650a2f))
+
 ## [0.7.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.6.0...v0.7.0) (2024-02-05)
 
 
