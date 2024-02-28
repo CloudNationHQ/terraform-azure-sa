@@ -31,7 +31,7 @@ module "storage" {
     queue_properties = {
       logging = {
         read              = true
-        retention_in_days = 8
+        retention_policy_days = 8
       }
 
       queues = {

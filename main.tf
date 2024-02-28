@@ -162,7 +162,7 @@ resource "azurerm_storage_account" "sa" {
       delete                = try(var.storage.queue_properties.logging.delete, false)
       read                  = try(var.storage.queue_properties.logging.read, false)
       write                 = try(var.storage.queue_properties.logging.write, false)
-      retention_policy_days = try(var.storage.queue_properties.logging.retention_in_days, null)
+      retention_policy_days = try(var.storage.queue_properties.logging.retention_policy_days, null)
     }
 
     minute_metrics {
@@ -173,7 +173,7 @@ resource "azurerm_storage_account" "sa" {
     }
 
     hour_metrics {
-      enabled               = try(var.storage.queue_properties.hour_metrics.enable, false)
+      enabled               = try(var.storage.queue_properties.hour_metrics.enabled, false) //fix typo
       version               = try(var.storage.queue_properties.hour_metrics.version, "1.0")
       include_apis          = try(var.storage.queue_properties.hour_metrics.include_apis, false)
       retention_policy_days = try(var.storage.queue_properties.hour_metrics.retention_policy_days, null)
@@ -203,7 +203,7 @@ resource "azurerm_storage_account" "sa" {
     for_each = try(var.storage.policy.immutability, null) != null ? { "default" = var.storage.policy.immutability } : {}
 
     content {
-      state                         = immutability_policy.value.state_mode
+      state                         = immutability_policy.value.state
       period_since_creation_in_days = immutability_policy.value.period_since_creation_in_days
       allow_protected_append_writes = immutability_policy.value.allow_protected_append_writes
     }
