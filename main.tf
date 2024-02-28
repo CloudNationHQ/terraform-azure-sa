@@ -17,13 +17,14 @@ resource "azurerm_storage_account" "sa" {
   queue_encryption_key_type         = try(var.storage.queue_encryption_key_type, null)
   allowed_copy_scope                = try(var.storage.allowed_copy_scope, null)
   large_file_share_enabled          = try(var.storage.large_file_share_enabled, false)
-  allow_nested_items_to_be_public   = try(var.storage.enable.allow_public_nested_items, true)
-  shared_access_key_enabled         = try(var.storage.enable.shared_access_key, true)
-  public_network_access_enabled     = try(var.storage.enable.public_access, true)
-  is_hns_enabled                    = try(var.storage.enable.is_hns, false)
-  nfsv3_enabled                     = try(var.storage.enable.nfsv3, false)
-  cross_tenant_replication_enabled  = try(var.storage.enable.cross_tenant_replication, false)
-  default_to_oauth_authentication   = try(var.storage.enable.default_to_oauth_authentication, false)
+  allow_nested_items_to_be_public   = try(var.storage.allow_nested_items_to_be_public, false)
+  shared_access_key_enabled         = try(var.storage.shared_access_key_enabled, true)
+  public_network_access_enabled     = try(var.storage.public_network_access_enabled, true)
+  is_hns_enabled                    = try(var.storage.is_hns_enabled, false)
+  nfsv3_enabled                     = try(var.storage.nfsv3_enabled, false)
+  cross_tenant_replication_enabled  = try(var.storage.cross_tenant_replication_enabled, false)
+  default_to_oauth_authentication   = try(var.storage.default_to_oauth_authentication, false)
+  tags                              = try(var.storage.tags, var.tags, null)
 
   sftp_enabled = (
     try(var.storage.enable.is_hns, false) == false ?
@@ -47,7 +48,7 @@ resource "azurerm_storage_account" "sa" {
     versioning_enabled            = try(var.storage.blob_properties.versioning, false)
     change_feed_enabled           = try(var.storage.blob_properties.change_feed, false)
     change_feed_retention_in_days = try(var.storage.blob_properties.change_feed_retention_in_days, null)
-    default_service_version       = try(var.storage.blob_properties.default_service_version, "2020-06-12")
+    default_service_version       = try(var.storage.blob_properties.default_service_version, null)
 
     dynamic "cors_rule" {
       for_each = {
@@ -161,21 +162,21 @@ resource "azurerm_storage_account" "sa" {
       delete                = try(var.storage.queue_properties.logging.delete, false)
       read                  = try(var.storage.queue_properties.logging.read, false)
       write                 = try(var.storage.queue_properties.logging.write, false)
-      retention_policy_days = try(var.storage.queue_properties.logging.retention_in_days, 7)
+      retention_policy_days = try(var.storage.queue_properties.logging.retention_in_days, null)
     }
 
     minute_metrics {
       enabled               = try(var.storage.queue_properties.minute_metrics.enabled, false)
       version               = try(var.storage.queue_properties.minute_metrics.version, "1.0")
       include_apis          = try(var.storage.queue_properties.minute_metrics.include_apis, false)
-      retention_policy_days = try(var.storage.queue_properties.minute_metrics.retention_policy_days, 7)
+      retention_policy_days = try(var.storage.queue_properties.minute_metrics.retention_policy_days, null)
     }
 
     hour_metrics {
       enabled               = try(var.storage.queue_properties.hour_metrics.enable, false)
       version               = try(var.storage.queue_properties.hour_metrics.version, "1.0")
       include_apis          = try(var.storage.queue_properties.hour_metrics.include_apis, false)
-      retention_policy_days = try(var.storage.queue_properties.hour_metrics.retention_policy_days, 7)
+      retention_policy_days = try(var.storage.queue_properties.hour_metrics.retention_policy_days, null)
     }
   }
 
@@ -357,6 +358,7 @@ resource "azurerm_private_endpoint" "endpoint" {
   resource_group_name           = var.storage.resourcegroup
   subnet_id                     = var.storage.private_endpoint.subnet
   custom_network_interface_name = try(var.storage.private_endpoint.custom_network_interface_name, null)
+  tags                          = try(var.storage.private_endpoint.tags, var.tags, null)
 
   private_service_connection {
     name                              = "endpoint"
