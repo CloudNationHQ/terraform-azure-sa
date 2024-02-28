@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.8.0...v0.8.1) (2024-02-28)
+
+
+### Bug Fixes
+
+* fix typos queue properties ([#34](https://github.com/CloudNationHQ/terraform-azure-sa/issues/34)) ([2434e70](https://github.com/CloudNationHQ/terraform-azure-sa/commit/2434e70de6e115ec9d44a0e7a1b1175c8d0d4c0f))
+
 ## [0.8.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.7.0...v0.8.0) (2024-02-28)
 
 
