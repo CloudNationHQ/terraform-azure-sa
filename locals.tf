@@ -31,7 +31,7 @@ locals {
     for sq_key, sq in try(var.storage.queue_properties.queues, {}) : {
 
       sq_key               = sq_key
-      name                 = try(sq.name, join("-", [var.naming.storage_queues, sq_key]))
+      name                 = try(sq.name, join("-", [var.naming.storage_queue, sq_key]))
       storage_account_name = azurerm_storage_account.sa.name
       metadata             = try(sq.metadata, {})
     }
