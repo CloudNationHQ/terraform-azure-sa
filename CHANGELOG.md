@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.8.1...v0.9.0) (2024-02-29)
+
+
+### Features
+
+* optimized dynamic identity blocks ([#36](https://github.com/CloudNationHQ/terraform-azure-sa/issues/36)) ([1726abf](https://github.com/CloudNationHQ/terraform-azure-sa/commit/1726abffcf7e864f9353eb62c712b9817ce4717c))
+
 ## [0.8.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.8.0...v0.8.1) (2024-02-28)
 
 
