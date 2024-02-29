@@ -5,7 +5,7 @@ This example illustrates the default storage setup, in its simplest form.
 ```hcl
 module "storage" {
   source = "cloudnationhq/sa/azure"
-  version = "~> 0.8"
+  version = "~> 0.9"
 
   storage = {
     name          = module.naming.storage_account.name_unique
