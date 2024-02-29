@@ -5,9 +5,9 @@ resource "azurerm_storage_account" "sa" {
   name                              = var.storage.name
   resource_group_name               = var.storage.resourcegroup
   location                          = var.storage.location
-  account_tier                      = try(var.storage.sku.tier, "Standard")
-  account_replication_type          = try(var.storage.sku.type, "GRS")
-  account_kind                      = try(var.storage.kind, "StorageV2")
+  account_tier                      = try(var.storage.account_tier, "Standard")
+  account_replication_type          = try(var.storage.account_replication_type, "GRS")
+  account_kind                      = try(var.storage.account_kind, "StorageV2")
   access_tier                       = try(var.storage.access_tier, "Hot")
   infrastructure_encryption_enabled = try(var.storage.infrastructure_encryption_enabled, false)
   enable_https_traffic_only         = try(var.storage.enable_https_traffic_only, true)
@@ -218,8 +218,16 @@ resource "azurerm_storage_account" "sa" {
     }
   }
 
-  identity {
-    type = "SystemAssigned"
+  dynamic "identity" {
+    for_each = [lookup(var.storage, "identity", { type = "SystemAssigned", identity_ids = [] })]
+
+    content {
+      type = identity.value.type
+      identity_ids = concat(
+        try([azurerm_user_assigned_identity.identity[var.storage.name].id], []),
+        lookup(identity.value, "identity_ids", [])
+      )
+    }
   }
 }
 
@@ -339,6 +347,15 @@ resource "azurerm_storage_management_policy" "mgmt_policy" {
       }
     }
   }
+}
+
+resource "azurerm_user_assigned_identity" "identity" {
+  for_each = contains(["UserAssigned", "SystemAssigned, UserAssigned"], try(var.storage.identity.type, "")) ? { "identity" = var.storage.identity } : {}
+
+  name                = try(each.value.name, "uai-${var.storage.name}")
+  resource_group_name = var.storage.resourcegroup
+  location            = var.storage.location
+  tags                = try(each.value.tags, var.tags, null)
 }
 
 # advanced threat protection
