@@ -30,7 +30,7 @@ module "storage" {
 
     queue_properties = {
       logging = {
-        read              = true
+        read                  = true
         retention_policy_days = 8
       }
 

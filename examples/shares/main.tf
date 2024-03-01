@@ -32,7 +32,10 @@ module "storage" {
       smb = {
         versions             = ["SMB3.1.1"]
         authentication_types = ["Kerberos"]
-        multichannel_enabled = false
+      }
+
+      retention_policy = {
+        days = 8
       }
 
       shares = {
