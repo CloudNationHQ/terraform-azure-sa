@@ -43,80 +43,88 @@ resource "azurerm_storage_account" "sa" {
     }
   }
 
-  blob_properties {
-    last_access_time_enabled      = try(var.storage.blob_properties.last_access_time, false)
-    versioning_enabled            = try(var.storage.blob_properties.versioning, false)
-    change_feed_enabled           = try(var.storage.blob_properties.change_feed, false)
-    change_feed_retention_in_days = try(var.storage.blob_properties.change_feed_retention_in_days, null)
-    default_service_version       = try(var.storage.blob_properties.default_service_version, null)
+  dynamic "blob_properties" {
+    for_each = try(var.storage.blob_properties, null) != null ? [1] : []
 
-    dynamic "cors_rule" {
-      for_each = {
-        for k, v in try(var.storage.blob_properties.cors_rules, {}) : k => v
+    content {
+      last_access_time_enabled      = try(var.storage.blob_properties.last_access_time_enabled, false)
+      versioning_enabled            = try(var.storage.blob_properties.versioning_enabled, false)
+      change_feed_enabled           = try(var.storage.blob_properties.change_feed_enabled, false)
+      change_feed_retention_in_days = try(var.storage.blob_properties.change_feed_retention_in_days, null)
+      default_service_version       = try(var.storage.blob_properties.default_service_version, null)
+
+      dynamic "cors_rule" {
+        for_each = try(var.storage.blob_properties != null ? [var.storage.blob_properties.cors_rules] : [], [])
+
+        content {
+          allowed_headers    = var.storage.blob_properties.cors_rule.allowed_headers
+          allowed_methods    = var.storage.blob_properties.cors_rule.allowed_methods
+          allowed_origins    = var.storage.blob_properties.cors_rule.allowed_origins
+          exposed_headers    = var.storage.blob_properties.cors_rule.exposed_headers
+          max_age_in_seconds = var.storage.blob_properties.cors_rule.max_age_in_seconds
+        }
       }
 
-      content {
-        allowed_headers    = cors_rule.value.allowed_headers
-        allowed_methods    = cors_rule.value.allowed_methods
-        allowed_origins    = cors_rule.value.allowed_origins
-        exposed_headers    = cors_rule.value.exposed_headers
-        max_age_in_seconds = cors_rule.value.max_age_in_seconds
+      dynamic "delete_retention_policy" {
+        for_each = try(var.storage.blob_properties != null ? [var.storage.blob_properties.delete_retention_policy] : [], [])
+
+        content {
+          days = try(var.storage.blob_properties.delete_retention_policy.days, 7)
+        }
       }
-    }
 
-    dynamic "delete_retention_policy" {
-      for_each = try(var.storage.blob_properties.delete_retention_in_days, null) != null ? [1] : []
+      dynamic "restore_policy" {
+        for_each = try(var.storage.blob_properties != null ? [var.storage.blob_properties.restore_policy] : [], [])
 
-      content {
-        days = lookup(var.storage.blob_properties, "delete_retention_in_days", 7)
+        content {
+          days = try(var.storage.blob_properties.restore_policy.days, 7)
+        }
       }
-    }
 
-    dynamic "restore_policy" {
-      for_each = try(var.storage.blob_properties.restore_policy, false) ? [1] : []
+      dynamic "container_delete_retention_policy" {
+        for_each = try(var.storage.blob_properties != null ? [var.storage.blob_properties.container_delete_retention_policy] : [], [])
 
-      content {
-        days = lookup(var.storage.blob_properties, "restore_in_days", 5)
-      }
-    }
-
-    dynamic "container_delete_retention_policy" {
-      for_each = try(var.storage.blob_properties.container_delete_retention_in_days, null) != null ? [1] : []
-
-      content {
-        days = lookup(var.storage.blob_properties, "container_delete_retention_in_days", 7)
+        content {
+          days = try(var.storage.blob_properties.container_delete_retention_policy.days, 7)
+        }
       }
     }
   }
 
-  share_properties {
-    dynamic "cors_rule" {
-      for_each = {
-        for k, v in try(var.storage.share_properties.cors_rules, {}) : k => v
+  dynamic "share_properties" {
+    for_each = try(var.storage.share_properties, null) != null ? [1] : []
+    content {
+
+      dynamic "cors_rule" {
+        for_each = try(var.storage.share_properties != null ? [var.storage.share_properties.cors_rules] : [], [])
+
+        content {
+          allowed_headers    = var.storage.blob_properties.cors_rule.allowed_headers
+          allowed_methods    = var.storage.blob_properties.cors_rule.allowed_methods
+          allowed_origins    = var.storage.blob_properties.cors_rule.allowed_origins
+          exposed_headers    = var.storage.blob_properties.cors_rule.exposed_headers
+          max_age_in_seconds = var.storage.blob_properties.cors_rule.max_age_in_seconds
+        }
       }
 
-      content {
-        allowed_headers    = cors_rule.value.allowed_headers
-        allowed_methods    = cors_rule.value.allowed_methods
-        allowed_origins    = cors_rule.value.allowed_origins
-        exposed_headers    = cors_rule.value.exposed_headers
-        max_age_in_seconds = cors_rule.value.max_age_in_seconds
+      dynamic "retention_policy" {
+        for_each = try(var.storage.share_properties != null ? [var.storage.share_properties.retention_policy] : [], [])
+
+        content {
+          days = try(var.storage.share_properties.retention_policy.days, 7)
+        }
       }
-    }
 
-    retention_policy {
-      days = try(var.storage.share_properties.retention_in_days, 7)
-    }
+      dynamic "smb" {
+        for_each = try(var.storage.share_properties != null ? [var.storage.share_properties.smb] : [], [])
 
-    dynamic "smb" {
-      for_each = try(var.storage.share_properties.smb, null) != null ? [1] : []
-
-      content {
-        versions                        = try(var.storage.share_properties.smb.versions, [])
-        authentication_types            = try(var.storage.share_properties.smb.authentication_types, [])
-        channel_encryption_type         = try(var.storage.share_properties.smb.channel_encryption_type, [])
-        multichannel_enabled            = try(var.storage.share_properties.smb.multichannel_enabled, false)
-        kerberos_ticket_encryption_type = try(var.storage.share_properties.smb.kerb_ticket_encryption_type, [])
+        content {
+          versions                        = try(var.storage.share_properties.smb.versions, [])
+          authentication_types            = try(var.storage.share_properties.smb.authentication_types, [])
+          channel_encryption_type         = try(var.storage.share_properties.smb.channel_encryption_type, [])
+          multichannel_enabled            = try(var.storage.share_properties.smb.multichannel_enabled, false)
+          kerberos_ticket_encryption_type = try(var.storage.share_properties.smb.kerberos_ticket_encryption_type, [])
+        }
       }
     }
   }
@@ -142,41 +150,55 @@ resource "azurerm_storage_account" "sa" {
     }
   }
 
-  queue_properties {
-    dynamic "cors_rule" {
-      for_each = {
-        for k, v in try(var.storage.queue_properties.cors_rules, {}) : k => v
+  dynamic "queue_properties" {
+    for_each = try(var.storage.queue_properties, null) != null ? [1] : []
+    content {
+
+      dynamic "cors_rule" {
+        for_each = try(var.storage.queue_properties != null ? [var.storage.queue_properties.cors_rule] : [], [])
+
+        content {
+          allowed_headers    = var.storage.blob_properties.cors_rule.allowed_headers
+          allowed_methods    = var.storage.blob_properties.cors_rule.allowed_methods
+          allowed_origins    = var.storage.blob_properties.cors_rule.allowed_origins
+          exposed_headers    = var.storage.blob_properties.cors_rule.exposed_headers
+          max_age_in_seconds = var.storage.blob_properties.cors_rule.max_age_in_seconds
+        }
       }
 
-      content {
-        allowed_headers    = cors_rule.value.allowed_headers
-        allowed_methods    = cors_rule.value.allowed_methods
-        allowed_origins    = cors_rule.value.allowed_origins
-        exposed_headers    = cors_rule.value.exposed_headers
-        max_age_in_seconds = cors_rule.value.max_age_in_seconds
+      dynamic "logging" {
+        for_each = try(var.storage.queue_properties != null ? [var.storage.queue_properties.logging] : [], [])
+
+        content {
+          version               = try(var.storage.queue_properties.logging.version, "1.0")
+          delete                = try(var.storage.queue_properties.logging.delete, false)
+          read                  = try(var.storage.queue_properties.logging.read, false)
+          write                 = try(var.storage.queue_properties.logging.write, false)
+          retention_policy_days = try(var.storage.queue_properties.logging.retention_policy_days, 7)
+        }
       }
-    }
 
-    logging {
-      version               = try(var.storage.queue_properties.logging.version, "1.0")
-      delete                = try(var.storage.queue_properties.logging.delete, false)
-      read                  = try(var.storage.queue_properties.logging.read, false)
-      write                 = try(var.storage.queue_properties.logging.write, false)
-      retention_policy_days = try(var.storage.queue_properties.logging.retention_policy_days, null)
-    }
+      dynamic "minute_metrics" {
+        for_each = try(var.storage.queue_properties != null ? [var.storage.queue_properties.minute_metrics] : [], [])
 
-    minute_metrics {
-      enabled               = try(var.storage.queue_properties.minute_metrics.enabled, false)
-      version               = try(var.storage.queue_properties.minute_metrics.version, "1.0")
-      include_apis          = try(var.storage.queue_properties.minute_metrics.include_apis, false)
-      retention_policy_days = try(var.storage.queue_properties.minute_metrics.retention_policy_days, null)
-    }
+        content {
+          enabled               = try(var.storage.queue_properties.minute_metrics.enabled, false)
+          version               = try(var.storage.queue_properties.minute_metrics.version, "1.0")
+          include_apis          = try(var.storage.queue_properties.minute_metrics.include_apis, false)
+          retention_policy_days = try(var.storage.queue_properties.minute_metrics.retention_policy_days, 7)
+        }
+      }
 
-    hour_metrics {
-      enabled               = try(var.storage.queue_properties.hour_metrics.enabled, false) //fix typo
-      version               = try(var.storage.queue_properties.hour_metrics.version, "1.0")
-      include_apis          = try(var.storage.queue_properties.hour_metrics.include_apis, false)
-      retention_policy_days = try(var.storage.queue_properties.hour_metrics.retention_policy_days, null)
+      dynamic "hour_metrics" {
+        for_each = try(var.storage.queue_properties != null ? [var.storage.queue_properties.hour_metrics] : [], [])
+
+        content {
+          enabled               = try(var.storage.queue_properties.hour_metrics.enabled, false)
+          version               = try(var.storage.queue_properties.hour_metrics.version, "1.0")
+          include_apis          = try(var.storage.queue_properties.hour_metrics.include_apis, false)
+          retention_policy_days = try(var.storage.queue_properties.hour_metrics.retention_policy_days, 7)
+        }
+      }
     }
   }
 

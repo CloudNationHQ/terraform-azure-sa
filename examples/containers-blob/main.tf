@@ -29,12 +29,21 @@ module "storage" {
     resourcegroup = module.rg.groups.demo.name
 
     blob_properties = {
-      versioning               = true
-      last_access_time         = true
-      change_feed              = true
-      restore_policy           = true
-      delete_retention_in_days = 8
-      restore_in_days          = 7
+      versioning_enabled       = true
+      last_access_time_enabled = true
+      change_feed_enabled      = true
+
+      restore_policy = {
+        days = 8
+      }
+
+      delete_retention_policy = {
+        days = 10
+      }
+
+      container_delete_retention_policy = {
+        days = 10
+      }
 
       containers = {
         sc1 = {
