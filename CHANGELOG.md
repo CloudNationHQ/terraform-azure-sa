@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.9.0...v0.9.1) (2024-03-01)
+
+
+### Bug Fixes
+
+* fix queue, blob and share properties to be fully optional ([#38](https://github.com/CloudNationHQ/terraform-azure-sa/issues/38)) ([97224f5](https://github.com/CloudNationHQ/terraform-azure-sa/commit/97224f5ee2eda8686294930df5166e94f70f937c))
+
 ## [0.9.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.8.1...v0.9.0) (2024-02-29)
 
 
