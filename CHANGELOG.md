@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.9.1...v0.10.0) (2024-03-08)
+
+
+### Features
+
+* add conditional expressions to allow some global properties and updated documentation ([#42](https://github.com/CloudNationHQ/terraform-azure-sa/issues/42)) ([2f72ed2](https://github.com/CloudNationHQ/terraform-azure-sa/commit/2f72ed23da466ea0cc782d4c1ba4c2a048bf61cd))
+* **deps:** bump github.com/stretchr/testify in /tests ([#40](https://github.com/CloudNationHQ/terraform-azure-sa/issues/40)) ([5324e37](https://github.com/CloudNationHQ/terraform-azure-sa/commit/5324e37981559e9351dfd031fe40349a886b1ce3))
+
 ## [0.9.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.9.0...v0.9.1) (2024-03-01)
 
 
