@@ -3,8 +3,8 @@ data "azurerm_subscription" "current" {}
 # storage accounts
 resource "azurerm_storage_account" "sa" {
   name                              = var.storage.name
-  resource_group_name               = var.storage.resourcegroup
-  location                          = var.storage.location
+  resource_group_name               = coalesce(lookup(var.storage, "resourcegroup", null), var.resourcegroup)
+  location                          = coalesce(lookup(var.storage, "location", null), var.location)
   account_tier                      = try(var.storage.account_tier, "Standard")
   account_replication_type          = try(var.storage.account_replication_type, "GRS")
   account_kind                      = try(var.storage.account_kind, "StorageV2")
