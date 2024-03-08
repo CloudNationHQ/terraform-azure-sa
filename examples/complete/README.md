@@ -1,12 +1,42 @@
-locals {
-  naming = {
-    # lookup outputs to have consistent naming
-    for type in local.naming_types : type => lookup(module.naming, type).name
+This example highlights the complete usage.
+
+## Usage
+
+```hcl
+module "storage" {
+  source  = "cloudnationhq/sa/azure"
+  version = "~> 0.1"
+
+  naming = local.naming
+
+  storage = {
+    name              = module.naming.storage_account.name_unique
+    location          = module.rg.groups.demo.location
+    resourcegroup     = module.rg.groups.demo.name
+    threat_protection = true
+
+    blob_properties  = local.blob_properties
+    queue_properties = local.queue_properties
+    share_properties = local.share_properties
+    mgt_policy       = local.mgt_policy
+
+    policy = {
+      sas = {
+        expiration_action = "Log"
+        expiration_period = "07.05:13:22"
+      }
+    }
+
+    routing = {
+      publish_internet_endpoints = true
+    }
   }
-
-  naming_types = ["storage_container", "storage_share", "storage_queue", "storage_table"]
 }
+```
 
+The module uses the below locals for configuration:
+
+```hcl
 locals {
   blob_properties = {
     versioning_enabled       = true
@@ -125,3 +155,4 @@ locals {
     }
   }
 }
+```
