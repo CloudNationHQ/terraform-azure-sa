@@ -5,7 +5,7 @@ This sample demonstrates configuring storage shares, facilitating file sharing w
 ```hcl
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 0.9"
+  version = "~> 0.1"
 
   naming = local.naming
 
@@ -18,7 +18,10 @@ module "storage" {
       smb = {
         versions             = ["SMB3.1.1"]
         authentication_types = ["Kerberos"]
-        multichannel_enabled = false
+      }
+
+      retention_policy = {
+        days = 8
       }
 
       shares = {
