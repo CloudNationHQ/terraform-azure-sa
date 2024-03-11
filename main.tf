@@ -240,6 +240,15 @@ resource "azurerm_storage_account" "sa" {
     }
   }
 
+  dynamic "customer_managed_key" {
+    for_each = try(var.storage.customer_managed_key, null) != null ? { "default" = var.storage.customer_managed_key } : {}
+
+    content {
+      key_vault_key_id          = customer_managed_key.value.key_vault_key_id
+      user_assigned_identity_id = azurerm_user_assigned_identity.identity.id
+    }
+  }
+
   dynamic "identity" {
     for_each = [lookup(var.storage, "identity", { type = "SystemAssigned", identity_ids = [] })]
 
