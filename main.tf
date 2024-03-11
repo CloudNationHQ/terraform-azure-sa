@@ -389,6 +389,14 @@ resource "azurerm_user_assigned_identity" "identity" {
   tags                = try(each.value.tags, var.tags, null)
 }
 
+resource "azurerm_role_assignment" "managed_identity" {
+  for_each = lookup(var.storage, "customer_managed_key", null) != null ? { "identity" = var.storage.customer_managed_key } : {}
+
+  scope                = each.value.key_vault_id
+  role_definition_name = "Key Vault Crypto Officer"
+  principal_id         = azurerm_user_assigned_identity.identity["identity"].principal_id
+}
+
 # advanced threat protection
 resource "azurerm_advanced_threat_protection" "prot" {
   for_each = try(var.storage.threat_protection, false) ? { "threat_protection" = true } : {}
@@ -421,3 +429,4 @@ resource "azurerm_private_endpoint" "endpoint" {
     private_dns_zone_ids = var.storage.private_endpoint.dns_zones
   }
 }
+
