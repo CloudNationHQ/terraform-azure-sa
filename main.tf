@@ -241,11 +241,11 @@ resource "azurerm_storage_account" "sa" {
   }
 
   dynamic "customer_managed_key" {
-    for_each = try(var.storage.customer_managed_key, null) != null ? { "default" = var.storage.customer_managed_key } : {}
+    for_each = lookup(var.storage, "customer_managed_key", null) != null ? { "default" = var.storage.customer_managed_key } : {}
 
     content {
       key_vault_key_id          = customer_managed_key.value.key_vault_key_id
-      user_assigned_identity_id = azurerm_user_assigned_identity.identity.id
+      user_assigned_identity_id = azurerm_user_assigned_identity.identity["identity"].id
     }
   }
 
@@ -255,7 +255,7 @@ resource "azurerm_storage_account" "sa" {
     content {
       type = identity.value.type
       identity_ids = concat(
-        try([azurerm_user_assigned_identity.identity[var.storage.name].id], []),
+        try([azurerm_user_assigned_identity.identity["identity"].id], []),
         lookup(identity.value, "identity_ids", [])
       )
     }
