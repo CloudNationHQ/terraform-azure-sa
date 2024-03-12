@@ -240,13 +240,22 @@ resource "azurerm_storage_account" "sa" {
     }
   }
 
+  dynamic "customer_managed_key" {
+    for_each = lookup(var.storage, "customer_managed_key", null) != null ? { "default" = var.storage.customer_managed_key } : {}
+
+    content {
+      key_vault_key_id          = customer_managed_key.value.key_vault_key_id
+      user_assigned_identity_id = azurerm_user_assigned_identity.identity["identity"].id
+    }
+  }
+
   dynamic "identity" {
     for_each = [lookup(var.storage, "identity", { type = "SystemAssigned", identity_ids = [] })]
 
     content {
       type = identity.value.type
       identity_ids = concat(
-        try([azurerm_user_assigned_identity.identity[var.storage.name].id], []),
+        try([azurerm_user_assigned_identity.identity["identity"].id], []),
         lookup(identity.value, "identity_ids", [])
       )
     }
@@ -380,6 +389,14 @@ resource "azurerm_user_assigned_identity" "identity" {
   tags                = try(each.value.tags, var.tags, null)
 }
 
+resource "azurerm_role_assignment" "managed_identity" {
+  for_each = lookup(var.storage, "customer_managed_key", null) != null ? { "identity" = var.storage.customer_managed_key } : {}
+
+  scope                = each.value.key_vault_id
+  role_definition_name = "Key Vault Crypto Officer"
+  principal_id         = azurerm_user_assigned_identity.identity["identity"].principal_id
+}
+
 # advanced threat protection
 resource "azurerm_advanced_threat_protection" "prot" {
   for_each = try(var.storage.threat_protection, false) ? { "threat_protection" = true } : {}
@@ -412,3 +429,4 @@ resource "azurerm_private_endpoint" "endpoint" {
     private_dns_zone_ids = var.storage.private_endpoint.dns_zones
   }
 }
+
