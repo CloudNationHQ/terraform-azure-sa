@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.10.0...v0.11.0) (2024-03-12)
+
+
+### Features
+
+* add customer managed key support ([#44](https://github.com/CloudNationHQ/terraform-azure-sa/issues/44)) ([33400c2](https://github.com/CloudNationHQ/terraform-azure-sa/commit/33400c21778e2c89e9f3ca925be4ff1b1f555383))
+
 ## [0.10.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.9.1...v0.10.0) (2024-03-08)
 
 
