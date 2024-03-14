@@ -22,21 +22,18 @@ module "storage" {
 }
 ```
 
-To enable private link, the below private dns submodule can be employed:
+The module uses the below locals for configuration:
 
 ```hcl
-module "private_dns" {
-  source  = "cloudnationhq/sa/azure//modules/private-dns"
-  version = "~> 0.1"
-
-  providers = {
-    azurerm = azurerm.connectivity
-  }
-
-  zone = {
-    name          = "privatelink.blob.core.windows.net"
-    resourcegroup = "rg-dns-shared-001"
-    vnet          = module.network.vnet.id
+locals {
+  endpoints = {
+    blob = {
+      name                           = module.naming.private_endpoint.name
+      subnet_id                      = module.network.subnets.sn1.id
+      private_connection_resource_id = module.storage.account.id
+      private_dns_zone_ids           = [module.private_dns.zones.blob.id]
+      subresource_names              = ["blob"]
+    }
   }
 }
 ```
