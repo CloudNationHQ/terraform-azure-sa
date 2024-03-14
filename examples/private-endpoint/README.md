@@ -3,22 +3,14 @@ This example details a storage account setup with a private endpoint, enhancing 
 ## Usage: private endpoint
 
 ```hcl
-module "storage" {
-  source  = "cloudnationhq/sa/azure"
-  version = "~> 0.12"
+module "private_endpoint" {
+  source  = "cloudnationhq/pe/azure"
+  version = "~> 0.1"
 
-  storage = {
-    name          = module.naming.storage_account.name_unique
-    location      = module.rg.groups.demo.location
-    resourcegroup = module.rg.groups.demo.name
+  resourcegroup = module.rg.groups.demo.name
+  location      = module.rg.groups.demo.location
 
-    private_endpoint = {
-      name         = module.naming.private_endpoint.name
-      dns_zones    = [module.private_dns.zone.id]
-      subnet       = module.network.subnets.sn1.id
-      subresources = ["blob"]
-    }
-  }
+  endpoints = local.endpoints
 }
 ```
 
