@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.12.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.11.0...v0.12.0) (2024-03-14)
+
+
+### Features
+
+* **deps:** bump google.golang.org/protobuf in /tests ([#46](https://github.com/CloudNationHQ/terraform-azure-sa/issues/46)) ([3eee708](https://github.com/CloudNationHQ/terraform-azure-sa/commit/3eee708ae300c759b8e6cd03adb54a0f0187fe7a))
+* small refactor private endpoints ([#47](https://github.com/CloudNationHQ/terraform-azure-sa/issues/47)) ([f9a612e](https://github.com/CloudNationHQ/terraform-azure-sa/commit/f9a612eec245033b91e6ba40b4564638f26b166c))
+
 ## [0.11.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.10.0...v0.11.0) (2024-03-12)
 
 
