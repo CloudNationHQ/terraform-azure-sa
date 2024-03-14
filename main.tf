@@ -404,29 +404,3 @@ resource "azurerm_advanced_threat_protection" "prot" {
   target_resource_id = azurerm_storage_account.sa.id
   enabled            = true
 }
-
-# private endpoint
-resource "azurerm_private_endpoint" "endpoint" {
-  for_each = contains(keys(var.storage), "private_endpoint") ? { "default" = var.storage.private_endpoint } : {}
-
-  name                          = var.storage.private_endpoint.name
-  location                      = var.storage.location
-  resource_group_name           = var.storage.resourcegroup
-  subnet_id                     = var.storage.private_endpoint.subnet
-  custom_network_interface_name = try(var.storage.private_endpoint.custom_network_interface_name, null)
-  tags                          = try(var.storage.private_endpoint.tags, var.tags, null)
-
-  private_service_connection {
-    name                              = "endpoint"
-    is_manual_connection              = try(each.value.is_manual_connection, false)
-    private_connection_resource_id    = azurerm_storage_account.sa.id
-    subresource_names                 = each.value.subresources
-    private_connection_resource_alias = try(each.value.private_connection_resource_alias, null)
-  }
-
-  private_dns_zone_group {
-    name                 = "default"
-    private_dns_zone_ids = var.storage.private_endpoint.dns_zones
-  }
-}
-
