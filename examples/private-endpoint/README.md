@@ -3,7 +3,7 @@ This example details a storage account setup with a private endpoint, enhancing 
 ## Usage: private endpoint
 
 ```hcl
-module "private_endpoint" {
+module "privatelink" {
   source  = "cloudnationhq/pe/azure"
   version = "~> 0.1"
 

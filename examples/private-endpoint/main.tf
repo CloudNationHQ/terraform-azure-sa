@@ -68,7 +68,7 @@ module "private_dns" {
   }
 }
 
-module "private_endpoint" {
+module "privatelink" {
   source  = "cloudnationhq/pe/azure"
   version = "~> 0.1"
 

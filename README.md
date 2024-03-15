@@ -84,11 +84,11 @@ Each of these tests contributes to the robustness and resilience of the module. 
 
 ## Notes
 
-Using a dedicated module, we've developed a naming convention for resources that's based on specific regular expressions for each type, ensuring correct abbreviations and offering flexibility with multiple prefixes and suffixes
+Using a dedicated module, we've developed a naming convention for resources that's based on specific regular expressions for each type, ensuring correct abbreviations and offering flexibility with multiple prefixes and suffixes.
 
-Full examples detailing all usages, along with integrations with dependency modules, are located in the examples directory
+Full examples detailing all usages, along with integrations with dependency modules, are located in the examples directory.
 
-To integrate seamlessly with the enterprise scale's centrally managed private dns zones within a connectivity subscription, you can employ the private dns submodule, designed to work effectively with an aliased provider.
+To streamline integration with the enterprise scale module, private endpoints can also make use of [existing zones](https://github.com/CloudNationHQ/terraform-azure-pdns/tree/main/examples/existing-zone).
 
 ## Authors
 
