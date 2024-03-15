@@ -5,7 +5,7 @@ This example demonstrates configuring blob storage containers, where tailored ac
 ```hcl
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 0.12"
+  version = "~> 0.13"
 
   naming = local.naming
 
