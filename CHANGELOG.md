@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.13.0...v0.14.0) (2024-03-19)
+
+
+### Features
+
+* refactored extended tests for modularity and readability and added container verifications ([#52](https://github.com/CloudNationHQ/terraform-azure-sa/issues/52)) ([5c9a15e](https://github.com/CloudNationHQ/terraform-azure-sa/commit/5c9a15ebb2baae1bff2d248deb0887f4f6a5c986))
+
 ## [0.13.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.12.0...v0.13.0) (2024-03-15)
 
 
