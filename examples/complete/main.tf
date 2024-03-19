@@ -29,7 +29,7 @@ module "storage" {
     threat_protection = true
 
     blob_properties  = local.blob_properties
-    queue_properties = local.queue_properties
+    queue_proprties  = local.queue_properties
     share_properties = local.share_properties
     mgt_policy       = local.mgt_policy
 
