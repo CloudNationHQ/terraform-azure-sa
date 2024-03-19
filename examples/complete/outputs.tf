@@ -4,12 +4,32 @@ output "storage" {
   sensitive   = true
 }
 
+output "shares" {
+  description = "share details"
+  value = {
+    for s in module.storage.shares : s.name => {
+      id   = s.id
+      name = s.name
+    }
+  }
+}
+
 output "containers" {
   description = "container details"
   value = {
     for c in module.storage.containers : c.name => {
       id   = c.id
       name = c.name
+    }
+  }
+}
+
+output "queues" {
+  description = "queue details"
+  value = {
+    for q in module.storage.queues : q.name => {
+      id   = q.id
+      name = q.name
     }
   }
 }

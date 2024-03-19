@@ -3,8 +3,10 @@ terraform {
 
   required_providers {
     azurerm = {
+      # pinned because of
+      # https://github.com/hashicorp/terraform-provider-azurerm/issues/25291
       source  = "hashicorp/azurerm"
-      version = "~> 3.61"
+      version = "3.95.0"
     }
   }
 }
