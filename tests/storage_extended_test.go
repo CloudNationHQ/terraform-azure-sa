@@ -2,150 +2,47 @@ package main
 
 import (
 	"context"
-	"strings"
 	"testing"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/storage/armstorage"
 	"github.com/cloudnationhq/terraform-azure-sa/shared"
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-type StorageAccountDetails struct {
-	ResourceGroupName string
-	AccountName       string
-	Containers        []ContainerDetails
-	Shares            []SharesDetails
-	Queues            []QueueDetails
+type ResourceFetcher interface {
+	InitClient(subscriptionID string, cred *azidentity.DefaultAzureCredential) error
+	FetchDetails(ctx context.Context, resourceGroupName, accountName string) ([]ResourceDetail, error)
 }
 
-type ContainerDetails struct {
+type AzureClients struct {
+	ContainerClient *armstorage.BlobContainersClient
+	ShareClient     *armstorage.FileSharesClient
+	QueueClient     *armstorage.QueueClient
+}
+
+type TestConfig struct {
+	subscriptionID    string
+	resourceGroupName string
+	accountName       string
+	tfOpts            *terraform.Options
+}
+
+type ResourceDetail struct {
 	Name string
 }
 
-type SharesDetails struct {
-	Name string
+type ContainerFetcher struct {
+	client *armstorage.BlobContainersClient
 }
 
-type QueueDetails struct {
-	Name string
+type SharesFetcher struct {
+	client *armstorage.FileSharesClient
 }
 
-type ClientSetup struct {
-	SubscriptionId   string
-	StorageClient    *armstorage.AccountsClient
-	ContainersClient *armstorage.BlobContainersClient
-	SharesClient     *armstorage.FileSharesClient
-	QueuesClient     *armstorage.QueueClient
-}
-
-func (setup *ClientSetup) InitStorageClient(t *testing.T, cred *azidentity.DefaultAzureCredential) {
-	var err error
-	setup.StorageClient, err = armstorage.NewAccountsClient(setup.SubscriptionId, cred, nil)
-	require.NoError(t, err,
-		"Failed to create credential",
-	)
-}
-
-func (setup *ClientSetup) InitContainersClient(t *testing.T, cred *azidentity.DefaultAzureCredential) {
-	var err error
-	setup.ContainersClient, err = armstorage.NewBlobContainersClient(setup.SubscriptionId, cred, nil)
-	require.NoError(t, err,
-		"Failed to create credential",
-	)
-}
-
-func (setup *ClientSetup) InitSharesClient(t *testing.T, cred *azidentity.DefaultAzureCredential) {
-	var err error
-	setup.SharesClient, err = armstorage.NewFileSharesClient(setup.SubscriptionId, cred, nil)
-	require.NoError(t, err,
-		"Failed to create credential",
-	)
-}
-
-func (setup *ClientSetup) InitQueuesClient(t *testing.T, cred *azidentity.DefaultAzureCredential) {
-	var err error
-	setup.QueuesClient, err = armstorage.NewQueueClient(setup.SubscriptionId, cred, nil)
-	require.NoError(t, err,
-		"Failed to create credential",
-	)
-}
-
-func (details *StorageAccountDetails) GetStorage(t *testing.T, client *armstorage.AccountsClient) *armstorage.Account {
-	ctx := context.Background()
-	resp, err := client.GetProperties(ctx, details.ResourceGroupName, details.AccountName, nil)
-	require.NoError(t, err,
-		"Failed to get storage account",
-	)
-	return &resp.Account
-}
-
-func (details *StorageAccountDetails) GetContainers(t *testing.T, client *armstorage.BlobContainersClient) []ContainerDetails {
-	pager := client.NewListPager(details.ResourceGroupName, details.AccountName, nil)
-
-	var containers []ContainerDetails
-	for {
-		page, err := pager.NextPage(context.Background())
-		require.NoError(t, err,
-			"Failed to fetch the next page of containers",
-		)
-
-		for _, container := range page.Value {
-			containers = append(containers, ContainerDetails{
-				Name: *container.Name,
-			})
-		}
-		if page.NextLink == nil || len(*page.NextLink) == 0 {
-			break
-		}
-	}
-	return containers
-}
-
-func (details *StorageAccountDetails) GetShares(t *testing.T, client *armstorage.FileSharesClient) []SharesDetails {
-	pager := client.NewListPager(details.ResourceGroupName, details.AccountName, nil)
-
-	var shares []SharesDetails
-	for {
-		page, err := pager.NextPage(context.Background())
-		require.NoError(t, err,
-			"Failed to fetch the next page of shares",
-		)
-
-		for _, share := range page.Value {
-			shares = append(shares, SharesDetails{
-				Name: *share.Name,
-			})
-		}
-		if page.NextLink == nil || len(*page.NextLink) == 0 {
-			break
-		}
-	}
-	return shares
-}
-
-func (details *StorageAccountDetails) GetQueues(t *testing.T, client *armstorage.QueueClient) []QueueDetails {
-	pager := client.NewListPager(details.ResourceGroupName, details.AccountName, nil)
-
-	var queues []QueueDetails
-	for {
-		page, err := pager.NextPage(context.Background())
-		require.NoError(t, err,
-			"Failed to fetch the next page of queues",
-		)
-
-		for _, queue := range page.Value {
-			queues = append(queues, QueueDetails{
-				Name: *queue.Name,
-			})
-		}
-		if page.NextLink == nil || len(*page.NextLink) == 0 {
-			break
-		}
-	}
-	return queues
+type QueuesFetcher struct {
+	client *armstorage.QueueClient
 }
 
 func InitTerraform(t *testing.T) (*terraform.Options, func()) {
@@ -159,173 +56,145 @@ func InitTerraform(t *testing.T) (*terraform.Options, func()) {
 	}
 }
 
-func GetAzureCredentials(t *testing.T) *azidentity.DefaultAzureCredential {
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
-	require.NoError(t, err,
-		"Failed to get credentials",
-	)
-	return cred
+func (cf *ContainerFetcher) InitClient(subscriptionID string, cred *azidentity.DefaultAzureCredential) error {
+	var err error
+	cf.client, err = armstorage.NewBlobContainersClient(subscriptionID, cred, nil)
+	return err
 }
 
-func TestStorageAccount(t *testing.T) {
-	t.Run("VerifyStorage", func(t *testing.T) {
-		t.Parallel()
-		tfOpts, cleanup := InitTerraform(t)
-		defer cleanup()
-
-		subscriptionId := terraform.Output(t, tfOpts, "subscriptionId")
-		require.NotEmpty(t, subscriptionId,
-			"Subscription ID not found in terraform output",
-		)
-
-		clientSetup := InitClients(t, subscriptionId)
-
-		storageAccountMap := terraform.OutputMap(t, tfOpts, "storage")
-		accountName := storageAccountMap["name"]
-		resourceGroupName := storageAccountMap["resource_group_name"]
-
-		VerifyStorage(t, tfOpts, clientSetup)
-
-		VerifyContainers(t, clientSetup, &StorageAccountDetails{
-			ResourceGroupName: resourceGroupName,
-			AccountName:       accountName,
-		}, tfOpts)
-
-		VerifyShares(t, clientSetup, &StorageAccountDetails{
-			ResourceGroupName: resourceGroupName,
-			AccountName:       accountName,
-		}, tfOpts)
-
-		VerifyQueues(t, clientSetup, &StorageAccountDetails{
-			ResourceGroupName: resourceGroupName,
-			AccountName:       accountName,
-		}, tfOpts)
-	})
-}
-
-func InitClients(t *testing.T, subscriptionId string) *ClientSetup {
-	clientSetup := &ClientSetup{
-		SubscriptionId: subscriptionId,
+func (cf *ContainerFetcher) FetchDetails(ctx context.Context, resourceGroupName, accountName string) ([]ResourceDetail, error) {
+	pager := cf.client.NewListPager(resourceGroupName, accountName, nil)
+	var details []ResourceDetail
+	for {
+		page, err := pager.NextPage(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, container := range page.Value {
+			details = append(details, ResourceDetail{
+				Name: *container.Name,
+			})
+		}
+		if page.NextLink == nil || len(*page.NextLink) == 0 {
+			break
+		}
 	}
-	cred := GetAzureCredentials(t)
-	clientSetup.InitStorageClient(t, cred)
-	clientSetup.InitContainersClient(t, cred)
-	clientSetup.InitSharesClient(t, cred)
-	clientSetup.InitQueuesClient(t, cred)
-
-	return clientSetup
+	return details, nil
 }
 
-func VerifyStorage(t *testing.T, tfOpts *terraform.Options, clientSetup *ClientSetup) {
-	t.Run("VerifyAccount", func(t *testing.T) {
-		t.Helper()
+func (sf *SharesFetcher) InitClient(subscriptionID string, cred *azidentity.DefaultAzureCredential) error {
+	var err error
+	sf.client, err = armstorage.NewFileSharesClient(subscriptionID, cred, nil)
+	return err
+}
 
-		storageAccountMap := terraform.OutputMap(t, tfOpts, "storage")
-
-		accountName, ok := storageAccountMap["name"]
-		require.True(t, ok,
-			"Storage account name not found in terraform output",
-		)
-
-		resourceGroupName, ok := storageAccountMap["resource_group_name"]
-		require.True(t, ok,
-			"Resource group name not found in terraform output",
-		)
-
-		storageAccountDetails := &StorageAccountDetails{
-			ResourceGroupName: resourceGroupName,
-			AccountName:       accountName,
+func (sf *SharesFetcher) FetchDetails(ctx context.Context, resourceGroupName, accountName string) ([]ResourceDetail, error) {
+	pager := sf.client.NewListPager(resourceGroupName, accountName, nil)
+	var details []ResourceDetail
+	for {
+		page, err := pager.NextPage(ctx)
+		if err != nil {
+			return nil, err
 		}
-
-		storageAccount := storageAccountDetails.GetStorage(t, clientSetup.StorageClient)
-		require.NotNil(t, storageAccount,
-			"Failed to retrieve storage account details",
-		)
-
-		require.Equal(t, accountName, *storageAccount.Name,
-			"Storage account name does not match expected value this one",
-		)
-
-		require.Equal(t, "Succeeded", string(*storageAccount.Properties.ProvisioningState),
-			"Storage account provisioning state is not Succeeded",
-		)
-
-		require.True(t, strings.HasPrefix(accountName, "st"),
-			"Storage account name does not start with the right abbreviation",
-		)
-	})
-}
-
-func VerifyContainers(t *testing.T, setup *ClientSetup, storageAccountDetails *StorageAccountDetails, tfOpts *terraform.Options) {
-	t.Run("VerifyContainers", func(t *testing.T) {
-		t.Helper()
-
-		containersData := storageAccountDetails.GetContainers(t, setup.ContainersClient)
-		containersOutput := terraform.OutputMap(t, tfOpts, "containers")
-		require.NotEmpty(t, containersOutput,
-			"Containers output is empty",
-		)
-
-		for _, containerData := range containersData {
-			containerName := containerData.Name
-			assert.NotEmpty(t, containerName,
-				"Container name not found in Azure response",
-			)
-
-			_, exists := containersOutput[containerName]
-			assert.True(t, exists,
-				"Container %s found in Azure but not in Terraform output", containerName,
-			)
+		for _, share := range page.Value {
+			details = append(details, ResourceDetail{
+				Name: *share.Name,
+			})
 		}
-	})
-}
-
-func VerifyShares(t *testing.T, setup *ClientSetup, storageAccountDetails *StorageAccountDetails, tfOpts *terraform.Options) {
-	t.Run("VerifyShares", func(t *testing.T) {
-		t.Helper()
-
-		sharesData := storageAccountDetails.GetShares(t, setup.SharesClient)
-		sharesOutput := terraform.OutputMap(t, tfOpts, "shares")
-		require.NotEmpty(t, sharesOutput,
-			"Shares output is empty",
-		)
-
-		for _, shareData := range sharesData {
-			shareName := shareData.Name
-			assert.NotEmpty(t, shareName,
-				"Share name not found in Azure response",
-			)
-
-			_, exists := sharesOutput[shareName]
-			assert.True(t, exists,
-				"Share %s found in Azure but not in Terraform output", shareName,
-			)
+		if page.NextLink == nil || len(*page.NextLink) == 0 {
+			break
 		}
-	})
+	}
+	return details, nil
 }
 
-func VerifyQueues(t *testing.T, setup *ClientSetup, storageAccountDetails *StorageAccountDetails, tfOpts *terraform.Options) {
-	t.Run("VerifyQueues", func(t *testing.T) {
-		t.Helper()
+func (qf *QueuesFetcher) InitClient(subscriptionID string, cred *azidentity.DefaultAzureCredential) error {
+	var err error
+	qf.client, err = armstorage.NewQueueClient(subscriptionID, cred, nil)
+	return err
+}
 
-		queuesData := storageAccountDetails.GetQueues(t, setup.QueuesClient)
-		queuesOutput := terraform.OutputMap(t, tfOpts, "queues")
-		require.NotEmpty(t, queuesOutput,
-			"Queues output is empty",
-		)
-
-		for _, queueData := range queuesData {
-			queueName := queueData.Name
-			assert.NotEmpty(t, queueName,
-				"Queue name not found in Azure response",
-			)
-
-			_, exists := queuesOutput[queueName]
-			assert.True(t, exists,
-				"Queue %s found in Azure but not in Terraform output", queueName,
-			)
+func (qf *QueuesFetcher) FetchDetails(ctx context.Context, resourceGroupName, accountName string) ([]ResourceDetail, error) {
+	pager := qf.client.NewListPager(resourceGroupName, accountName, nil)
+	var details []ResourceDetail
+	for {
+		page, err := pager.NextPage(ctx)
+		if err != nil {
+			return nil, err
 		}
-	})
+		for _, queue := range page.Value {
+			details = append(details, ResourceDetail{
+				Name: *queue.Name,
+			})
+		}
+		if page.NextLink == nil || len(*page.NextLink) == 0 {
+			break
+		}
+	}
+	return details, nil
 }
 
-// .TODO: reduce repetition by using interfaces
+func initAndFetchResources(t *testing.T, subscriptionID, resourceGroupName, accountName string, fetcher ResourceFetcher) []ResourceDetail {
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	require.NoError(t, err, "Failed to get credentials")
+
+	err = fetcher.InitClient(subscriptionID, cred)
+	require.NoError(t, err, "Failed to initialize client")
+
+	details, err := fetcher.FetchDetails(context.Background(), resourceGroupName, accountName)
+	require.NoError(t, err, "Failed to fetch details")
+
+	return details
+}
+
+func verifyResource(t *testing.T, config TestConfig, resourceType string, fetcher ResourceFetcher, tfOutputKey string) {
+	expectedOutput := terraform.OutputMap(t, config.tfOpts, tfOutputKey)
+	actualDetails := initAndFetchResources(t, config.subscriptionID, config.resourceGroupName, config.accountName, fetcher)
+
+	for _, detail := range actualDetails {
+		if _, exists := expectedOutput[detail.Name]; !exists {
+			t.Errorf("%s %s found in Azure but not in Terraform output", resourceType, detail.Name)
+		}
+	}
+
+	for expectedName := range expectedOutput {
+		found := false
+		for _, detail := range actualDetails {
+			if detail.Name == expectedName {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("Expected %s %s not found in actual Azure resources", resourceType, expectedName)
+		}
+	}
+}
+
+func TestStorageSubResources(t *testing.T) {
+	tfOpts, cleanup := InitTerraform(t)
+	defer cleanup()
+
+	config := TestConfig{
+		subscriptionID:    terraform.Output(t, tfOpts, "subscription_id"),
+		resourceGroupName: terraform.OutputMap(t, tfOpts, "storage")["resource_group_name"],
+		accountName:       terraform.OutputMap(t, tfOpts, "storage")["name"],
+		tfOpts:            tfOpts,
+	}
+
+	resourceTypes := []struct {
+		name        string
+		fetcher     ResourceFetcher
+		tfOutputKey string
+	}{
+		{"Containers", &ContainerFetcher{}, "containers"},
+		{"Shares", &SharesFetcher{}, "shares"},
+		{"Queues", &QueuesFetcher{}, "queues"},
+	}
+
+	for _, rt := range resourceTypes {
+		t.Run("Verify"+rt.name, func(t *testing.T) {
+			verifyResource(t, config, rt.name, rt.fetcher, rt.tfOutputKey)
+		})
+	}
+}

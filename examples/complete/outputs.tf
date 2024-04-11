@@ -34,7 +34,7 @@ output "queues" {
   }
 }
 
-output "subscriptionId" {
+output "subscription_id" {
   description = "contains the current subscription id"
   value       = module.storage.subscriptionId
 }
