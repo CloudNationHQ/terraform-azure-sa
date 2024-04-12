@@ -1,13 +1,7 @@
-#output "storage" {
-  #description = "storage account details"
-  #value       = module.storage.account
-  #sensitive   = true
-#}
-
 output "storage" {
   value = {
-    id   = module.storage.account.id
-    name = module.storage.account.name
+    id                  = module.storage.account.id
+    name                = module.storage.account.name
     resource_group_name = module.storage.account.resource_group_name
   }
 }

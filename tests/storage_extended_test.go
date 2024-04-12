@@ -12,9 +12,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type ResourceFetcher interface {
+type StorageFetcher interface {
 	InitClient(subscriptionID string, cred *azidentity.DefaultAzureCredential, clients *AzureClients) error
 	FetchResourceDetails(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error)
+}
+
+type StorageVerifier interface {
+	Verify(t *testing.T, details []ResourceDetail, expectedOutputs map[string]string)
 }
 
 type AzureClients struct {
@@ -33,10 +37,16 @@ type TestConfig struct {
 }
 
 type ResourceDetail struct {
-	Name string
+	Name              string
+	ResourceGroupName string
+	ProvisioningState string
 }
 
 type AzureStorageFetcher struct{}
+
+type StorageSubResourceVerifier struct{}
+
+type StorageResourceVerifier struct{}
 
 func initAzureClients(subscriptionID string) (*AzureClients, error) {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
@@ -76,21 +86,30 @@ func InitTerraform(t *testing.T) (*terraform.Options, func()) {
 	}
 }
 
-func (f *AzureStorageFetcher) FetchStorageDetails(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error) {
+func (f *AzureStorageFetcher) GetStorageDetails(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error) {
 	accountClient, err := armstorage.NewAccountsClient(clients.SubscriptionID, clients.Cred, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create account client: %w", err)
 	}
 
-	account, err := accountClient.GetProperties(ctx, resourceGroupName, accountName, nil)
+	resp, err := accountClient.GetProperties(ctx, resourceGroupName, accountName, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch storage account details: %w", err)
 	}
 
-	return []ResourceDetail{{Name: *account.Name}}, nil
+	provisioningState := ""
+	if resp.Account.Properties != nil && resp.Account.Properties.ProvisioningState != nil {
+		provisioningState = string(*resp.Account.Properties.ProvisioningState)
+	}
+
+	return []ResourceDetail{{
+		Name:              *resp.Account.Name,
+		ResourceGroupName: resourceGroupName,
+		ProvisioningState: provisioningState,
+	}}, nil
 }
 
-func (f *AzureStorageFetcher) FetchContainerDetails(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error) {
+func (f *AzureStorageFetcher) GetContainerDetails(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error) {
 	if clients.ContainerClient == nil {
 		return nil, fmt.Errorf("container client is not initialized")
 	}
@@ -114,7 +133,7 @@ func (f *AzureStorageFetcher) FetchContainerDetails(ctx context.Context, resourc
 	return details, nil
 }
 
-func (f *AzureStorageFetcher) FetchShareDetails(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error) {
+func (f *AzureStorageFetcher) GetShareDetails(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error) {
 	if clients.ShareClient == nil {
 		return nil, fmt.Errorf("share client is not initialized")
 	}
@@ -138,7 +157,7 @@ func (f *AzureStorageFetcher) FetchShareDetails(ctx context.Context, resourceGro
 	return details, nil
 }
 
-func (f *AzureStorageFetcher) FetchQueueDetails(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error) {
+func (f *AzureStorageFetcher) GetQueueDetails(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error) {
 	if clients.QueueClient == nil {
 		return nil, fmt.Errorf("queue client is not initialized")
 	}
@@ -162,7 +181,7 @@ func (f *AzureStorageFetcher) FetchQueueDetails(ctx context.Context, resourceGro
 	return details, nil
 }
 
-func initAndFetchResources(t *testing.T, subscriptionID, resourceGroupName, accountName string, clients *AzureClients, fetcher ResourceFetcher) ([]ResourceDetail, error) {
+func initAndFetchResources(t *testing.T, subscriptionID, resourceGroupName, accountName string, clients *AzureClients, fetcher StorageFetcher) ([]ResourceDetail, error) {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	require.NoError(t, err, "Failed to get credentials")
 
@@ -175,15 +194,14 @@ func initAndFetchResources(t *testing.T, subscriptionID, resourceGroupName, acco
 	return details, nil
 }
 
-func verifyResource(t *testing.T, config TestConfig, resourceType string, details []ResourceDetail, tfOutputKey string) {
-	expectedOutput := terraform.OutputMap(t, config.tfOpts, tfOutputKey)
+func (v *StorageSubResourceVerifier) Verify(t *testing.T, details []ResourceDetail, expectedOutputs map[string]string) { //StorageSubResourceVerifier
 	for _, detail := range details {
-		if _, exists := expectedOutput[detail.Name]; !exists {
-			t.Errorf("%s %s found in Azure but not in Terraform output", resourceType, detail.Name)
+		if _, exists := expectedOutputs[detail.Name]; !exists {
+			t.Errorf("Resource %s found in Azure but not in Terraform output", detail.Name)
 		}
 	}
 
-	for expectedName := range expectedOutput {
+	for expectedName := range expectedOutputs {
 		found := false
 		for _, detail := range details {
 			if detail.Name == expectedName {
@@ -192,7 +210,24 @@ func verifyResource(t *testing.T, config TestConfig, resourceType string, detail
 			}
 		}
 		if !found {
-			t.Errorf("Expected %s %s not found in actual Azure resources", resourceType, expectedName)
+			t.Errorf("Expected resource %s not found in actual Azure resources", expectedName)
+		}
+	}
+}
+
+func (v *StorageResourceVerifier) Verify(t *testing.T, details []ResourceDetail, expectedOutputs map[string]string) { //StorageResourceVerifier
+	for _, detail := range details {
+		expectedName, nameExists := expectedOutputs["name"]
+		expectedRGName, rgNameExists := expectedOutputs["resource_group_name"]
+
+		if nameExists && detail.Name != expectedName {
+			t.Errorf("StorageAccount name mismatch: expected %s, got %s", expectedName, detail.Name)
+		}
+		if rgNameExists && detail.ResourceGroupName != expectedRGName {
+			t.Errorf("StorageAccount resource group name mismatch: expected %s, got %s", expectedRGName, detail.ResourceGroupName)
+		}
+		if detail.ProvisioningState != "Succeeded" {
+			t.Errorf("StorageAccount provisioning state is not succeeded: got %s", detail.ProvisioningState)
 		}
 	}
 }
@@ -213,7 +248,14 @@ func TestStorage(t *testing.T) {
 		t.Fatalf("Failed to initialize Azure clients: %v", err)
 	}
 
-	azureFetcher := &AzureStorageFetcher{}
+	azureFetcher := AzureStorageFetcher{}
+
+	verifierMap := map[string]StorageVerifier{
+		"Containers":     &StorageSubResourceVerifier{},
+		"Shares":         &StorageSubResourceVerifier{},
+		"Queues":         &StorageSubResourceVerifier{},
+		"StorageAccount": &StorageResourceVerifier{},
+	}
 
 	t.Run("SubResources", func(t *testing.T) {
 		resourceTypes := []struct {
@@ -221,10 +263,10 @@ func TestStorage(t *testing.T) {
 			fetchDetailsFunc func(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error)
 			tfOutputKey      string
 		}{
-			{"Containers", azureFetcher.FetchContainerDetails, "containers"},
-			{"Shares", azureFetcher.FetchShareDetails, "shares"},
-			{"Queues", azureFetcher.FetchQueueDetails, "queues"},
-			{"StorageAccount", azureFetcher.FetchStorageDetails, "storage"},
+			{"Containers", azureFetcher.GetContainerDetails, "containers"},
+			{"Shares", azureFetcher.GetShareDetails, "shares"},
+			{"Queues", azureFetcher.GetQueueDetails, "queues"},
+			{"StorageAccount", azureFetcher.GetStorageDetails, "storage"},
 		}
 
 		for _, rt := range resourceTypes {
@@ -234,7 +276,9 @@ func TestStorage(t *testing.T) {
 					t.Errorf("Failed to fetch details for %s: %v", rt.name, err)
 					return
 				}
-				verifyResource(t, config, rt.name, actualDetails, rt.tfOutputKey)
+				expectedOutputs := terraform.OutputMap(t, config.tfOpts, rt.tfOutputKey)
+				verifier := verifierMap[rt.name]
+				verifier.Verify(t, actualDetails, expectedOutputs)
 			})
 		}
 	})
