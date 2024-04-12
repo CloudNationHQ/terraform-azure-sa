@@ -18,6 +18,8 @@ type ResourceFetcher interface {
 }
 
 type AzureClients struct {
+	SubscriptionID  string
+	Cred            *azidentity.DefaultAzureCredential
 	ContainerClient *armstorage.BlobContainersClient
 	ShareClient     *armstorage.FileSharesClient
 	QueueClient     *armstorage.QueueClient
@@ -42,7 +44,11 @@ func initAzureClients(subscriptionID string) (*AzureClients, error) {
 		return nil, fmt.Errorf("failed to create credentials: %w", err)
 	}
 
-	clients := &AzureClients{}
+	clients := &AzureClients{
+		SubscriptionID: subscriptionID,
+		Cred:           cred,
+	}
+
 	var clientErr error
 	clients.ContainerClient, clientErr = armstorage.NewBlobContainersClient(subscriptionID, cred, nil)
 	if clientErr != nil {
@@ -68,6 +74,20 @@ func InitTerraform(t *testing.T) (*terraform.Options, func()) {
 	return tfOpts, func() {
 		shared.Cleanup(t, tfOpts)
 	}
+}
+
+func (f *AzureStorageFetcher) FetchStorageDetails(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error) {
+	accountClient, err := armstorage.NewAccountsClient(clients.SubscriptionID, clients.Cred, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create account client: %w", err)
+	}
+
+	account, err := accountClient.GetProperties(ctx, resourceGroupName, accountName, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch storage account details: %w", err)
+	}
+
+	return []ResourceDetail{{Name: *account.Name}}, nil
 }
 
 func (f *AzureStorageFetcher) FetchContainerDetails(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error) {
@@ -204,6 +224,7 @@ func TestStorage(t *testing.T) {
 			{"Containers", azureFetcher.FetchContainerDetails, "containers"},
 			{"Shares", azureFetcher.FetchShareDetails, "shares"},
 			{"Queues", azureFetcher.FetchQueueDetails, "queues"},
+			{"StorageAccount", azureFetcher.FetchStorageDetails, "storage"},
 		}
 
 		for _, rt := range resourceTypes {
