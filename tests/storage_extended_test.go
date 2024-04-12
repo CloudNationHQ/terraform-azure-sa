@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
@@ -12,8 +13,8 @@ import (
 )
 
 type ResourceFetcher interface {
-	InitClient(subscriptionID string, cred *azidentity.DefaultAzureCredential) error
-	FetchDetails(ctx context.Context, resourceGroupName, accountName string) ([]ResourceDetail, error)
+	InitClient(subscriptionID string, cred *azidentity.DefaultAzureCredential, clients *AzureClients) error
+	FetchResourceDetails(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error)
 }
 
 type AzureClients struct {
@@ -33,16 +34,29 @@ type ResourceDetail struct {
 	Name string
 }
 
-type ContainerFetcher struct {
-	client *armstorage.BlobContainersClient
-}
+type AzureStorageFetcher struct{}
 
-type SharesFetcher struct {
-	client *armstorage.FileSharesClient
-}
+func initAzureClients(subscriptionID string) (*AzureClients, error) {
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create credentials: %w", err)
+	}
 
-type QueuesFetcher struct {
-	client *armstorage.QueueClient
+	clients := &AzureClients{}
+	var clientErr error
+	clients.ContainerClient, clientErr = armstorage.NewBlobContainersClient(subscriptionID, cred, nil)
+	if clientErr != nil {
+		return nil, clientErr
+	}
+	clients.ShareClient, clientErr = armstorage.NewFileSharesClient(subscriptionID, cred, nil)
+	if clientErr != nil {
+		return nil, clientErr
+	}
+	clients.QueueClient, clientErr = armstorage.NewQueueClient(subscriptionID, cred, nil)
+	if clientErr != nil {
+		return nil, clientErr
+	}
+	return clients, nil
 }
 
 func InitTerraform(t *testing.T) (*terraform.Options, func()) {
@@ -56,14 +70,12 @@ func InitTerraform(t *testing.T) (*terraform.Options, func()) {
 	}
 }
 
-func (cf *ContainerFetcher) InitClient(subscriptionID string, cred *azidentity.DefaultAzureCredential) error {
-	var err error
-	cf.client, err = armstorage.NewBlobContainersClient(subscriptionID, cred, nil)
-	return err
-}
+func (f *AzureStorageFetcher) FetchContainerDetails(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error) {
+	if clients.ContainerClient == nil {
+		return nil, fmt.Errorf("container client is not initialized")
+	}
 
-func (cf *ContainerFetcher) FetchDetails(ctx context.Context, resourceGroupName, accountName string) ([]ResourceDetail, error) {
-	pager := cf.client.NewListPager(resourceGroupName, accountName, nil)
+	pager := clients.ContainerClient.NewListPager(resourceGroupName, accountName, nil)
 	var details []ResourceDetail
 	for {
 		page, err := pager.NextPage(ctx)
@@ -82,14 +94,12 @@ func (cf *ContainerFetcher) FetchDetails(ctx context.Context, resourceGroupName,
 	return details, nil
 }
 
-func (sf *SharesFetcher) InitClient(subscriptionID string, cred *azidentity.DefaultAzureCredential) error {
-	var err error
-	sf.client, err = armstorage.NewFileSharesClient(subscriptionID, cred, nil)
-	return err
-}
+func (f *AzureStorageFetcher) FetchShareDetails(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error) {
+	if clients.ShareClient == nil {
+		return nil, fmt.Errorf("share client is not initialized")
+	}
 
-func (sf *SharesFetcher) FetchDetails(ctx context.Context, resourceGroupName, accountName string) ([]ResourceDetail, error) {
-	pager := sf.client.NewListPager(resourceGroupName, accountName, nil)
+	pager := clients.ShareClient.NewListPager(resourceGroupName, accountName, nil)
 	var details []ResourceDetail
 	for {
 		page, err := pager.NextPage(ctx)
@@ -108,14 +118,12 @@ func (sf *SharesFetcher) FetchDetails(ctx context.Context, resourceGroupName, ac
 	return details, nil
 }
 
-func (qf *QueuesFetcher) InitClient(subscriptionID string, cred *azidentity.DefaultAzureCredential) error {
-	var err error
-	qf.client, err = armstorage.NewQueueClient(subscriptionID, cred, nil)
-	return err
-}
+func (f *AzureStorageFetcher) FetchQueueDetails(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error) {
+	if clients.QueueClient == nil {
+		return nil, fmt.Errorf("queue client is not initialized")
+	}
 
-func (qf *QueuesFetcher) FetchDetails(ctx context.Context, resourceGroupName, accountName string) ([]ResourceDetail, error) {
-	pager := qf.client.NewListPager(resourceGroupName, accountName, nil)
+	pager := clients.QueueClient.NewListPager(resourceGroupName, accountName, nil)
 	var details []ResourceDetail
 	for {
 		page, err := pager.NextPage(ctx)
@@ -134,24 +142,22 @@ func (qf *QueuesFetcher) FetchDetails(ctx context.Context, resourceGroupName, ac
 	return details, nil
 }
 
-func initAndFetchResources(t *testing.T, subscriptionID, resourceGroupName, accountName string, fetcher ResourceFetcher) []ResourceDetail {
+func initAndFetchResources(t *testing.T, subscriptionID, resourceGroupName, accountName string, clients *AzureClients, fetcher ResourceFetcher) ([]ResourceDetail, error) {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	require.NoError(t, err, "Failed to get credentials")
 
-	err = fetcher.InitClient(subscriptionID, cred)
+	err = fetcher.InitClient(subscriptionID, cred, clients)
 	require.NoError(t, err, "Failed to initialize client")
 
-	details, err := fetcher.FetchDetails(context.Background(), resourceGroupName, accountName)
+	details, err := fetcher.FetchResourceDetails(context.Background(), resourceGroupName, accountName, clients)
 	require.NoError(t, err, "Failed to fetch details")
 
-	return details
+	return details, nil
 }
 
-func verifyResource(t *testing.T, config TestConfig, resourceType string, fetcher ResourceFetcher, tfOutputKey string) {
+func verifyResource(t *testing.T, config TestConfig, resourceType string, details []ResourceDetail, tfOutputKey string) {
 	expectedOutput := terraform.OutputMap(t, config.tfOpts, tfOutputKey)
-	actualDetails := initAndFetchResources(t, config.subscriptionID, config.resourceGroupName, config.accountName, fetcher)
-
-	for _, detail := range actualDetails {
+	for _, detail := range details {
 		if _, exists := expectedOutput[detail.Name]; !exists {
 			t.Errorf("%s %s found in Azure but not in Terraform output", resourceType, detail.Name)
 		}
@@ -159,7 +165,7 @@ func verifyResource(t *testing.T, config TestConfig, resourceType string, fetche
 
 	for expectedName := range expectedOutput {
 		found := false
-		for _, detail := range actualDetails {
+		for _, detail := range details {
 			if detail.Name == expectedName {
 				found = true
 				break
@@ -171,7 +177,7 @@ func verifyResource(t *testing.T, config TestConfig, resourceType string, fetche
 	}
 }
 
-func TestStorageSubResources(t *testing.T) {
+func TestStorage(t *testing.T) {
 	tfOpts, cleanup := InitTerraform(t)
 	defer cleanup()
 
@@ -182,19 +188,33 @@ func TestStorageSubResources(t *testing.T) {
 		tfOpts:            tfOpts,
 	}
 
-	resourceTypes := []struct {
-		name        string
-		fetcher     ResourceFetcher
-		tfOutputKey string
-	}{
-		{"Containers", &ContainerFetcher{}, "containers"},
-		{"Shares", &SharesFetcher{}, "shares"},
-		{"Queues", &QueuesFetcher{}, "queues"},
+	clients, err := initAzureClients(config.subscriptionID)
+	if err != nil {
+		t.Fatalf("Failed to initialize Azure clients: %v", err)
 	}
 
-	for _, rt := range resourceTypes {
-		t.Run("Verify"+rt.name, func(t *testing.T) {
-			verifyResource(t, config, rt.name, rt.fetcher, rt.tfOutputKey)
-		})
-	}
+	azureFetcher := &AzureStorageFetcher{}
+
+	t.Run("SubResources", func(t *testing.T) {
+		resourceTypes := []struct {
+			name             string
+			fetchDetailsFunc func(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error)
+			tfOutputKey      string
+		}{
+			{"Containers", azureFetcher.FetchContainerDetails, "containers"},
+			{"Shares", azureFetcher.FetchShareDetails, "shares"},
+			{"Queues", azureFetcher.FetchQueueDetails, "queues"},
+		}
+
+		for _, rt := range resourceTypes {
+			t.Run("Verify"+rt.name, func(t *testing.T) {
+				actualDetails, err := rt.fetchDetailsFunc(context.Background(), config.resourceGroupName, config.accountName, clients)
+				if err != nil {
+					t.Errorf("Failed to fetch details for %s: %v", rt.name, err)
+					return
+				}
+				verifyResource(t, config, rt.name, actualDetails, rt.tfOutputKey)
+			})
+		}
+	})
 }
