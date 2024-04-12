@@ -194,7 +194,7 @@ func initAndFetchResources(t *testing.T, subscriptionID, resourceGroupName, acco
 	return details, nil
 }
 
-func (v *StorageSubResourceVerifier) Verify(t *testing.T, details []ResourceDetail, expectedOutputs map[string]string) { //StorageSubResourceVerifier
+func (v *StorageSubResourceVerifier) Verify(t *testing.T, details []ResourceDetail, expectedOutputs map[string]string) {
 	for _, detail := range details {
 		if _, exists := expectedOutputs[detail.Name]; !exists {
 			t.Errorf("Resource %s found in Azure but not in Terraform output", detail.Name)
@@ -215,7 +215,7 @@ func (v *StorageSubResourceVerifier) Verify(t *testing.T, details []ResourceDeta
 	}
 }
 
-func (v *StorageResourceVerifier) Verify(t *testing.T, details []ResourceDetail, expectedOutputs map[string]string) { //StorageResourceVerifier
+func (v *StorageResourceVerifier) Verify(t *testing.T, details []ResourceDetail, expectedOutputs map[string]string) {
 	for _, detail := range details {
 		expectedName, nameExists := expectedOutputs["name"]
 		expectedRGName, rgNameExists := expectedOutputs["resource_group_name"]
