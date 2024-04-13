@@ -233,6 +233,19 @@ func (v *StorageResourceVerifier) Verify(t *testing.T, details []ResourceDetail,
 }
 
 func TestStorage(t *testing.T) {
+	fetcher := &AzureStorageFetcher{}
+	tests := []struct {
+		name             string
+		fetchDetailsFunc func(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error)
+		tfOutputKey      string
+		verifier         StorageVerifier
+	}{
+		{"Containers", fetcher.GetContainerDetails, "containers", &StorageSubResourceVerifier{}},
+		{"Shares", fetcher.GetShareDetails, "shares", &StorageSubResourceVerifier{}},
+		{"Queues", fetcher.GetQueueDetails, "queues", &StorageSubResourceVerifier{}},
+		{"StorageAccount", fetcher.GetStorageDetails, "storage", &StorageResourceVerifier{}},
+	}
+
 	tfOpts, cleanup := InitTerraform(t)
 	defer cleanup()
 
@@ -248,38 +261,15 @@ func TestStorage(t *testing.T) {
 		t.Fatalf("Failed to initialize Azure clients: %v", err)
 	}
 
-	azureFetcher := AzureStorageFetcher{}
-
-	verifierMap := map[string]StorageVerifier{
-		"Containers":     &StorageSubResourceVerifier{},
-		"Shares":         &StorageSubResourceVerifier{},
-		"Queues":         &StorageSubResourceVerifier{},
-		"StorageAccount": &StorageResourceVerifier{},
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actualDetails, err := tt.fetchDetailsFunc(context.Background(), config.resourceGroupName, config.accountName, clients)
+			if err != nil {
+				t.Errorf("Failed to fetch details for %s: %v", tt.name, err)
+				return
+			}
+			expectedOutputs := terraform.OutputMap(t, config.tfOpts, tt.tfOutputKey)
+			tt.verifier.Verify(t, actualDetails, expectedOutputs)
+		})
 	}
-
-	t.Run("SubResources", func(t *testing.T) {
-		resourceTypes := []struct {
-			name             string
-			fetchDetailsFunc func(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error)
-			tfOutputKey      string
-		}{
-			{"Containers", azureFetcher.GetContainerDetails, "containers"},
-			{"Shares", azureFetcher.GetShareDetails, "shares"},
-			{"Queues", azureFetcher.GetQueueDetails, "queues"},
-			{"StorageAccount", azureFetcher.GetStorageDetails, "storage"},
-		}
-
-		for _, rt := range resourceTypes {
-			t.Run("Verify"+rt.name, func(t *testing.T) {
-				actualDetails, err := rt.fetchDetailsFunc(context.Background(), config.resourceGroupName, config.accountName, clients)
-				if err != nil {
-					t.Errorf("Failed to fetch details for %s: %v", rt.name, err)
-					return
-				}
-				expectedOutputs := terraform.OutputMap(t, config.tfOpts, rt.tfOutputKey)
-				verifier := verifierMap[rt.name]
-				verifier.Verify(t, actualDetails, expectedOutputs)
-			})
-		}
-	})
 }
