@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.17.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.16.1...v0.17.0) (2024-06-07)
+
+
+### Features
+
+* **deps:** bump github.com/gruntwork-io/terratest in /tests ([#63](https://github.com/CloudNationHQ/terraform-azure-sa/issues/63)) ([f7734f4](https://github.com/CloudNationHQ/terraform-azure-sa/commit/f7734f4de49c7ea0543f9e77bbc8f04a61e1fb31))
+* **deps:** bump github.com/hashicorp/go-getter in /tests ([#61](https://github.com/CloudNationHQ/terraform-azure-sa/issues/61)) ([4de5cc4](https://github.com/CloudNationHQ/terraform-azure-sa/commit/4de5cc46be51fd285840cc52cfc760c7d0d162fa))
+
+
+### Bug Fixes
+
+* ensure container access type is fully optional ([#68](https://github.com/CloudNationHQ/terraform-azure-sa/issues/68)) ([17c18dd](https://github.com/CloudNationHQ/terraform-azure-sa/commit/17c18dd2e6e421b7ffd9b30554f2212cfbd1c32b))
+
 ## [0.16.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.16.0...v0.16.1) (2024-06-07)
 
 
