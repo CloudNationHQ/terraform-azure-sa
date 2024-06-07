@@ -43,7 +43,6 @@ locals {
 
     containers = {
       sc1 = {
-        access_type = "private"
         metadata = {
           project = "marketing"
           owner   = "marketing team"
