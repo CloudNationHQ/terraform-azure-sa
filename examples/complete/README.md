@@ -39,6 +39,22 @@ The module uses the below locals for configuration:
 ```hcl
 locals {
   blob_properties = {
+    cors_rules = {
+      rule1 = {
+        allowed_headers    = ["*"]
+        allowed_methods    = ["GET", "POST"]
+        allowed_origins    = ["*"]
+        exposed_headers    = ["*"]
+        max_age_in_seconds = 3600
+      }
+      rule2 = {
+        allowed_headers    = ["*"]
+        allowed_methods    = ["PUT"]
+        allowed_origins    = ["*"]
+        exposed_headers    = ["*"]
+        max_age_in_seconds = 3600
+      }
+    }
     versioning_enabled       = true
     last_access_time_enabled = true
     change_feed_enabled      = true
@@ -57,7 +73,6 @@ locals {
 
     containers = {
       sc1 = {
-        access_type = "private"
         metadata = {
           project = "marketing"
           owner   = "marketing team"
@@ -66,6 +81,15 @@ locals {
     }
   }
   queue_properties = {
+    cors_rules = {
+      rule1 = {
+        allowed_headers    = ["*"]
+        allowed_methods    = ["GET", "POST"]
+        allowed_origins    = ["*"]
+        exposed_headers    = ["*"]
+        max_age_in_seconds = 3600
+      }
+    }
     logging = {
       read              = true
       retention_in_days = 8
@@ -82,6 +106,15 @@ locals {
     }
   }
   share_properties = {
+    cors_rules = {
+      rule1 = {
+        allowed_headers    = ["*"]
+        allowed_methods    = ["GET", "POST"]
+        allowed_origins    = ["*"]
+        exposed_headers    = ["*"]
+        max_age_in_seconds = 3600
+      }
+    }
     smb = {
       versions             = ["SMB3.1.1"]
       authentication_types = ["Kerberos"]
