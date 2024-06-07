@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.16.0...v0.16.1) (2024-06-07)
+
+
+### Bug Fixes
+
+* fix handling of optional cors rules for blob, shares and queues ([#65](https://github.com/CloudNationHQ/terraform-azure-sa/issues/65)) ([163033b](https://github.com/CloudNationHQ/terraform-azure-sa/commit/163033be9ec28b813855b89e3c0f50866da6a677))
+
 ## [0.16.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.15.0...v0.16.0) (2024-04-22)
 
 
