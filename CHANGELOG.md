@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.17.0...v0.18.0) (2024-06-07)
+
+
+### Features
+
+* add pull request template ([#70](https://github.com/CloudNationHQ/terraform-azure-sa/issues/70)) ([8a590ba](https://github.com/CloudNationHQ/terraform-azure-sa/commit/8a590bae822ddf753fa350ed58a88be9d8d9c6fd))
+
 ## [0.17.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.16.1...v0.17.0) (2024-06-07)
 
 
