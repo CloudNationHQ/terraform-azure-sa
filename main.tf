@@ -66,7 +66,7 @@ resource "azurerm_storage_account" "sa" {
       }
 
       dynamic "delete_retention_policy" {
-        for_each = try(var.storage.blob_properties != null ? [var.storage.blob_properties.delete_retention_policy] : [], [])
+        for_each = try(var.storage.blob_properties.delete_retention_policy != null ? [var.storage.blob_properties.delete_retention_policy] : [], [])
 
         content {
           days = try(var.storage.blob_properties.delete_retention_policy.days, 7)
@@ -74,7 +74,7 @@ resource "azurerm_storage_account" "sa" {
       }
 
       dynamic "restore_policy" {
-        for_each = try(var.storage.blob_properties != null ? [var.storage.blob_properties.restore_policy] : [], [])
+        for_each = try(var.storage.blob_properties.restore_policy != null ? [var.storage.blob_properties.restore_policy] : [], [])
 
         content {
           days = try(var.storage.blob_properties.restore_policy.days, 7)
@@ -82,7 +82,7 @@ resource "azurerm_storage_account" "sa" {
       }
 
       dynamic "container_delete_retention_policy" {
-        for_each = try(var.storage.blob_properties != null ? [var.storage.blob_properties.container_delete_retention_policy] : [], [])
+        for_each = try(var.storage.blob_properties.container_delete_retention_policy != null ? [var.storage.blob_properties.container_delete_retention_policy] : [], [])
 
         content {
           days = try(var.storage.blob_properties.container_delete_retention_policy.days, 7)
@@ -108,7 +108,7 @@ resource "azurerm_storage_account" "sa" {
       }
 
       dynamic "retention_policy" {
-        for_each = try(var.storage.share_properties != null ? [var.storage.share_properties.retention_policy] : [], [])
+        for_each = try(var.storage.share_properties.retention_policy != null ? [var.storage.share_properties.retention_policy] : [], [])
 
         content {
           days = try(var.storage.share_properties.retention_policy.days, 7)
@@ -116,7 +116,7 @@ resource "azurerm_storage_account" "sa" {
       }
 
       dynamic "smb" {
-        for_each = try(var.storage.share_properties != null ? [var.storage.share_properties.smb] : [], [])
+        for_each = try(var.storage.share_properties.smb != null ? [var.storage.share_properties.smb] : [], [])
 
         content {
           versions                        = try(var.storage.share_properties.smb.versions, [])
@@ -167,7 +167,7 @@ resource "azurerm_storage_account" "sa" {
       }
 
       dynamic "logging" {
-        for_each = try(var.storage.queue_properties != null ? [var.storage.queue_properties.logging] : [], [])
+        for_each = try(var.storage.queue_properties.logging != null ? [var.storage.queue_properties.logging] : [], [])
 
         content {
           version               = try(var.storage.queue_properties.logging.version, "1.0")
@@ -179,7 +179,7 @@ resource "azurerm_storage_account" "sa" {
       }
 
       dynamic "minute_metrics" {
-        for_each = try(var.storage.queue_properties != null ? [var.storage.queue_properties.minute_metrics] : [], [])
+        for_each = try(var.storage.queue_properties.minute_metrics != null ? [var.storage.queue_properties.minute_metrics] : [], [])
 
         content {
           enabled               = try(var.storage.queue_properties.minute_metrics.enabled, false)
@@ -190,7 +190,7 @@ resource "azurerm_storage_account" "sa" {
       }
 
       dynamic "hour_metrics" {
-        for_each = try(var.storage.queue_properties != null ? [var.storage.queue_properties.hour_metrics] : [], [])
+        for_each = try(var.storage.queue_properties.hour_metrics != null ? [var.storage.queue_properties.hour_metrics] : [], [])
 
         content {
           enabled               = try(var.storage.queue_properties.hour_metrics.enabled, false)
