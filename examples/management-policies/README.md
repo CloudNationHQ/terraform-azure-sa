@@ -5,7 +5,7 @@ This example shows the implementation of a storage management policy, ensuring d
 ```hcl
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 0.20"
+  version = "~> 0.21"
 
   storage = {
     name              = module.naming.storage_account.name_unique
