@@ -5,7 +5,7 @@ This example details a storage account setup with a private endpoint, enhancing 
 ```hcl
 module "privatelink" {
   source  = "cloudnationhq/pe/azure"
-  version = "~> 0.20"
+  version = "~> 0.21"
 
   resourcegroup = module.rg.groups.demo.name
   location      = module.rg.groups.demo.location

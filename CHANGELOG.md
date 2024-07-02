@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.21.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.20.0...v0.21.0) (2024-07-02)
+
+
+### Features
+
+* modularize azure client initialization in extended test ([#84](https://github.com/CloudNationHQ/terraform-azure-sa/issues/84)) ([6a0f717](https://github.com/CloudNationHQ/terraform-azure-sa/commit/6a0f717dc8509f4f98f573225b337c34bc58fa78))
+
 ## [0.20.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.19.0...v0.20.0) (2024-07-02)
 
 
