@@ -64,16 +64,16 @@ func (a *AzureClientInitializer) InitClients(subscriptionID string) (*AzureClien
 		Cred:           cred,
 	}
 
-	if err := a.initContainerClient(clients); err != nil {
-		return nil, err
+	clientInitFuncs := map[string]func(*AzureClients) error{
+		"ContainerClient": a.initContainerClient,
+		"ShareClient":     a.initShareClient,
+		"QueueClient":     a.initQueueClient,
 	}
 
-	if err := a.initShareClient(clients); err != nil {
-		return nil, err
-	}
-
-	if err := a.initQueueClient(clients); err != nil {
-		return nil, err
+	for clientName, initFunc := range clientInitFuncs {
+		if err := initFunc(clients); err != nil {
+			return nil, fmt.Errorf("failed to initialize %s: %w", clientName, err)
+		}
 	}
 
 	return clients, nil
@@ -203,17 +203,6 @@ func (f *AzureStorageFetcher) GetQueueDetails(ctx context.Context, resourceGroup
 	return details, nil
 }
 
-func initAndFetchResources(t *testing.T, subscriptionID, resourceGroupName, accountName string, clients *AzureClients, fetcher StorageFetcher) ([]ResourceDetail, error) {
-	clientInitializer := &AzureClientInitializer{}
-	clients, err := clientInitializer.InitClients(subscriptionID)
-	require.NoError(t, err, "Failed to initialize Azure clients")
-
-	details, err := fetcher.FetchResourceDetails(context.Background(), resourceGroupName, accountName, clients)
-	require.NoError(t, err, "Failed to fetch details")
-
-	return details, nil
-}
-
 func (v *StorageSubResourceVerifier) Verify(t *testing.T, details []ResourceDetail, expectedOutputs map[string]string) {
 	for _, detail := range details {
 		if _, exists := expectedOutputs[detail.Name]; !exists {
@@ -257,7 +246,7 @@ func TestStorage(t *testing.T) {
 	clientInitializer := &AzureClientInitializer{}
 	tests := []struct {
 		name             string
-		fetchDetailsFunc func(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error)
+		fetchDetailsFunc func(context.Context, string, string, *AzureClients) ([]ResourceDetail, error)
 		tfOutputKey      string
 		verifier         StorageVerifier
 	}{
@@ -278,17 +267,13 @@ func TestStorage(t *testing.T) {
 	}
 
 	clients, err := clientInitializer.InitClients(config.subscriptionID)
-	if err != nil {
-		t.Fatalf("Failed to initialize Azure clients: %v", err)
-	}
+	require.NoError(t, err, "Failed to initialize Azure clients")
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			actualDetails, err := tt.fetchDetailsFunc(context.Background(), config.resourceGroupName, config.accountName, clients)
-			if err != nil {
-				t.Errorf("Failed to fetch details for %s: %v", tt.name, err)
-				return
-			}
+			require.NoError(t, err, "Failed to fetch details for %s", tt.name)
+
 			expectedOutputs := terraform.OutputMap(t, config.tfOpts, tt.tfOutputKey)
 			tt.verifier.Verify(t, actualDetails, expectedOutputs)
 		})
