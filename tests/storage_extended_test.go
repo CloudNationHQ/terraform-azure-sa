@@ -13,12 +13,15 @@ import (
 )
 
 type StorageFetcher interface {
-	InitClient(subscriptionID string, cred *azidentity.DefaultAzureCredential, clients *AzureClients) error
 	FetchResourceDetails(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error)
 }
 
 type StorageVerifier interface {
 	Verify(t *testing.T, details []ResourceDetail, expectedOutputs map[string]string)
+}
+
+type ClientInitializer interface {
+	InitClients(subscriptionID string) (*AzureClients, error)
 }
 
 type AzureClients struct {
@@ -48,7 +51,9 @@ type StorageSubResourceVerifier struct{}
 
 type StorageResourceVerifier struct{}
 
-func initAzureClients(subscriptionID string) (*AzureClients, error) {
+type AzureClientInitializer struct{}
+
+func (a *AzureClientInitializer) InitClients(subscriptionID string) (*AzureClients, error) {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create credentials: %w", err)
@@ -59,20 +64,46 @@ func initAzureClients(subscriptionID string) (*AzureClients, error) {
 		Cred:           cred,
 	}
 
-	var clientErr error
-	clients.ContainerClient, clientErr = armstorage.NewBlobContainersClient(subscriptionID, cred, nil)
-	if clientErr != nil {
-		return nil, clientErr
+	if err := a.initContainerClient(clients); err != nil {
+		return nil, err
 	}
-	clients.ShareClient, clientErr = armstorage.NewFileSharesClient(subscriptionID, cred, nil)
-	if clientErr != nil {
-		return nil, clientErr
+
+	if err := a.initShareClient(clients); err != nil {
+		return nil, err
 	}
-	clients.QueueClient, clientErr = armstorage.NewQueueClient(subscriptionID, cred, nil)
-	if clientErr != nil {
-		return nil, clientErr
+
+	if err := a.initQueueClient(clients); err != nil {
+		return nil, err
 	}
+
 	return clients, nil
+}
+
+func (a *AzureClientInitializer) initContainerClient(clients *AzureClients) error {
+	containerClient, err := armstorage.NewBlobContainersClient(clients.SubscriptionID, clients.Cred, nil)
+	if err != nil {
+		return fmt.Errorf("failed to create container client: %w", err)
+	}
+	clients.ContainerClient = containerClient
+	return nil
+}
+
+func (a *AzureClientInitializer) initShareClient(clients *AzureClients) error {
+	shareClient, err := armstorage.NewFileSharesClient(clients.SubscriptionID, clients.Cred, nil)
+	if err != nil {
+		return fmt.Errorf("failed to create share client: %w", err)
+	}
+	clients.ShareClient = shareClient
+	return nil
+}
+
+func (a *AzureClientInitializer) initQueueClient(clients *AzureClients) error {
+	queueClient, err := armstorage.NewQueueClient(clients.SubscriptionID, clients.Cred, nil)
+	if err != nil {
+		return fmt.Errorf("failed to create queue client: %w", err)
+	}
+	clients.QueueClient = queueClient
+	return nil
 }
 
 func InitTerraform(t *testing.T) (*terraform.Options, func()) {
@@ -86,7 +117,7 @@ func InitTerraform(t *testing.T) (*terraform.Options, func()) {
 	}
 }
 
-func (f *AzureStorageFetcher) GetStorageDetails(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error) {
+func (f *AzureStorageFetcher) FetchResourceDetails(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error) {
 	accountClient, err := armstorage.NewAccountsClient(clients.SubscriptionID, clients.Cred, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create account client: %w", err)
@@ -116,7 +147,7 @@ func (f *AzureStorageFetcher) GetContainerDetails(ctx context.Context, resourceG
 
 	pager := clients.ContainerClient.NewListPager(resourceGroupName, accountName, nil)
 	var details []ResourceDetail
-	for {
+	for pager.More() {
 		page, err := pager.NextPage(ctx)
 		if err != nil {
 			return nil, err
@@ -125,9 +156,6 @@ func (f *AzureStorageFetcher) GetContainerDetails(ctx context.Context, resourceG
 			details = append(details, ResourceDetail{
 				Name: *container.Name,
 			})
-		}
-		if page.NextLink == nil || len(*page.NextLink) == 0 {
-			break
 		}
 	}
 	return details, nil
@@ -140,7 +168,7 @@ func (f *AzureStorageFetcher) GetShareDetails(ctx context.Context, resourceGroup
 
 	pager := clients.ShareClient.NewListPager(resourceGroupName, accountName, nil)
 	var details []ResourceDetail
-	for {
+	for pager.More() {
 		page, err := pager.NextPage(ctx)
 		if err != nil {
 			return nil, err
@@ -149,9 +177,6 @@ func (f *AzureStorageFetcher) GetShareDetails(ctx context.Context, resourceGroup
 			details = append(details, ResourceDetail{
 				Name: *share.Name,
 			})
-		}
-		if page.NextLink == nil || len(*page.NextLink) == 0 {
-			break
 		}
 	}
 	return details, nil
@@ -164,7 +189,7 @@ func (f *AzureStorageFetcher) GetQueueDetails(ctx context.Context, resourceGroup
 
 	pager := clients.QueueClient.NewListPager(resourceGroupName, accountName, nil)
 	var details []ResourceDetail
-	for {
+	for pager.More() {
 		page, err := pager.NextPage(ctx)
 		if err != nil {
 			return nil, err
@@ -174,19 +199,14 @@ func (f *AzureStorageFetcher) GetQueueDetails(ctx context.Context, resourceGroup
 				Name: *queue.Name,
 			})
 		}
-		if page.NextLink == nil || len(*page.NextLink) == 0 {
-			break
-		}
 	}
 	return details, nil
 }
 
 func initAndFetchResources(t *testing.T, subscriptionID, resourceGroupName, accountName string, clients *AzureClients, fetcher StorageFetcher) ([]ResourceDetail, error) {
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
-	require.NoError(t, err, "Failed to get credentials")
-
-	err = fetcher.InitClient(subscriptionID, cred, clients)
-	require.NoError(t, err, "Failed to initialize client")
+	clientInitializer := &AzureClientInitializer{}
+	clients, err := clientInitializer.InitClients(subscriptionID)
+	require.NoError(t, err, "Failed to initialize Azure clients")
 
 	details, err := fetcher.FetchResourceDetails(context.Background(), resourceGroupName, accountName, clients)
 	require.NoError(t, err, "Failed to fetch details")
@@ -234,6 +254,7 @@ func (v *StorageResourceVerifier) Verify(t *testing.T, details []ResourceDetail,
 
 func TestStorage(t *testing.T) {
 	fetcher := &AzureStorageFetcher{}
+	clientInitializer := &AzureClientInitializer{}
 	tests := []struct {
 		name             string
 		fetchDetailsFunc func(ctx context.Context, resourceGroupName, accountName string, clients *AzureClients) ([]ResourceDetail, error)
@@ -243,7 +264,7 @@ func TestStorage(t *testing.T) {
 		{"Containers", fetcher.GetContainerDetails, "containers", &StorageSubResourceVerifier{}},
 		{"Shares", fetcher.GetShareDetails, "shares", &StorageSubResourceVerifier{}},
 		{"Queues", fetcher.GetQueueDetails, "queues", &StorageSubResourceVerifier{}},
-		{"StorageAccount", fetcher.GetStorageDetails, "storage", &StorageResourceVerifier{}},
+		{"StorageAccount", fetcher.FetchResourceDetails, "storage", &StorageResourceVerifier{}},
 	}
 
 	tfOpts, cleanup := InitTerraform(t)
@@ -256,7 +277,7 @@ func TestStorage(t *testing.T) {
 		tfOpts:            tfOpts,
 	}
 
-	clients, err := initAzureClients(config.subscriptionID)
+	clients, err := clientInitializer.InitClients(config.subscriptionID)
 	if err != nil {
 		t.Fatalf("Failed to initialize Azure clients: %v", err)
 	}
