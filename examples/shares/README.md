@@ -5,7 +5,7 @@ This sample demonstrates configuring storage shares, facilitating file sharing w
 ```hcl
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 0.21"
+  version = "~> 0.22"
 
   naming = local.naming
 
