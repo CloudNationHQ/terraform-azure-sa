@@ -5,7 +5,7 @@ This example outlines integrating storage accounts with active directory authent
 ```hcl
 module "storage" {
   source = "cloudnationhq/sa/azure"
-  version = "~> 0.21"
+  version = "~> 0.22"
 
   naming = local.naming
 
