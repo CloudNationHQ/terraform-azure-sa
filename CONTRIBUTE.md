@@ -3,7 +3,7 @@
 Thank you for your interest. Here’s how to contribute:
 
 ## Issues
-Use the `feature` or `bug` issue template when creating issues to ensure clarity and consistency.
+Use the feature or bug issue template when creating issues to ensure clarity and consistency.
 
 ## Pull Requests
 Make changes in a fork of our repository and submit a pull request for review. Ensure your changes address a specific issue and include a clear description of the problem and solution.
