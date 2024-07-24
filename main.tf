@@ -297,6 +297,22 @@ resource "azurerm_storage_share" "sh" {
   metadata             = each.value.metadata
   access_tier          = each.value.access_tier
   enabled_protocol     = each.value.enabled_protocol
+
+  dynamic "acl" {
+    for_each = try(each.value.acl, {}) != {} ? [each.value.acl] : []
+    content {
+      id = try(acl.value.id, null)
+
+      dynamic "access_policy" {
+        for_each = try(acl.value.access_policy, null) != null ? [acl.value.access_policy] : []
+        content {
+          permissions = try(access_policy.value.permissions, null)
+          start       = try(access_policy.value.start, null)
+          expiry      = try(access_policy.value.expiry, null)
+        }
+      }
+    }
+  }
 }
 
 # tables
