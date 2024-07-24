@@ -302,7 +302,6 @@ resource "azurerm_storage_share" "sh" {
     for_each = try(each.value.acl, {}) != {} ? [each.value.acl] : []
     content {
       id = try(acl.value.id, null)
-
       dynamic "access_policy" {
         for_each = try(acl.value.access_policy, null) != null ? [acl.value.access_policy] : []
         content {
