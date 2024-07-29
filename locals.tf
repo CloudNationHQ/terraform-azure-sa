@@ -22,6 +22,7 @@ locals {
       metadata             = try(fs.metadata, {})
       access_tier          = try(fs.access_tier, "Hot")
       enabled_protocol     = try(fs.protocol, "SMB")
+      acl                  = try(fs.acl, {})
     }
   ])
 }
