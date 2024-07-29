@@ -5,7 +5,7 @@ This example highlights the complete usage.
 ```hcl
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 0.22"
+  version = "~> 0.23"
 
   naming = local.naming
 

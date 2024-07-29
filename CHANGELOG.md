@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.23.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.22.0...v0.23.0) (2024-07-29)
+
+
+### Features
+
+* add acl support on shares ([#93](https://github.com/CloudNationHQ/terraform-azure-sa/issues/93)) ([97c604e](https://github.com/CloudNationHQ/terraform-azure-sa/commit/97c604e551f62d4c6dab26b84b7126a086aee286))
+* **deps:** bump github.com/gruntwork-io/terratest in /tests ([#91](https://github.com/CloudNationHQ/terraform-azure-sa/issues/91)) ([a93d39d](https://github.com/CloudNationHQ/terraform-azure-sa/commit/a93d39d84035db7d8e08bcd21385d064b6655107))
+
 ## [0.22.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.21.0...v0.22.0) (2024-07-04)
 
 
