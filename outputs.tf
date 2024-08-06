@@ -27,3 +27,13 @@ output "tables" {
   description = "tables configuration specifics"
   value       = azurerm_storage_table.st
 }
+
+output "file_systems" {
+  description = "file systems configuration specifics"
+  value       = azurerm_storage_data_lake_gen2_filesystem.fs
+}
+
+output "file_system_paths" {
+  description = "file system paths configuration specifics"
+  value       = azurerm_storage_data_lake_gen2_path.pa
+}

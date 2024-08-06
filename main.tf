@@ -324,6 +324,53 @@ resource "azurerm_storage_table" "st" {
   storage_account_name = each.value.storage_account_name
 }
 
+# file systems
+resource "azurerm_storage_data_lake_gen2_filesystem" "fs" {
+  for_each = {
+    for fs in local.file_systems : fs.fs_key => fs
+  }
+
+  name                     = each.value.name
+  storage_account_id       = each.value.storage_account_id
+  default_encryption_scope = each.value.default_encryption_scope
+  properties               = each.value.properties
+  owner                    = each.value.owner
+  group                    = each.value.group
+
+  dynamic "ace" {
+    for_each = try(each.value.ace, {}) != {} ? each.value.ace : {}
+    content {
+      permissions = ace.value.permissions
+      type        = ace.value.type
+      id          = ace.value.type == "group" || ace.value.type == "user" ? ace.value.id : null
+      scope       = try(ace.value.scope, "access")
+    }
+  }
+}
+
+resource "azurerm_storage_data_lake_gen2_path" "pa" {
+  for_each = {
+    for pa in local.fs_paths : pa.pa_key => pa
+  }
+
+  path               = each.value.path
+  filesystem_name    = each.value.filesystem_name
+  storage_account_id = each.value.storage_account_id
+  owner              = each.value.owner
+  group              = each.value.group
+  resource           = "directory" ## Currently only directory is supported
+
+  dynamic "ace" {
+    for_each = try(each.value.ace, {}) != {} ? each.value.ace : {}
+    content {
+      permissions = ace.value.permissions
+      type        = ace.value.type
+      id          = ace.value.type == "group" || ace.value.type == "user" ? ace.value.id : null
+      scope       = try(ace.value.scope, "access")
+    }
+  }
+}
+
 # management policies
 resource "azurerm_storage_management_policy" "mgmt_policy" {
   for_each = try(var.storage.mgt_policy, null) != null ? { "default" = var.storage.mgt_policy } : {}
