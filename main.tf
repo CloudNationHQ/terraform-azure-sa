@@ -10,7 +10,7 @@ resource "azurerm_storage_account" "sa" {
   account_kind                      = try(var.storage.account_kind, "StorageV2")
   access_tier                       = try(var.storage.access_tier, "Hot")
   infrastructure_encryption_enabled = try(var.storage.infrastructure_encryption_enabled, false)
-  enable_https_traffic_only         = try(var.storage.enable_https_traffic_only, true)
+  https_traffic_only_enabled        = try(var.storage.https_traffic_only_enabled, true)
   min_tls_version                   = try(var.storage.min_tls_version, "TLS1_2")
   edge_zone                         = try(var.storage.edge_zone, null)
   table_encryption_key_type         = try(var.storage.table_encryption_key_type, null)
