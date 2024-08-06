@@ -43,6 +43,8 @@ A last key goal is to separate logic from configuration in the module, thereby e
 | [azurerm_storage_container](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container) | resource |
 | [azurerm_storage_queue](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_queue) | resource |
 | [azurerm_storage_share](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_share) | resource |
+| [azurerm_storage_data_lake_gen2_filesystem](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/azurerm_storage_data_lake_gen2_filesystem) | resource |
+| [azurerm_storage_data_lake_gen2_path](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/azurerm_storage_data_lake_gen2_path) | resource |
 | [azurerm_storage_table](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_table) | resource |
 | [azurerm_storage_management_policy](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_management_policy) | resource |
 | [azurerm_advanced_threat_protection](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/advanced_threat_protection) | resource |
@@ -67,6 +69,8 @@ A last key goal is to separate logic from configuration in the module, thereby e
 | `shares` | shares configuration specifics |
 | `queues` | queues configuration specifics |
 | `tables` | table configuration specifics |
+| `file_systems` | file systems configuration specifics |
+| `file_system_paths` | file system paths configuration specifics |
 
 ## Testing
 
