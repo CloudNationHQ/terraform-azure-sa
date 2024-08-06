@@ -12,7 +12,7 @@ module "storage" {
   storage = {
     name          = module.naming.storage_account.name_unique
     location      = module.rg.groups.demo.location
-    resourcegroup = module.rg.groups.demo.name
+    resource_group = module.rg.groups.demo.name
 
     share_properties = {
       smb = {

@@ -5,12 +5,12 @@ This example illustrates the default storage setup, in its simplest form.
 ```hcl
 module "storage" {
   source = "cloudnationhq/sa/azure"
-  version = "~> 0.23"
+  version = "~> 1.0"
 
   storage = {
     name          = module.naming.storage_account.name_unique
     location      = module.rg.groups.demo.location
-    resourcegroup = module.rg.groups.demo.name
+    resource_group = module.rg.groups.demo.name
   }
 }
 ```
@@ -22,7 +22,7 @@ Additionally, for certain scenarios, the example below highlights the ability to
 ```hcl
 module "storage" {
   source = "cloudnationhq/sa/azure"
-  version = "~> 0.1"
+  version = "~> 1.0"
 
   for_each = local.storage
 
@@ -39,7 +39,7 @@ locals {
     sa1 = {
       name          = join("", [module.naming.storage_account.name_unique, "001"])
       location      = module.rg.groups.demo.location
-      resourcegroup = module.rg.groups.demo.name
+      resource_group = module.rg.groups.demo.name
 
       share_properties = {
         smb = {
@@ -62,7 +62,7 @@ locals {
     sa2 = {
       name          = join("", [module.naming.storage_account.name_unique, "002"])
       location      = module.rg.groups.demo.location
-      resourcegroup = module.rg.groups.demo.name
+      resource_group = module.rg.groups.demo.name
 
       share_properties = {
         smb = {

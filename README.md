@@ -64,7 +64,7 @@ A last key goal is to separate logic from configuration in the module, thereby e
 | Name | Description |
 | :-- | :-- |
 | `account` | storage account details |
-| `subscriptionId` | contains the current subscription id |
+| `subscription_id` | contains the current subscription id |
 | `containers` | container configuration specifics |
 | `shares` | shares configuration specifics |
 | `queues` | queues configuration specifics |

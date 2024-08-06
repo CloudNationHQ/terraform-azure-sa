@@ -3,7 +3,7 @@ data "azurerm_subscription" "current" {}
 # storage accounts
 resource "azurerm_storage_account" "sa" {
   name                              = var.storage.name
-  resource_group_name               = coalesce(lookup(var.storage, "resourcegroup", null), var.resourcegroup)
+  resource_group_name               = coalesce(lookup(var.storage, "resource_group", null), var.resource_group)
   location                          = coalesce(lookup(var.storage, "location", null), var.location)
   account_tier                      = try(var.storage.account_tier, "Standard")
   account_replication_type          = try(var.storage.account_replication_type, "GRS")
@@ -440,13 +440,14 @@ resource "azurerm_storage_management_policy" "mgmt_policy" {
       }
     }
   }
+  depends_on = [azurerm_storage_container.sc]
 }
 
 resource "azurerm_user_assigned_identity" "identity" {
   for_each = contains(["UserAssigned", "SystemAssigned, UserAssigned"], try(var.storage.identity.type, "")) ? { "identity" = var.storage.identity } : {}
 
   name                = try(each.value.name, "uai-${var.storage.name}")
-  resource_group_name = var.storage.resourcegroup
+  resource_group_name = var.storage.resource_group
   location            = var.storage.location
   tags                = try(each.value.tags, var.tags, null)
 }
