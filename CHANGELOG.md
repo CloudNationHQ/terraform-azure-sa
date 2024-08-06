@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.23.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.23.0...v0.23.1) (2024-08-06)
+
+
+### Bug Fixes
+
+* updated acl's to map of objects instead of list of objects to allow for multiple acl entries ([#98](https://github.com/CloudNationHQ/terraform-azure-sa/issues/98)) ([fbb544d](https://github.com/CloudNationHQ/terraform-azure-sa/commit/fbb544d843487a1706e53865568d3a5e27598f8a))
+
 ## [0.23.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.22.0...v0.23.0) (2024-07-29)
 
 
