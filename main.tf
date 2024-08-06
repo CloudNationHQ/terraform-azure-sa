@@ -299,11 +299,11 @@ resource "azurerm_storage_share" "sh" {
   enabled_protocol     = each.value.enabled_protocol
 
   dynamic "acl" {
-    for_each = try(each.value.acl, {}) != {} ? [each.value.acl] : []
+    for_each = try(each.value.acl, {}) != {} ? each.value.acl : {}
     content {
-      id = try(acl.value.id, null)
+      id = try(acl.value.id, acl.key)
       dynamic "access_policy" {
-        for_each = try(acl.value.access_policy, null) != null ? [acl.value.access_policy] : []
+        for_each = try(acl.value.access_policy, null) != null ? { default : acl.value.access_policy } : {}
         content {
           permissions = try(access_policy.value.permissions, null)
           start       = try(access_policy.value.start, null)
