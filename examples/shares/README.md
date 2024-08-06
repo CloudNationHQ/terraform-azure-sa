@@ -1,4 +1,4 @@
-This sample demonstrates configuring storage shares, facilitating file sharing with defined access levels for secure and collaborative work environments.
+**This** sample demonstrates configuring storage shares, facilitating file sharing with defined access levels for secure and collaborative work environments.
 
 ## Usage
 
@@ -32,11 +32,13 @@ module "storage" {
             owner       = "finance team"
           }
           acl = {
+            acl1 = {
             id = "MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTI"
-            access_policy = {
-              permissions = "r"
-              start       = "2019-07-02T09:38:21.0000000Z"
-              expiry      = "2019-07-02T10:38:21.0000000Z"
+              access_policy = {
+                permissions = "r"
+                start       = "2024-08-01T09:38:21.0000000Z"
+                expiry      = "2025-08-01T10:38:21.0000000Z"
+              }
             }
           }
         }
