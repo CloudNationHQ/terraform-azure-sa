@@ -11,7 +11,7 @@
 
 * add filesystems adls gen2 and filesystems paths, renaming of properties ([#100](https://github.com/CloudNationHQ/terraform-azure-sa/issues/100)) ([c90774c](https://github.com/CloudNationHQ/terraform-azure-sa/commit/c90774cc50f0c3a6ffda035deb661cd5f57f637c))
 
-### Upgrade Manual from v0.23.x to v1.0
+### Upgrade from v0.23.x to v1.0
 
 - Update **module reference** to: `version = "~> 1.0"`
 - Rename properties in **storage** object:
