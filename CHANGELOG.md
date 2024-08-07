@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.23.1...v1.0.0) (2024-08-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* data structure has changed due to renaming of properties and (output) variables
+
+### Features
+
+* add filesystems adls gen2 and filesystems paths, renaming of properties ([#100](https://github.com/CloudNationHQ/terraform-azure-sa/issues/100)) ([c90774c](https://github.com/CloudNationHQ/terraform-azure-sa/commit/c90774cc50f0c3a6ffda035deb661cd5f57f637c))
+
 ## [0.23.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.23.0...v0.23.1) (2024-08-06)
 
 
