@@ -11,6 +11,17 @@
 
 * add filesystems adls gen2 and filesystems paths, renaming of properties ([#100](https://github.com/CloudNationHQ/terraform-azure-sa/issues/100)) ([c90774c](https://github.com/CloudNationHQ/terraform-azure-sa/commit/c90774cc50f0c3a6ffda035deb661cd5f57f637c))
 
+### Upgrade Manual from v0.23.x to v1.0
+
+- Update **module reference** to: `version = "~> 1.0"`
+- Rename properties in **storage** object:
+    * resourcegroup -> resource_group
+    * enable_https_traffic_only -> https_traffic_only_enabled
+- Rename **variable** (optional):
+   * resourcegroup -> resource_group
+- Rename **output variable**:
+   * subscriptionId -> subscription_id
+
 ## [0.23.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.23.0...v0.23.1) (2024-08-06)
 
 
