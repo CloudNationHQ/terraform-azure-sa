@@ -21,6 +21,7 @@ A last key goal is to separate logic from configuration in the module, thereby e
 - facilitates cors to securely control access to assets across different domains.
 - supports optional active directory authentication for enhanced security in azure file shares.
 - integrates seamlessly with private endpoint capabilities for direct and secure connectivity.
+- support for ADLS Gen 2 file systems and file system paths
 
 ## Requirements
 
