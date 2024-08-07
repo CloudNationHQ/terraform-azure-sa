@@ -5,7 +5,7 @@
 ```hcl
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 0.23"
+  version = "~> 1.0"
 
   naming = local.naming
 
