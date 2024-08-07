@@ -5,14 +5,14 @@ This example demonstrates configuring blob storage containers, where tailored ac
 ```hcl
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 0.23"
+  version = "~> 1.0"
 
   naming = local.naming
 
   storage = {
     name          = module.naming.storage_account.name_unique
     location      = module.rg.groups.demo.location
-    resourcegroup = module.rg.groups.demo.name
+    resource_group = module.rg.groups.demo.name
 
     blob_properties = {
       versioning_enabled       = true

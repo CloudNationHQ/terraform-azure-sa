@@ -5,16 +5,16 @@ This example shows the implementation of a storage management policy, ensuring d
 ```hcl
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 0.23"
+  version = "~> 1.0"
 
   storage = {
     name              = module.naming.storage_account.name_unique
     location          = module.rg.groups.demo.location
-    resourcegroup     = module.rg.groups.demo.name
+    resource_group     = module.rg.groups.demo.name
     threat_protection = true
 
     blob_properties = {
-      last_access_time = true
+      last_access_time_enabled = true
     }
 
     mgt_policy = {

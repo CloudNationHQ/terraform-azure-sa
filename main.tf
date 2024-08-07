@@ -3,14 +3,14 @@ data "azurerm_subscription" "current" {}
 # storage accounts
 resource "azurerm_storage_account" "sa" {
   name                              = var.storage.name
-  resource_group_name               = coalesce(lookup(var.storage, "resourcegroup", null), var.resourcegroup)
+  resource_group_name               = coalesce(lookup(var.storage, "resource_group", null), var.resource_group)
   location                          = coalesce(lookup(var.storage, "location", null), var.location)
   account_tier                      = try(var.storage.account_tier, "Standard")
   account_replication_type          = try(var.storage.account_replication_type, "GRS")
   account_kind                      = try(var.storage.account_kind, "StorageV2")
   access_tier                       = try(var.storage.access_tier, "Hot")
   infrastructure_encryption_enabled = try(var.storage.infrastructure_encryption_enabled, false)
-  enable_https_traffic_only         = try(var.storage.enable_https_traffic_only, true)
+  https_traffic_only_enabled        = try(var.storage.https_traffic_only_enabled, true)
   min_tls_version                   = try(var.storage.min_tls_version, "TLS1_2")
   edge_zone                         = try(var.storage.edge_zone, null)
   table_encryption_key_type         = try(var.storage.table_encryption_key_type, null)
@@ -324,6 +324,53 @@ resource "azurerm_storage_table" "st" {
   storage_account_name = each.value.storage_account_name
 }
 
+# file systems
+resource "azurerm_storage_data_lake_gen2_filesystem" "fs" {
+  for_each = {
+    for fs in local.file_systems : fs.fs_key => fs
+  }
+
+  name                     = each.value.name
+  storage_account_id       = each.value.storage_account_id
+  default_encryption_scope = each.value.default_encryption_scope
+  properties               = each.value.properties
+  owner                    = each.value.owner
+  group                    = each.value.group
+
+  dynamic "ace" {
+    for_each = try(each.value.ace, {}) != {} ? each.value.ace : {}
+    content {
+      permissions = ace.value.permissions
+      type        = ace.value.type
+      id          = ace.value.type == "group" || ace.value.type == "user" ? ace.value.id : null
+      scope       = try(ace.value.scope, "access")
+    }
+  }
+}
+
+resource "azurerm_storage_data_lake_gen2_path" "pa" {
+  for_each = {
+    for pa in local.fs_paths : pa.pa_key => pa
+  }
+
+  path               = each.value.path
+  filesystem_name    = each.value.filesystem_name
+  storage_account_id = each.value.storage_account_id
+  owner              = each.value.owner
+  group              = each.value.group
+  resource           = "directory" ## Currently only directory is supported
+
+  dynamic "ace" {
+    for_each = try(each.value.ace, {}) != {} ? each.value.ace : {}
+    content {
+      permissions = ace.value.permissions
+      type        = ace.value.type
+      id          = ace.value.type == "group" || ace.value.type == "user" ? ace.value.id : null
+      scope       = try(ace.value.scope, "access")
+    }
+  }
+}
+
 # management policies
 resource "azurerm_storage_management_policy" "mgmt_policy" {
   for_each = try(var.storage.mgt_policy, null) != null ? { "default" = var.storage.mgt_policy } : {}
@@ -393,13 +440,14 @@ resource "azurerm_storage_management_policy" "mgmt_policy" {
       }
     }
   }
+  depends_on = [azurerm_storage_container.sc]
 }
 
 resource "azurerm_user_assigned_identity" "identity" {
   for_each = contains(["UserAssigned", "SystemAssigned, UserAssigned"], try(var.storage.identity.type, "")) ? { "identity" = var.storage.identity } : {}
 
   name                = try(each.value.name, "uai-${var.storage.name}")
-  resource_group_name = var.storage.resourcegroup
+  resource_group_name = var.storage.resource_group
   location            = var.storage.location
   tags                = try(each.value.tags, var.tags, null)
 }

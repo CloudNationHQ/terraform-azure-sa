@@ -49,3 +49,35 @@ locals {
     }
   ])
 }
+
+locals {
+  file_systems = flatten([
+    for fs_key, fs in try(var.storage.file_systems, {}) : {
+
+      fs_key                   = fs_key
+      name                     = try(fs.name, join("-", [var.naming.storage_data_lake_gen2_filesystem, fs_key]))
+      storage_account_id       = azurerm_storage_account.sa.id
+      properties               = try(fs.properties, {})
+      owner                    = try(fs.owner, null)
+      group                    = try(fs.group, null)
+      default_encryption_scope = try(fs.default_encryption_scope, null)
+      ace                      = try(fs.ace, {})
+    }
+  ])
+}
+
+locals {
+  fs_paths = flatten([
+    for fs_key, fs in try(var.storage.file_systems, {}) : [
+      for pa_key, pa in try(fs.paths, {}) : {
+
+        pa_key             = pa_key
+        path               = try(pa.path, pa_key)
+        filesystem_name    = try(fs.name, join("-", [var.naming.storage_data_lake_gen2_filesystem, fs_key]))
+        storage_account_id = azurerm_storage_account.sa.id
+        owner              = try(pa.owner, null)
+        group              = try(pa.group, null)
+        ace                = try(pa.ace, {})
+      }
+  ]])
+}

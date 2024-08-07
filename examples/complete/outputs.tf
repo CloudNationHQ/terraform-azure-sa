@@ -38,5 +38,5 @@ output "queues" {
 
 output "subscription_id" {
   description = "contains the current subscription id"
-  value       = module.storage.subscriptionId
+  value       = module.storage.subscription_id
 }

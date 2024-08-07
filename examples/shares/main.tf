@@ -19,14 +19,14 @@ module "rg" {
 
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 0.1"
+  version = "~> 1.0"
 
   naming = local.naming
 
   storage = {
-    name          = module.naming.storage_account.name_unique
-    location      = module.rg.groups.demo.location
-    resourcegroup = module.rg.groups.demo.name
+    name           = module.naming.storage_account.name_unique
+    location       = module.rg.groups.demo.location
+    resource_group = module.rg.groups.demo.name
 
     share_properties = {
       smb = {
