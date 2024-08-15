@@ -12,6 +12,16 @@ A primary goal is to utilize keys and values in the object that correspond to th
 
 A last key goal is to separate logic from configuration in the module, thereby enhancing its scalability, ease of customization, and manageability.
 
+## Non-Goals
+
+These modules are not intended to be complete, ready-to-use solutions; they are designed as components for creating your own patterns.
+
+They are not tailored for a single use case but are meant to be versatile and applicable to a range of scenarios.
+
+Security standardization is applied at the pattern level, while the modules include default values based on best practices but do not enforce specific security standards.
+
+End-to-end testing is not conducted on these modules, as they are individual components and do not undergo the extensive testing reserved for complete patterns or solutions.
+
 ## Features
 
 - offers support for shares, tables, containers, and queues.
@@ -59,6 +69,9 @@ A last key goal is to separate logic from configuration in the module, thereby e
 | :-- | :-- | :-- | :-- |
 | `storage` | describes storage related configuration | object | yes |
 | `naming` | contains naming convention	| string | yes |
+| `location` | default azure region to be used | string | no |
+| `resource_group` | default resource group to be used | string | no |
+| `tags` | tags to be added to the resources | map(string) | no |
 
 ## Outputs
 
@@ -93,10 +106,15 @@ Using a dedicated module, we've developed a naming convention for resources that
 
 Full examples detailing all usages, along with integrations with dependency modules, are located in the examples directory.
 
-
 ## Authors
 
 Module is maintained by [these awesome contributors](https://github.com/cloudnationhq/terraform-azure-sa/graphs/contributors).
+
+## Contributing
+
+We welcome contributions from the community! Whether it's reporting a bug, suggesting a new feature, or submitting a pull request, your input is highly valued.
+
+For more information, please see our contribution [guidelines](https://github.com/CloudNationHQ/terraform-azure-sa/blob/main/CONTRIBUTING.md).
 
 ## License
 
