@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v1.0.0...v1.1.0) (2024-08-15)
+
+
+### Features
+
+* added code of conduct and security documentation ([#103](https://github.com/CloudNationHQ/terraform-azure-sa/issues/103)) ([755bc3a](https://github.com/CloudNationHQ/terraform-azure-sa/commit/755bc3a342573f140e2b8b6485e301a30297f2d4))
+
 ## [1.0.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v0.23.1...v1.0.0) (2024-08-07)
 
 
