@@ -77,5 +77,13 @@ module "privatelink" {
   resourcegroup = module.rg.groups.demo.name
   location      = module.rg.groups.demo.location
 
-  endpoints = local.endpoints
+  endpoints = {
+    blob = {
+      name                           = module.naming.private_endpoint.name
+      subnet_id                      = module.network.subnets.sn1.id
+      private_connection_resource_id = module.storage.account.id
+      private_dns_zone_ids           = [module.private_dns.zones.blob.id]
+      subresource_names              = ["blob"]
+    }
+  }
 }
