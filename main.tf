@@ -443,7 +443,6 @@ resource "azurerm_storage_management_policy" "mgmt_policy" {
 }
 
 resource "azurerm_user_assigned_identity" "identity" {
-  # for_each = contains(["UserAssigned", "SystemAssigned, UserAssigned"], try(var.storage.identity.type, "")) ? { "identity" = var.storage.identity } : {}
   for_each = lookup(var.storage, "identity", null) != null ? (
     (lookup(var.storage.identity, "type", null) == "UserAssigned" ||
     lookup(var.storage.identity, "type", null) == "SystemAssigned, UserAssigned") &&
