@@ -250,8 +250,7 @@ resource "azurerm_storage_account" "sa" {
   }
 
   dynamic "identity" {
-    for_each = [lookup(var.storage, "identity", { type = "SystemAssigned", identity_ids = [] })]
-
+    for_each = try(var.storage.identity, null) != null ? { "default" = var.storage.identity } : {}
     content {
       type = identity.value.type
       identity_ids = concat(
