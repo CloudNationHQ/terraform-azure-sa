@@ -250,7 +250,7 @@ resource "azurerm_storage_account" "sa" {
   }
 
   dynamic "identity" {
-    for_each = try(var.storage.identity, null) != null ? { "default" = var.storage.identity } : {}
+    for_each = lookup(var.storage, "identity", null) != null ? [var.storage.identity] : []
     content {
       type = identity.value.type
       identity_ids = concat(
@@ -443,7 +443,12 @@ resource "azurerm_storage_management_policy" "mgmt_policy" {
 }
 
 resource "azurerm_user_assigned_identity" "identity" {
-  for_each = contains(["UserAssigned", "SystemAssigned, UserAssigned"], try(var.storage.identity.type, "")) ? { "identity" = var.storage.identity } : {}
+  # for_each = contains(["UserAssigned", "SystemAssigned, UserAssigned"], try(var.storage.identity.type, "")) ? { "identity" = var.storage.identity } : {}
+  for_each = lookup(var.storage, "identity", null) != null ? (
+    (lookup(var.storage.identity, "type", null) == "UserAssigned" ||
+    lookup(var.storage.identity, "type", null) == "SystemAssigned, UserAssigned") &&
+    lookup(var.storage.identity, "identity_ids", null) == null ? { "identity" = var.storage.identity } : {}
+  ) : {}
 
   name                = try(each.value.name, "uai-${var.storage.name}")
   resource_group_name = var.storage.resource_group
