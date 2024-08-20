@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v1.1.0...v1.1.1) (2024-08-20)
+
+
+### Bug Fixes
+
+* make identity fully optional ([#106](https://github.com/CloudNationHQ/terraform-azure-sa/issues/106)) ([d77dfc4](https://github.com/CloudNationHQ/terraform-azure-sa/commit/d77dfc4f77c776213c7a6ed09622dba61e07745b))
+
 ## [1.1.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v1.0.0...v1.1.0) (2024-08-15)
 
 
