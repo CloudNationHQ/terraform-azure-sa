@@ -1,6 +1,6 @@
 module github.com/cloudnationhq/terraform-azure-sa
 
-go 1.20
+go 1.23.0
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.7.0

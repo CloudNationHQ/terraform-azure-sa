@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/storage/armstorage"
-	"github.com/cloudnationhq/terraform-azure-sa/shared"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/require"
 )
@@ -109,11 +110,31 @@ func (a *AzureClientInitializer) initQueueClient(clients *AzureClients) error {
 func InitTerraform(t *testing.T) (*terraform.Options, func()) {
 	t.Helper()
 
-	tfOpts := shared.GetTerraformOptions("../examples/complete")
+	tfOpts := &terraform.Options{
+		TerraformDir: "../examples/complete",
+		NoColor:      true,
+	}
 	terraform.InitAndApply(t, tfOpts)
 
 	return tfOpts, func() {
-		shared.Cleanup(t, tfOpts)
+		terraform.Destroy(t, tfOpts)
+		cleanupFilesExtended(t, tfOpts.TerraformDir)
+	}
+}
+
+func cleanupFilesExtended(t *testing.T, dir string) {
+	filesToCleanup := []string{"*.terraform*", "*tfstate*"}
+	for _, pattern := range filesToCleanup {
+		matches, err := filepath.Glob(filepath.Join(dir, pattern))
+		if err != nil {
+			t.Logf("Error globbing %s: %v", pattern, err)
+			continue
+		}
+		for _, filePath := range matches {
+			if err := os.RemoveAll(filePath); err != nil {
+				t.Logf("Failed to remove %s: %v", filePath, err)
+			}
+		}
 	}
 }
 
