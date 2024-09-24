@@ -9,7 +9,7 @@
 
 ### Features
 
-* upgrade azurerm provder to v4 ([#111](https://github.com/CloudNationHQ/terraform-azure-sa/issues/111)) ([17d5e7f](https://github.com/CloudNationHQ/terraform-azure-sa/commit/17d5e7f216e5eab93720f6ee220a08a7214e0b91))
+* upgrade azurerm provider to v4 ([#111](https://github.com/CloudNationHQ/terraform-azure-sa/issues/111)) ([17d5e7f](https://github.com/CloudNationHQ/terraform-azure-sa/commit/17d5e7f216e5eab93720f6ee220a08a7214e0b91))
 
 ### Upgrade from v1.1.1 to v2.0.0:
 
