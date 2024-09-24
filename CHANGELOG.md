@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v1.1.1...v2.0.0) (2024-09-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* * Version 4 of the azurerm provider includes breaking changes.
+
+### Features
+
+* consolidated tests and upgrade to go v1.23 ([#108](https://github.com/CloudNationHQ/terraform-azure-sa/issues/108)) ([e0b4293](https://github.com/CloudNationHQ/terraform-azure-sa/commit/e0b4293b61451a15406a3358da7f372dc8d797ae))
+* upgrade azurerm provder to v4 ([#111](https://github.com/CloudNationHQ/terraform-azure-sa/issues/111)) ([17d5e7f](https://github.com/CloudNationHQ/terraform-azure-sa/commit/17d5e7f216e5eab93720f6ee220a08a7214e0b91))
+
 ## [1.1.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v1.1.0...v1.1.1) (2024-08-20)
 
 
