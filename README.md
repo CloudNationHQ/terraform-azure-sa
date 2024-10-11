@@ -50,7 +50,7 @@ End-to-end testing is not conducted on these modules, as they are individual com
 
 ## Resources
 
-| Namse | Types |
+| Name | Type |
 |------|------|
 | [azurerm_advanced_threat_protection.prot](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/advanced_threat_protection) | resource |
 | [azurerm_role_assignment.managed_identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
