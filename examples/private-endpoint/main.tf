@@ -11,15 +11,15 @@ module "rg" {
 
   groups = {
     demo = {
-      name     = module.naming.resource_group.name
-      location = "northeurope"
+      name     = module.naming.resource_group.name_unique
+      location = "westeurope"
     }
   }
 }
 
 module "network" {
   source  = "cloudnationhq/vnet/azure"
-  version = "~> 4.0"
+  version = "~> 7.0"
 
   naming = local.naming
 
@@ -31,8 +31,8 @@ module "network" {
 
     subnets = {
       sn1 = {
-        nsg  = {}
-        cidr = ["10.19.1.0/24"]
+        network_security_group = {}
+        cidr                   = ["10.19.1.0/24"]
       }
     }
   }
@@ -53,17 +53,19 @@ module "storage" {
 
 module "private_dns" {
   source  = "cloudnationhq/pdns/azure"
-  version = "~> 1.0"
+  version = "~> 3.0"
 
   resource_group = module.rg.groups.demo.name
 
   zones = {
-    blob = {
-      name = "privatelink.blob.core.windows.net"
-      virtual_network_links = {
-        link1 = {
-          virtual_network_id   = module.network.vnet.id
-          registration_enabled = true
+    private = {
+      blob = {
+        name = "privatelink.blob.core.windows.net"
+        virtual_network_links = {
+          link1 = {
+            virtual_network_id   = module.network.vnet.id
+            registration_enabled = true
+          }
         }
       }
     }
@@ -82,7 +84,7 @@ module "privatelink" {
       name                           = module.naming.private_endpoint.name
       subnet_id                      = module.network.subnets.sn1.id
       private_connection_resource_id = module.storage.account.id
-      private_dns_zone_ids           = [module.private_dns.zones.blob.id]
+      private_dns_zone_ids           = [module.private_dns.private_zones.blob.id]
       subresource_names              = ["blob"]
     }
   }

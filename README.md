@@ -89,16 +89,6 @@ End-to-end testing is not conducted on these modules, as they are individual com
 | <a name="output_tables"></a> [tables](#output\_tables) | tables configuration specifics |
 <!-- END_TF_DOCS -->
 
-## Testing
-
-Ensure go and terraform are installed.
-
-Run tests for different usage scenarios by specifying the EXAMPLE environment variable. Usage examples are in the examples directory.
-
-To execute a test, run `make test EXAMPLE=default`
-
-Replace default with the specific example you want to test. These tests ensure the module performs reliably across various configurations.
-
 ## Notes
 
 Using a dedicated module, we've developed a naming convention for resources that's based on specific regular expressions for each type, ensuring correct abbreviations and offering flexibility with multiple prefixes and suffixes.
