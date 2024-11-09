@@ -91,7 +91,7 @@ End-to-end testing is not conducted on these modules, as they are individual com
 
 ## Testing
 
-For instructions on running tests, see our [testing](./TESTING.md) guide.
+For more information, please see our testing [guidelines](./TESTING.md)
 
 ## Notes
 
