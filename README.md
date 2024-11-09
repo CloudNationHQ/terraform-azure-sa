@@ -89,6 +89,10 @@ End-to-end testing is not conducted on these modules, as they are individual com
 | <a name="output_tables"></a> [tables](#output\_tables) | tables configuration specifics |
 <!-- END_TF_DOCS -->
 
+## Testing
+
+For instructions on running tests, see our [testing](./TESTING.md) guide.
+
 ## Notes
 
 Using a dedicated module, we've developed a naming convention for resources that's based on specific regular expressions for each type, ensuring correct abbreviations and offering flexibility with multiple prefixes and suffixes.
@@ -105,7 +109,7 @@ Module is maintained by [these awesome contributors](https://github.com/cloudnat
 
 We welcome contributions from the community! Whether it's reporting a bug, suggesting a new feature, or submitting a pull request, your input is highly valued.
 
-For more information, please see our contribution [guidelines](https://github.com/CloudNationHQ/terraform-azure-sa/blob/main/CONTRIBUTING.md).
+For more information, please see our contribution [guidelines](./CONTRIBUTING.md).
 
 ## License
 
