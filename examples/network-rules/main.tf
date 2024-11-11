@@ -11,7 +11,7 @@ module "rg" {
 
   groups = {
     demo = {
-      name     = module.naming.resource_group.name
+      name     = module.naming.resource_group.name_unique
       location = "westeurope"
     }
   }
@@ -19,7 +19,7 @@ module "rg" {
 
 module "network" {
   source  = "cloudnationhq/vnet/azure"
-  version = "~> 4.0"
+  version = "~> 7.0"
 
   naming = local.naming
 
@@ -32,7 +32,7 @@ module "network" {
     subnets = {
       sn1 = {
         cidr = ["10.19.1.0/24"]
-        endpoints = [
+        service_endpoints = [
           "Microsoft.Storage",
         ]
       }
