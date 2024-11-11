@@ -125,12 +125,17 @@ func (m *Module) cleanupFiles(t *testing.T) error {
 }
 
 func RunTests(t *testing.T, modules []*Module, parallel bool) {
+	// Error collector to accumulate failures and reasons
+	var errorMessages []string
+
 	for _, module := range modules {
 		module := module
 		t.Run(module.Name, func(t *testing.T) {
 			if parallel {
 				t.Parallel()
 			}
+
+			// Defer Destroy to ensure cleanup happens, regardless of Apply success or failure
 			if !skipDestroy {
 				defer func() {
 					if err := module.Destroy(t); err != nil {
@@ -138,11 +143,28 @@ func RunTests(t *testing.T, modules []*Module, parallel bool) {
 					}
 				}()
 			}
+
+			// Apply the module and collect errors
 			if err := module.Apply(t); err != nil {
-				t.Fatalf("Failed to apply module %s: %v", module.Name, err)
+				// Mark this test as failed and collect the error message
+				t.Fail()
+				errorMessages = append(errorMessages, fmt.Sprintf("Module %s failed: %v", module.Name, err))
+				t.Logf("Apply failed for module %s: %v", module.Name, err)
 			}
 		})
 	}
+
+	// After all tests are complete, log the summary of errors if any
+	t.Cleanup(func() {
+		if len(errorMessages) > 0 {
+			t.Log("Summary of failed modules:")
+			for _, msg := range errorMessages {
+				t.Log(msg)
+			}
+		} else {
+			t.Log("All modules applied and destroyed successfully.")
+		}
+	})
 }
 
 func TestApplyNoError(t *testing.T) {
