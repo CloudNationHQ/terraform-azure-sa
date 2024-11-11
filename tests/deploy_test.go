@@ -181,17 +181,24 @@ func TestApplyNoError(t *testing.T) {
 
 	modulePath := filepath.Join("..", "examples", example)
 	module := NewModule(example, modulePath)
-
-	if !skipDestroy {
-		defer func() {
-			if err := module.Destroy(t); err != nil {
-				t.Logf("Warning: Cleanup failed: %v", err)
-			}
-		}()
-	}
+	var errorMessages []string
 
 	if err := module.Apply(t); err != nil {
-		t.Fatalf("Failed to apply module: %v", err)
+		errorMessages = append(errorMessages, fmt.Sprintf("Apply failed for module %s: %v", module.Name, err))
+		t.Fail()
+	}
+
+	if !skipDestroy {
+		if err := module.Destroy(t); err != nil {
+			errorMessages = append(errorMessages, fmt.Sprintf("Cleanup failed for module %s: %v", module.Name, err))
+		}
+	}
+
+	if len(errorMessages) > 0 {
+		fmt.Println("Summary of errors:")
+		for _, msg := range errorMessages {
+			fmt.Println(msg)
+		}
 	}
 }
 
