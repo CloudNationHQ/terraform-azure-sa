@@ -5,7 +5,6 @@ locals {
       sc_key                = sc_key
       name                  = try(sc.name, join("-", [var.naming.storage_container, sc_key]))
       container_access_type = try(sc.access_type, "private")
-      storage_account_name  = azurerm_storage_account.sa.name
       metadata              = try(sc.metadata, {})
     }
   ])

@@ -268,7 +268,7 @@ resource "azurerm_storage_container" "sc" {
   }
 
   name                  = each.value.name
-  storage_account_name  = each.value.storage_account_name
+  storage_account_id    = azurerm_storage_account.sa.id
   container_access_type = each.value.container_access_type
   metadata              = each.value.metadata
 }
