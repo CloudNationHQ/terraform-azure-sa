@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v2.2.0...v2.2.1) (2024-11-21)
+
+
+### Bug Fixes
+
+* replaced deprecated properties storage containers and shares ([#118](https://github.com/CloudNationHQ/terraform-azure-sa/issues/118)) ([e7495ce](https://github.com/CloudNationHQ/terraform-azure-sa/commit/e7495ce071b595605d218fe96abd1c531ff89fac))
+
 ## [2.2.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v2.1.0...v2.2.0) (2024-11-11)
 
 
