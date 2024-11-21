@@ -268,7 +268,7 @@ resource "azurerm_storage_container" "sc" {
   }
 
   name                  = each.value.name
-  storage_account_name  = each.value.storage_account_name
+  storage_account_id    = azurerm_storage_account.sa.id
   container_access_type = each.value.container_access_type
   metadata              = each.value.metadata
 }
@@ -290,12 +290,12 @@ resource "azurerm_storage_share" "sh" {
     for fs in local.shares : fs.fs_key => fs
   }
 
-  name                 = each.value.name
-  storage_account_name = each.value.storage_account_name
-  quota                = each.value.quota
-  metadata             = each.value.metadata
-  access_tier          = each.value.access_tier
-  enabled_protocol     = each.value.enabled_protocol
+  name               = each.value.name
+  storage_account_id = azurerm_storage_account.sa.id
+  quota              = each.value.quota
+  metadata           = each.value.metadata
+  access_tier        = each.value.access_tier
+  enabled_protocol   = each.value.enabled_protocol
 
   dynamic "acl" {
     for_each = try(each.value.acl, {}) != {} ? each.value.acl : {}
