@@ -3,11 +3,6 @@ output "account" {
   value       = azurerm_storage_account.sa
 }
 
-output "subscription_id" {
-  description = "contains the current subscription id"
-  value       = data.azurerm_subscription.current.subscription_id
-}
-
 output "containers" {
   description = "container configuration specifics"
   value       = azurerm_storage_container.sc

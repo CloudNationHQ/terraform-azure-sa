@@ -19,7 +19,7 @@ module "rg" {
 
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   naming = local.naming
 
@@ -28,6 +28,7 @@ module "storage" {
     location       = module.rg.groups.demo.location
     resource_group = module.rg.groups.demo.name
     is_hns_enabled = true
+    sftp_enabled   = true
 
     file_systems = {
       fs1 = {

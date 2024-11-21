@@ -104,7 +104,7 @@ locals {
       }
     }
   }
-  mgt_policy = {
+  management_policy = {
     rules = {
       rule1 = {
         filters = {

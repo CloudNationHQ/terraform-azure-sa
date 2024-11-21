@@ -19,7 +19,7 @@ module "rg" {
 
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   naming = local.naming
 
@@ -29,10 +29,14 @@ module "storage" {
     resource_group    = module.rg.groups.demo.name
     threat_protection = true
 
-    blob_properties  = local.blob_properties
-    queue_properties = local.queue_properties
-    share_properties = local.share_properties
-    mgt_policy       = local.mgt_policy
+
+    local_user_enabled = true
+    dns_endpoint_type  = "Standard"
+
+    blob_properties   = local.blob_properties
+    queue_properties  = local.queue_properties
+    share_properties  = local.share_properties
+    management_policy = local.management_policy
 
     policy = {
       sas = {

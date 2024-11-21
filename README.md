@@ -85,7 +85,6 @@ End-to-end testing is not conducted on these modules, as they are individual com
 | <a name="output_file_systems"></a> [file\_systems](#output\_file\_systems) | file systems configuration specifics |
 | <a name="output_queues"></a> [queues](#output\_queues) | queues configuration specifics |
 | <a name="output_shares"></a> [shares](#output\_shares) | shares configuration specifics |
-| <a name="output_subscription_id"></a> [subscription\_id](#output\_subscription\_id) | contains the current subscription id |
 | <a name="output_tables"></a> [tables](#output\_tables) | tables configuration specifics |
 <!-- END_TF_DOCS -->
 

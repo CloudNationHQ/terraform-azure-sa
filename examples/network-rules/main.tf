@@ -27,11 +27,11 @@ module "network" {
     name           = module.naming.virtual_network.name
     location       = module.rg.groups.demo.location
     resource_group = module.rg.groups.demo.name
-    cidr           = ["10.19.0.0/16"]
+    address_space  = ["10.19.0.0/16"]
 
     subnets = {
       sn1 = {
-        cidr = ["10.19.1.0/24"]
+        address_prefixes = ["10.19.1.0/24"]
         service_endpoints = [
           "Microsoft.Storage",
         ]
@@ -40,9 +40,21 @@ module "network" {
   }
 }
 
+module "acr" {
+  source  = "cloudnationhq/acr/azure"
+  version = "~> 3.0"
+
+  registry = {
+    name           = module.naming.container_registry.name_unique
+    location       = module.rg.groups.demo.location
+    resource_group = module.rg.groups.demo.name
+    sku            = "Basic"
+  }
+}
+
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   storage = {
     name           = module.naming.storage_account.name_unique
@@ -51,6 +63,9 @@ module "storage" {
 
     network_rules = {
       virtual_network_subnet_ids = [module.network.subnets.sn1.id]
+      private_link_access = {
+        endpoint_resource_id = module.acr.registry.id
+      }
     }
   }
 }

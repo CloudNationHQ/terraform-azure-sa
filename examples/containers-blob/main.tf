@@ -19,7 +19,7 @@ module "rg" {
 
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   naming = local.naming
 
@@ -38,7 +38,8 @@ module "storage" {
       }
 
       delete_retention_policy = {
-        days = 10
+        days                     = 10
+        permanent_delete_enabled = false
       }
 
       container_delete_retention_policy = {

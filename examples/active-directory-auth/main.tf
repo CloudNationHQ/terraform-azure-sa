@@ -19,7 +19,7 @@ module "rg" {
 
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   naming = local.naming
 
@@ -29,8 +29,9 @@ module "storage" {
     resource_group = module.rg.groups.demo.name
 
     share_properties = {
-      authentication = {
-        type = "AD"
+      azure_files_authentication = {
+        directory_type                 = "AD"
+        default_share_level_permission = "None"
         active_directory = {
           domain_name         = "corp.acmeinc.net"
           domain_guid         = "d10a8b2e-0fc1-4d5c-b456-abcdef785612"

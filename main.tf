@@ -21,25 +21,31 @@ resource "azurerm_storage_account" "sa" {
   shared_access_key_enabled         = try(var.storage.shared_access_key_enabled, true)
   public_network_access_enabled     = try(var.storage.public_network_access_enabled, true)
   is_hns_enabled                    = try(var.storage.is_hns_enabled, false)
+  sftp_enabled                      = try(var.storage.sftp_enabled, false)
   nfsv3_enabled                     = try(var.storage.nfsv3_enabled, false)
   cross_tenant_replication_enabled  = try(var.storage.cross_tenant_replication_enabled, false)
+  local_user_enabled                = try(var.storage.local_user_enabled, null)
+  dns_endpoint_type                 = try(var.storage.dns_endpoint_type, null)
   default_to_oauth_authentication   = try(var.storage.default_to_oauth_authentication, false)
   tags                              = try(var.storage.tags, var.tags, null)
 
-  sftp_enabled = (
-    try(var.storage.enable.is_hns, false) == false ?
-    try(var.storage.enable.sftp, false)
-    : true
-  )
-
   dynamic "network_rules" {
-    for_each = try(var.storage.network_rules, null) != null ? { "default" = var.storage.network_rules } : {}
+    for_each = try(var.storage.network_rules, null) != null ? [var.storage.network_rules] : []
 
     content {
       bypass                     = try(network_rules.value.bypass, ["None"])
       default_action             = try(network_rules.value.default_action, "Deny")
       ip_rules                   = try(network_rules.value.ip_rules, null)
       virtual_network_subnet_ids = try(network_rules.value.virtual_network_subnet_ids, null)
+
+      dynamic "private_link_access" {
+        for_each = try(var.storage.network_rules.private_link_access, null) != null ? { "default" = var.storage.network_rules.private_link_access } : {}
+
+        content {
+          endpoint_resource_id = private_link_access.value.endpoint_resource_id
+          endpoint_tenant_id   = try(private_link_access.value.endpoint_tenant_id, null)
+        }
+      }
     }
   }
 
@@ -69,7 +75,8 @@ resource "azurerm_storage_account" "sa" {
         for_each = try(var.storage.blob_properties.delete_retention_policy != null ? [var.storage.blob_properties.delete_retention_policy] : [], [])
 
         content {
-          days = try(var.storage.blob_properties.delete_retention_policy.days, 7)
+          days                     = try(delete_retention_policy.value.days, 7)
+          permanent_delete_enabled = try(delete_retention_policy.value.permanent_delete_enabled, null)
         }
       }
 
@@ -130,13 +137,14 @@ resource "azurerm_storage_account" "sa" {
   }
 
   dynamic "azure_files_authentication" {
-    for_each = try(var.storage.share_properties.authentication, null) != null ? { auth = var.storage.share_properties.authentication } : {}
+    for_each = try(var.storage.share_properties.azure_files_authentication, null) != null ? { auth = var.storage.share_properties.azure_files_authentication } : {}
 
     content {
-      directory_type = try(azure_files_authentication.value.type, "AD")
+      directory_type                 = try(azure_files_authentication.value.directory_type, "AD")
+      default_share_level_permission = try(azure_files_authentication.value.default_share_level_permission, null)
 
       dynamic "active_directory" {
-        for_each = azure_files_authentication.value.type == "AD" ? [azure_files_authentication.value.active_directory] : []
+        for_each = azure_files_authentication.value.directory_type == "AD" ? [azure_files_authentication.value.active_directory] : []
 
         content {
           domain_name         = active_directory.value.domain_name
@@ -244,8 +252,18 @@ resource "azurerm_storage_account" "sa" {
     for_each = lookup(var.storage, "customer_managed_key", null) != null ? { "default" = var.storage.customer_managed_key } : {}
 
     content {
-      key_vault_key_id          = customer_managed_key.value.key_vault_key_id
+      key_vault_key_id          = try(customer_managed_key.value.key_vault_key_id, null)
+      managed_hsm_key_id        = try(customer_managed_key.value.managed_hsm_key_id, null)
       user_assigned_identity_id = azurerm_user_assigned_identity.identity["identity"].id
+    }
+  }
+
+  dynamic "static_website" {
+    for_each = try(var.storage.static_website, null) != null ? [1] : []
+
+    content {
+      index_document     = try(static_website.value.index_document, null)
+      error_404_document = try(static_website.value.error_404_document, null)
     }
   }
 
@@ -372,12 +390,12 @@ resource "azurerm_storage_data_lake_gen2_path" "pa" {
 
 # management policies
 resource "azurerm_storage_management_policy" "mgmt_policy" {
-  for_each = try(var.storage.mgt_policy, null) != null ? { "default" = var.storage.mgt_policy } : {}
+  for_each = try(var.storage.management_policy, null) != null ? { "default" = var.storage.management_policy } : {}
 
   storage_account_id = azurerm_storage_account.sa.id
 
   dynamic "rule" {
-    for_each = try(var.storage.mgt_policy.rules, {})
+    for_each = try(var.storage.management_policy.rules, {})
 
     content {
       name    = try(rule.value.name, rule.key)
