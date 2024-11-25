@@ -37,7 +37,7 @@ resource "azurerm_storage_account" "sa" {
       virtual_network_subnet_ids = try(network_rules.value.virtual_network_subnet_ids, null)
 
       dynamic "private_link_access" {
-        for_each = try(var.storage.network_rules.private_link_access, null) != null ? { "default" = var.storage.network_rules.private_link_access } : {}
+        for_each = { for key, pla in try(var.storage.network_rules.private_link_access, {}) : key => pla }
 
         content {
           endpoint_resource_id = private_link_access.value.endpoint_resource_id

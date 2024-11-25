@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.0.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v2.2.1...v3.0.0) (2024-11-25)
+## [3.0.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v2.2.0...v3.0.0) (2024-11-25)
 
 
 ### ⚠ BREAKING CHANGES
@@ -10,9 +10,6 @@
 ### Features
 
 * added missing properties, aligned azure files authentication properties ([#121](https://github.com/CloudNationHQ/terraform-azure-sa/issues/121)) ([cdfc710](https://github.com/CloudNationHQ/terraform-azure-sa/commit/cdfc71015459cb23773cd72c137c1c2e8be8f2be))
-
-## [2.2.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v2.2.0...v2.2.1) (2024-11-21)
-
 
 ### Bug Fixes
 

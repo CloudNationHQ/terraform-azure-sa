@@ -64,7 +64,9 @@ module "storage" {
     network_rules = {
       virtual_network_subnet_ids = [module.network.subnets.sn1.id]
       private_link_access = {
-        endpoint_resource_id = module.acr.registry.id
+        registry_endpoint = {
+          endpoint_resource_id = module.acr.registry.id
+        }
       }
     }
   }
