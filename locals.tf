@@ -71,7 +71,7 @@ locals {
 
         pa_key             = pa_key
         path               = try(pa.path, pa_key)
-        filesystem_name    = try(fs.name, join("-", [var.naming.storage_data_lake_gen2_filesystem, fs_key]))
+        filesystem_name    = azurerm_storage_data_lake_gen2_filesystem.fs[fs_key].name
         storage_account_id = azurerm_storage_account.sa.id
         owner              = try(pa.owner, null)
         group              = try(pa.group, null)

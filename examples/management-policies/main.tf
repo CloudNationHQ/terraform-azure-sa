@@ -19,7 +19,7 @@ module "rg" {
 
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   storage = {
     name              = module.naming.storage_account.name_unique
@@ -31,7 +31,7 @@ module "storage" {
       last_access_time_enabled = true
     }
 
-    mgt_policy = {
+    management_policy = {
       rules = {
         rule1 = {
           filters = {
