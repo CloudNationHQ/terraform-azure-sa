@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.1.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.0.2...v3.1.0) (2025-01-16)
+
+
+### Features
+
+* add missing management policies actions in base blob, snapshot and version ([#131](https://github.com/CloudNationHQ/terraform-azure-sa/issues/131)) ([e7ac065](https://github.com/CloudNationHQ/terraform-azure-sa/commit/e7ac06541f4d95c9b0e40f9e738276d07028cdd5))
+* **deps:** bump github.com/gruntwork-io/terratest in /tests ([#130](https://github.com/CloudNationHQ/terraform-azure-sa/issues/130)) ([c613675](https://github.com/CloudNationHQ/terraform-azure-sa/commit/c6136758619d50730f13b473ac54a11db0c9367f))
+* **deps:** bump golang.org/x/net from 0.31.0 to 0.33.0 in /tests ([#134](https://github.com/CloudNationHQ/terraform-azure-sa/issues/134)) ([1461fff](https://github.com/CloudNationHQ/terraform-azure-sa/commit/1461fff0099a611c5a2763ef72ac1270a457df8e))
+* remove temporary files when deployment tests fails ([#132](https://github.com/CloudNationHQ/terraform-azure-sa/issues/132)) ([0f728f4](https://github.com/CloudNationHQ/terraform-azure-sa/commit/0f728f48be308fedef10788e00003bb2a53e4ebe))
+
 ## [3.0.2](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.0.1...v3.0.2) (2024-12-03)
 
 
