@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.1.0...v3.2.0) (2025-01-16)
+
+
+### Features
+
+* add type definitions ([#136](https://github.com/CloudNationHQ/terraform-azure-sa/issues/136)) ([b38a2b4](https://github.com/CloudNationHQ/terraform-azure-sa/commit/b38a2b4ff87ffcdb46092c057f73441c36f41274))
+
 ## [3.1.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.0.2...v3.1.0) (2025-01-16)
 
 
