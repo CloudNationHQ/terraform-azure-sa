@@ -1,75 +1,69 @@
-This example shows the implementation of a storage management policy, ensuring data lifecycle and access protocols are systematically enforced for efficiency and compliance.
+# Management Policies
 
-## Usage
+This deploys management policies
+
+## Types
 
 ```hcl
-module "storage" {
-  source  = "cloudnationhq/sa/azure"
-  version = "~> 1.0"
-
-  storage = {
-    name              = module.naming.storage_account.name_unique
-    location          = module.rg.groups.demo.location
-    resource_group     = module.rg.groups.demo.name
-    threat_protection = true
-
-    blob_properties = {
-      last_access_time_enabled = true
-    }
-
-    mgt_policy = {
-      rules = {
-        rule1 = {
-          filters = {
-            filter_specs = {
-              prefix_match = ["container1/prefix1"]
-              blob_types   = ["blockBlob"]
-            }
-          }
-          actions = {
-            base_blob = {
-              blob_specs = {
-                tier_to_cool_after_days_since_modification_greater_than    = 11
-                tier_to_archive_after_days_since_modification_greater_than = 51
-                delete_after_days_since_modification_greater_than          = 101
-              }
-            }
-            snapshot = {
-              snapshot_specs = {
-                change_tier_to_archive_after_days_since_creation = 90
-                change_tier_to_cool_after_days_since_creation    = 23
-                delete_after_days_since_creation_greater_than    = 31
-              }
-            }
-            version = {
-              version_specs = {
-                change_tier_to_archive_after_days_since_creation = 9
-                change_tier_to_cool_after_days_since_creation    = 90
-                delete_after_days_since_creation                 = 3
-              }
-            }
-          }
-        },
-        rule2 = {
-          filters = {
-            filter_specs = {
-              prefix_match = ["container1/prefix3"]
-              blob_types   = ["blockBlob"]
-            }
-          }
-          actions = {
-            base_blob = {
-              blob_specs = {
-                tier_to_cool_after_days_since_last_access_time_greater_than    = 30
-                tier_to_archive_after_days_since_last_access_time_greater_than = 90
-                delete_after_days_since_last_access_time_greater_than          = 365
-                auto_tier_to_hot_from_cool_enabled                             = true
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
+storage = object({
+  name              = string
+  location          = string
+  resource_group    = string
+  threat_protection = optional(bool)
+  blob_properties = optional(object({
+    last_access_time_enabled = optional(bool)
+  }))
+  management_policy = optional(object({
+    rules = map(object({
+      enabled = optional(bool)
+      filters = optional(object({
+        prefix_match = optional(list(string))
+        blob_types   = optional(list(string))
+        match_blob_index_tag = optional(map(object({
+          name      = string
+          operation = string
+          value     = string
+        })))
+      }))
+      actions = object({
+        base_blob = optional(object({
+          tier_to_cool_after_days_since_modification_greater_than        = optional(number)
+          tier_to_cool_after_days_since_last_access_time_greater_than    = optional(number)
+          tier_to_archive_after_days_since_modification_greater_than     = optional(number)
+          tier_to_archive_after_days_since_last_access_time_greater_than = optional(number)
+          delete_after_days_since_modification_greater_than              = optional(number)
+          delete_after_days_since_last_access_time_greater_than          = optional(number)
+          auto_tier_to_hot_from_cool_enabled                             = optional(bool)
+          delete_after_days_since_creation_greater_than                  = optional(number)
+          tier_to_cold_after_days_since_creation_greater_than            = optional(number)
+          tier_to_cool_after_days_since_creation_greater_than            = optional(number)
+          tier_to_archive_after_days_since_creation_greater_than         = optional(number)
+          tier_to_cold_after_days_since_modification_greater_than        = optional(number)
+          tier_to_cold_after_days_since_last_access_time_greater_than    = optional(number)
+          tier_to_archive_after_days_since_last_tier_change_greater_than = optional(number)
+        }))
+        snapshot = optional(object({
+          change_tier_to_archive_after_days_since_creation               = optional(number)
+          change_tier_to_cool_after_days_since_creation                  = optional(number)
+          delete_after_days_since_creation_greater_than                  = optional(number)
+          tier_to_archive_after_days_since_last_tier_change_greater_than = optional(number)
+          tier_to_cold_after_days_since_creation_greater_than            = optional(number)
+        }))
+        version = optional(object({
+          change_tier_to_archive_after_days_since_creation               = optional(number)
+          change_tier_to_cool_after_days_since_creation                  = optional(number)
+          delete_after_days_since_creation                               = optional(number)
+          tier_to_cold_after_days_since_creation_greater_than            = optional(number)
+          tier_to_archive_after_days_since_last_tier_change_greater_than = optional(number)
+        }))
+      })
+    }))
+  }))
+})
 ```
+
+## Notes
+
+This is the complete usage. In real world scenarios often specific properties are choosen thats fits in categories like cost optimization, compliancy or creation based rules.
+
+The provider intentionally injects the value -1 into policy action properties when they are not specified. This behavior is designed and controlled at an upstream level.

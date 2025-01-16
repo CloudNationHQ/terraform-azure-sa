@@ -1,20 +1,20 @@
-This example shows how to use network rules to enhance security with secure access control.
+# Network Rules
 
-## Usage:
+This deploys network rules
+
+## Types
 
 ```hcl
-module "sa" {
-  source  = "cloudnationhq/sa/azure"
-  version = "~> 1.0"
-
-  storage = {
-    name          = module.naming.storage_account.name_unique
-    location      = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
-
-    network_rules = {
-      virtual_network_subnet_ids = [module.network.subnets.sn1.id]
-    }
-  }
-}
+storage = object({
+  name           = string
+  location       = string
+  resource_group = string
+  network_rules = optional(object({
+    virtual_network_subnet_ids = optional(list(string))
+    private_link_access = optional(map(object({
+      endpoint_resource_id = string
+      endpoint_tenant_id  = optional(string)
+    })))
+  }))
+})
 ```

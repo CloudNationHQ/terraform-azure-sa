@@ -1,45 +1,31 @@
-This example demonstrates configuring blob storage containers, where tailored access rules ensure secure and organized data interaction for services.
+# Containers Blob
 
-## Usage
+This deploys storage containers
+
+## Types
 
 ```hcl
-module "storage" {
-  source  = "cloudnationhq/sa/azure"
-  version = "~> 1.0"
-
-  naming = local.naming
-
-  storage = {
-    name          = module.naming.storage_account.name_unique
-    location      = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
-
-    blob_properties = {
-      versioning_enabled       = true
-      last_access_time_enabled = true
-      change_feed_enabled      = true
-
-      restore_policy = {
-        days = 8
-      }
-
-      delete_retention_policy = {
-        days = 10
-      }
-
-      container_delete_retention_policy = {
-        days = 10
-      }
-
-      containers = {
-        sc1 = {
-          metadata = {
-            project = "marketing"
-            owner   = "marketing team"
-          }
-        }
-      }
-    }
-  }
-}
+storage = object({
+  name           = string
+  location       = string
+  resource_group = string
+  blob_properties = optional(object({
+    versioning_enabled       = optional(bool)
+    last_access_time_enabled = optional(bool)
+    change_feed_enabled      = optional(bool)
+    restore_policy = optional(object({
+      days = number
+    }))
+    delete_retention_policy = optional(object({
+      days                     = number
+      permanent_delete_enabled = optional(bool)
+    }))
+    container_delete_retention_policy = optional(object({
+      days = number
+    }))
+    containers = optional(map(object({
+      metadata = optional(map(string))
+    })))
+  }))
+})
 ```
