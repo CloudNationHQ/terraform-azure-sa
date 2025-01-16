@@ -1,35 +1,25 @@
-This example highlights setting up storage queues, streamlining message handling between services with controlled access and reliable delivery.
+# Queues
 
-## Usage
+This deploys storage queues
+
+## Types
 
 ```hcl
-module "storage" {
-  source  = "cloudnationhq/sa/azure"
-  version = "~> 1.0"
-
-  naming = local.naming
-
-  storage = {
-    name          = module.naming.storage_account.name_unique
-    location      = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
-
-    queue_properties = {
-      logging = {
-        read              = true
-        retention_in_days = 8
-      }
-
-      queues = {
-        q1 = {
-          metadata = {
-            environment = "dev"
-            owner       = "finance team"
-            purpose     = "transaction_processing"
-          }
-        }
-      }
-    }
-  }
-}
+storage = object({
+  name           = string
+  location       = string
+  resource_group = string
+  queue_properties = optional(object({
+    logging = optional(object({
+      read                  = optional(bool)
+      write                 = optional(bool)
+      delete                = optional(bool)
+      version               = optional(string)
+      retention_policy_days = optional(number)
+    }))
+    queues = optional(map(object({
+      metadata = optional(map(string))
+    })))
+  }))
+})
 ```

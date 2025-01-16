@@ -1,49 +1,33 @@
-**This** sample demonstrates configuring storage shares, facilitating file sharing with defined access levels for secure and collaborative work environments.
+# Shares
 
-## Usage
+This deploys storage shares
+
+## Types
 
 ```hcl
-module "storage" {
-  source  = "cloudnationhq/sa/azure"
-  version = "~> 1.0"
-
-  naming = local.naming
-
-  storage = {
-    name          = module.naming.storage_account.name_unique
-    location      = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
-
-    share_properties = {
-      smb = {
-        versions             = ["SMB3.1.1"]
-        authentication_types = ["Kerberos"]
-      }
-
-      retention_policy = {
-        days = 8
-      }
-
-      shares = {
-        fs1 = {
-          quota = 50
-          metadata = {
-            environment = "dev"
-            owner       = "finance team"
-          }
-          acl = {
-            acl1 = {
-            id = "MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTI"
-              access_policy = {
-                permissions = "r"
-                start       = "2024-08-01T09:38:21.0000000Z"
-                expiry      = "2025-08-01T10:38:21.0000000Z"
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
+storage = object({
+  name           = string
+  location       = string
+  resource_group = string
+  share_properties = optional(object({
+    smb = optional(object({
+      versions             = list(string)
+      authentication_types = list(string)
+    }))
+    retention_policy = optional(object({
+      days = number
+    }))
+    shares = optional(map(object({
+      quota    = number
+      metadata = optional(map(string))
+      acl = optional(map(object({
+        access_policy = optional(object({
+          permissions = string
+          start       = optional(string)
+          expiry      = optional(string)
+        }))
+      })))
+    })))
+  }))
+})
 ```
