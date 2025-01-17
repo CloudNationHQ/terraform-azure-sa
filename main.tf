@@ -327,6 +327,12 @@ resource "azurerm_storage_share" "sh" {
       }
     }
   }
+  lifecycle {
+    ignore_changes = [
+      # needed for file sync that changes the metadata every time when a file changes
+      metadata["syncsignature"],
+    ]
+  }
 }
 
 # tables
