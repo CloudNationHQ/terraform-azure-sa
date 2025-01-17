@@ -49,15 +49,15 @@ module "storage" {
             acl1 = {
               access_policy = {
                 permissions = "r"
-                start       = "2024-07-02T09:38:21.0000000Z"
-                expiry      = "2025-07-02T10:38:21.0000000Z"
+                start       = "2025-07-02T09:38:21Z"
+                expiry      = "2026-07-02T10:38:21Z"
               }
             }
             acl2 = {
               access_policy = {
                 permissions = "rwdl"
-                start       = "2024-08-01T09:38:21.0000000Z"
-                expiry      = "2025-08-01T10:38:21.0000000Z"
+                start       = "2025-08-01T09:38:21Z"
+                expiry      = "2026-08-01T10:38:21Z"
               }
             }
           }
