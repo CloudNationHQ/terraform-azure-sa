@@ -279,87 +279,90 @@ resource "azurerm_storage_account" "sa" {
 
 # containers
 resource "azurerm_storage_container" "sc" {
-  for_each = {
-    for sc in local.containers : sc.sc_key => sc
-  }
+  for_each = try(
+    var.storage.blob_properties.containers, {}
+  )
 
-  name                  = each.value.name
+  name                  = try(each.value.name, join("-", [var.naming.storage_container, each.key]))
   storage_account_id    = azurerm_storage_account.sa.id
-  container_access_type = each.value.container_access_type
-  metadata              = each.value.metadata
+  container_access_type = try(each.value.access_type, "private")
+  metadata              = try(each.value.metadata, {})
 }
 
 # queues
 resource "azurerm_storage_queue" "sq" {
-  for_each = {
-    for sq in local.queues : sq.sq_key => sq
-  }
+  for_each = try(
+    var.storage.queue_properties.queues, {}
+  )
 
-  name                 = each.value.name
-  storage_account_name = each.value.storage_account_name
-  metadata             = each.value.metadata
+  name                 = try(each.value.name, join("-", [var.naming.storage_queue, each.key]))
+  storage_account_name = azurerm_storage_account.sa.name
+  metadata             = try(each.value.metadata, {})
 }
 
 # shares
 resource "azurerm_storage_share" "sh" {
-  for_each = {
-    for fs in local.shares : fs.fs_key => fs
-  }
+  for_each = try(
+    var.storage.share_properties.shares, {}
+  )
 
-  name               = each.value.name
+  name               = try(each.value.name, join("-", [var.naming.storage_share, each.key]))
   storage_account_id = azurerm_storage_account.sa.id
   quota              = each.value.quota
-  metadata           = each.value.metadata
-  access_tier        = each.value.access_tier
-  enabled_protocol   = each.value.enabled_protocol
+  metadata           = try(each.value.metadata, {})
+  access_tier        = try(each.value.access_tier, "Hot")
+  enabled_protocol   = try(each.value.protocol, "SMB")
 
   dynamic "acl" {
-    for_each = try(each.value.acl, {}) != {} ? each.value.acl : {}
+    for_each = try(
+      each.value.acl, {}
+    )
+
     content {
-      id = try(acl.value.id, acl.key)
+      id = acl.key
+
       dynamic "access_policy" {
-        for_each = try(acl.value.access_policy, null) != null ? { default : acl.value.access_policy } : {}
+        for_each = can(acl.value.access_policy) ? [acl.value.access_policy] : []
         content {
-          permissions = try(access_policy.value.permissions, null)
-          start       = try(access_policy.value.start, null)
-          expiry      = try(access_policy.value.expiry, null)
+          permissions = access_policy.value.permissions
+          start       = access_policy.value.start
+          expiry      = access_policy.value.expiry
         }
       }
     }
   }
+
   lifecycle {
     ignore_changes = [
-      # needed for file sync that changes the metadata every time when a file changes
-      metadata["syncsignature"],
+      metadata["syncsignature"]
     ]
   }
 }
 
 # tables
 resource "azurerm_storage_table" "st" {
-  for_each = {
-    for st in local.tables : st.st_key => st
-  }
+  for_each = try(
+    var.storage.tables, {}
+  )
 
-  name                 = each.value.name
-  storage_account_name = each.value.storage_account_name
+  name                 = try(each.value.name, join("-", [var.naming.storage_table, each.key]))
+  storage_account_name = azurerm_storage_account.sa.name
 }
 
 # file systems
 resource "azurerm_storage_data_lake_gen2_filesystem" "fs" {
-  for_each = {
-    for fs in local.file_systems : fs.fs_key => fs
-  }
-
-  name                     = each.value.name
-  storage_account_id       = each.value.storage_account_id
-  default_encryption_scope = each.value.default_encryption_scope
-  properties               = each.value.properties
-  owner                    = each.value.owner
-  group                    = each.value.group
+  for_each = try(
+    var.storage.file_systems, {}
+  )
+  name                     = try(each.value.name, join("-", [var.naming.storage_data_lake_gen2_filesystem, each.key]))
+  storage_account_id       = azurerm_storage_account.sa.id
+  properties               = try(each.value.properties, {})
+  owner                    = try(each.value.owner, null)
+  group                    = try(each.value.group, null)
+  default_encryption_scope = try(each.value.default_encryption_scope, null)
 
   dynamic "ace" {
-    for_each = try(each.value.ace, {}) != {} ? each.value.ace : {}
+    for_each = try(each.value.ace, {})
     content {
       permissions = ace.value.permissions
       type        = ace.value.type
@@ -370,19 +373,28 @@ resource "azurerm_storage_data_lake_gen2_filesystem" "fs" {
 }
 
 resource "azurerm_storage_data_lake_gen2_path" "pa" {
-  for_each = {
-    for pa in local.fs_paths : pa.pa_key => pa
-  }
+  for_each = merge([
+    for fs_key, fs in try(var.storage.file_systems, {}) : {
+      for pa_key, pa in try(fs.paths, {}) : pa_key => {
+        path               = try(pa.path, pa_key)
+        filesystem_name    = azurerm_storage_data_lake_gen2_filesystem.fs[fs_key].name
+        storage_account_id = azurerm_storage_account.sa.id
+        owner              = try(pa.owner, null)
+        group              = try(pa.group, null)
+        ace                = try(pa.ace, {})
+      }
+    }
+  ]...)
 
   path               = each.value.path
   filesystem_name    = each.value.filesystem_name
   storage_account_id = each.value.storage_account_id
   owner              = each.value.owner
   group              = each.value.group
-  resource           = "directory" ## Currently only directory is supported
+  resource           = "directory" # currently only directory is supported
 
   dynamic "ace" {
-    for_each = try(each.value.ace, {}) != {} ? each.value.ace : {}
+    for_each = try(each.value.ace, {})
     content {
       permissions = ace.value.permissions
       type        = ace.value.type
