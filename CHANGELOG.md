@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.2](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.2.1...v3.2.2) (2025-01-27)
+
+
+### Bug Fixes
+
+* make start and expiry properties optional + add Camelcase ignore for SyncSignature ([#144](https://github.com/CloudNationHQ/terraform-azure-sa/issues/144)) ([bc3fcbb](https://github.com/CloudNationHQ/terraform-azure-sa/commit/bc3fcbb8831d14b549c94cbe8482728c12d6b6c6))
+
 ## [3.2.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.2.0...v3.2.1) (2025-01-17)
 
 
