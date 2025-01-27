@@ -325,8 +325,8 @@ resource "azurerm_storage_share" "sh" {
         for_each = can(acl.value.access_policy) ? [acl.value.access_policy] : []
         content {
           permissions = access_policy.value.permissions
-          start       = access_policy.value.start
-          expiry      = access_policy.value.expiry
+          start       = try(access_policy.value.start, null)
+          expiry      = try(access_policy.value.expiry, null)
         }
       }
     }
@@ -334,7 +334,8 @@ resource "azurerm_storage_share" "sh" {
 
   lifecycle {
     ignore_changes = [
-      metadata["syncsignature"]
+      metadata["syncsignature"],
+      metadata["SyncSignature"]
     ]
   }
 }
