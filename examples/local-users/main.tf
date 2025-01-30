@@ -49,16 +49,6 @@ module "kv" {
           "verify", "wrapKey"
         ]
       }
-      sftp2 = {
-        key_type = "RSA"
-        key_size = 2048
-
-        key_opts = [
-          "decrypt", "encrypt",
-          "sign", "unwrapKey",
-          "verify", "wrapKey"
-        ]
-      }
     }
   }
 }
@@ -96,7 +86,7 @@ module "storage" {
       containers = {
         sc1 = {
           local_users = {
-            example1 = {
+            sftp1 = {
               ssh_key_enabled = true
               home_directory  = "/home/sftp-user1"
 
@@ -130,7 +120,7 @@ module "storage" {
       shares = {
         fs1 = {
           local_users = {
-            example1 = {
+            finance1 = {
               ssh_key_enabled = true
               home_directory  = "finance"
 
