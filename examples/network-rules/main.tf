@@ -1,6 +1,6 @@
 module "naming" {
   source  = "cloudnationhq/naming/azure"
-  version = "~> 0.22"
+  version = "~> 0.23"
 
   suffix = ["demo", "dev"]
 }
@@ -42,7 +42,7 @@ module "network" {
 
 module "acr" {
   source  = "cloudnationhq/acr/azure"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   registry = {
     name           = module.naming.container_registry.name_unique
