@@ -279,9 +279,8 @@ resource "azurerm_storage_account" "sa" {
 
 # containers
 resource "azurerm_storage_container" "sc" {
-  for_each = try(
-    var.storage.blob_properties.containers, {}
-  )
+  for_each = lookup(
+  lookup(var.storage, "blob_properties", {}), "containers", {})
 
   name                  = try(each.value.name, join("-", [var.naming.storage_container, each.key]))
   storage_account_id    = azurerm_storage_account.sa.id
@@ -300,11 +299,94 @@ resource "azurerm_storage_queue" "sq" {
   metadata             = try(each.value.metadata, {})
 }
 
+
+resource "azurerm_storage_account_local_user" "lu" {
+  for_each = merge({
+    for kv in flatten([
+      for container_name, container_def in lookup(lookup(var.storage, "blob_properties", {}), "containers", {}) : [
+        for user_key, user_def in lookup(container_def, "local_users", {}) : {
+          key = "${container_name}-${user_key}"
+          value = {
+            service          = "blob" # currently only blob and file is supported
+            resource_name    = azurerm_storage_container.sc[container_name].name
+            name             = try(user_def.name, user_key)
+            home_directory   = try(user_def.home_directory, null)
+            ssh_key_enabled  = try(user_def.ssh_key_enabled, false)
+            ssh_pass_enabled = try(user_def.ssh_password_enabled, false)
+
+            ssh_authorized_keys = try(
+              user_def.ssh_authorized_keys, {}
+            )
+
+            permissions = try(
+              user_def.permission_scope.permissions, {}
+            )
+          }
+        }
+      ]
+    ]) : kv.key => kv.value
+    },
+    {
+      for kv in flatten([
+        for share_name, share_def in lookup(lookup(var.storage, "share_properties", {}), "shares", {}) : [
+          for user_key, user_def in lookup(share_def, "local_users", {}) : {
+            key = "${share_name}-${user_key}"
+            value = {
+              service          = "file"
+              resource_name    = azurerm_storage_share.sh[share_name].name
+              name             = try(user_def.name, user_key)
+              home_directory   = try(user_def.home_directory, null)
+              ssh_key_enabled  = try(user_def.ssh_key_enabled, false)
+              ssh_pass_enabled = try(user_def.ssh_password_enabled, false)
+
+              ssh_authorized_keys = try(
+                user_def.ssh_authorized_keys, {}
+              )
+
+              permissions = try(
+                user_def.permission_scope.permissions, {}
+              )
+            }
+          }
+        ]
+      ]) : kv.key => kv.value
+    }
+  )
+
+  name                 = each.value.name
+  ssh_key_enabled      = each.value.ssh_key_enabled
+  ssh_password_enabled = each.value.ssh_pass_enabled
+  home_directory       = each.value.home_directory
+  storage_account_id   = azurerm_storage_account.sa.id
+
+  dynamic "ssh_authorized_key" {
+    for_each = try(
+      each.value.ssh_authorized_keys, {}
+    )
+
+    content {
+      description = try(ssh_authorized_key.value.description, null)
+      key         = ssh_authorized_key.value.key
+    }
+  }
+
+  permission_scope {
+    service       = each.value.service
+    resource_name = each.value.resource_name
+
+    permissions {
+      read   = try(each.value.permissions.read, false)
+      write  = try(each.value.permissions.write, false)
+      create = try(each.value.permissions.create, false)
+      delete = try(each.value.permissions.delete, false)
+    }
+  }
+}
+
 # shares
 resource "azurerm_storage_share" "sh" {
-  for_each = try(
-    var.storage.share_properties.shares, {}
-  )
+  for_each = lookup(
+  lookup(var.storage, "share_properties", {}), "shares", {})
 
   name               = try(each.value.name, join("-", [var.naming.storage_share, each.key]))
   storage_account_id = azurerm_storage_account.sa.id

@@ -32,6 +32,7 @@ End-to-end testing is not conducted on these modules, as they are individual com
 - supports optional active directory authentication for enhanced security in azure file shares.
 - integrates seamlessly with private endpoint capabilities for direct and secure connectivity.
 - support for ADLS Gen 2 file systems and file system paths
+- enables multiple local users to concurrently access shares and containers
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -55,6 +56,7 @@ End-to-end testing is not conducted on these modules, as they are individual com
 | [azurerm_advanced_threat_protection.prot](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/advanced_threat_protection) | resource |
 | [azurerm_role_assignment.managed_identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
 | [azurerm_storage_account.sa](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) | resource |
+| [azurerm_storage_account_local_user.lu](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account_local_user) | resource |
 | [azurerm_storage_container.sc](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container) | resource |
 | [azurerm_storage_data_lake_gen2_filesystem.fs](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_data_lake_gen2_filesystem) | resource |
 | [azurerm_storage_data_lake_gen2_path.pa](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_data_lake_gen2_path) | resource |
