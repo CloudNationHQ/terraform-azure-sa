@@ -377,6 +377,7 @@ resource "azurerm_storage_account_local_user" "lu" {
     permissions {
       read   = try(each.value.permissions.read, false)
       write  = try(each.value.permissions.write, false)
+      list   = try(each.value.permissions.list, false)
       create = try(each.value.permissions.create, false)
       delete = try(each.value.permissions.delete, false)
     }
