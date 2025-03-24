@@ -2,16 +2,6 @@
 
 This terraform module simplifies the process of creating and managing storage accounts on azure with customizable options and features, offering a flexible and powerful solution for managing azure storage through code.
 
-## Non-Goals
-
-These modules are not intended to be complete, ready-to-use solutions; they are designed as components for creating your own patterns.
-
-They are not tailored for a single use case but are meant to be versatile and applicable to a range of scenarios.
-
-Security standardization is applied at the pattern level, while the modules include default values based on best practices but do not enforce specific security standards.
-
-End-to-end testing is not conducted on these modules, as they are individual components and do not undergo the extensive testing reserved for complete patterns or solutions.
-
 ## Features
 
 Offers support for shares, tables, containers, and queues.
