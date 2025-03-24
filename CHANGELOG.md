@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.4.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.3.1...v3.4.0) (2025-03-24)
+
+
+### Features
+
+* **deps:** bump github.com/gruntwork-io/terratest in /tests ([#149](https://github.com/CloudNationHQ/terraform-azure-sa/issues/149)) ([5e0aa39](https://github.com/CloudNationHQ/terraform-azure-sa/commit/5e0aa3958aefd436a390123d8e15347fd144d79f))
+* format documentation to include type definitions and removed redundant random provider ([#153](https://github.com/CloudNationHQ/terraform-azure-sa/issues/153)) ([72e1889](https://github.com/CloudNationHQ/terraform-azure-sa/commit/72e1889d35c4d84e99b9999835672132427cd828))
+
 ## [3.3.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.3.0...v3.3.1) (2025-03-10)
 
 
