@@ -292,27 +292,26 @@ resource "azurerm_storage_account" "sa" {
 
 # containers
 resource "azurerm_storage_container" "sc" {
-  for_each = coalesce(
+  for_each = nonsensitive(coalesce(
     var.storage.blob_properties != null ? var.storage.blob_properties.containers : {},
     {}
-  )
+  ))
 
   name = coalesce(
-    each.value.name,
+    var.storage.blob_properties.containers[each.key].name,
     join("-", [var.naming.storage_container, each.key])
   )
-
   storage_account_id    = azurerm_storage_account.sa.id
-  container_access_type = each.value.access_type
-  metadata              = each.value.metadata
+  container_access_type = var.storage.blob_properties.containers[each.key].access_type
+  metadata              = var.storage.blob_properties.containers[each.key].metadata
 }
 
 # queues
 resource "azurerm_storage_queue" "sq" {
-  for_each = coalesce(
+  for_each = nonsensitive(coalesce(
     var.storage.queue_properties != null ? var.storage.queue_properties.queues : {},
     {}
-  )
+  ))
 
   name = coalesce(
     each.value.name, join("-", [var.naming.storage_queue, each.key])
@@ -322,10 +321,8 @@ resource "azurerm_storage_queue" "sq" {
   metadata             = each.value.metadata
 }
 
-# local users
 resource "azurerm_storage_account_local_user" "lu" {
-  for_each = merge(
-    # blob container
+  for_each = nonsensitive(merge(
     var.storage != null && var.storage.blob_properties != null ? {
       for kv in flatten([
         for container_name, container_def in lookup(var.storage.blob_properties, "containers", {}) : [
@@ -349,8 +346,6 @@ resource "azurerm_storage_account_local_user" "lu" {
         ]
       ]) : kv.key => kv.value
     } : {},
-
-    # file shares
     var.storage != null && var.storage.share_properties != null ? {
       for kv in flatten([
         for share_name, share_def in lookup(var.storage.share_properties, "shares", {}) : [
@@ -374,7 +369,7 @@ resource "azurerm_storage_account_local_user" "lu" {
         ]
       ]) : kv.key => kv.value
     } : {}
-  )
+  ))
 
   name                 = each.value.name
   ssh_key_enabled      = each.value.ssh_key_enabled
@@ -386,7 +381,6 @@ resource "azurerm_storage_account_local_user" "lu" {
     for_each = try(
       each.value.ssh_authorized_keys, {}
     )
-
     content {
       description = ssh_authorized_key.value.description
       key         = ssh_authorized_key.value.key
@@ -396,7 +390,6 @@ resource "azurerm_storage_account_local_user" "lu" {
   permission_scope {
     service       = each.value.service
     resource_name = each.value.resource_name
-
     permissions {
       read   = each.value.permissions.read
       write  = each.value.permissions.write
