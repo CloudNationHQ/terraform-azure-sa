@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.5.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.4.0...v3.5.0) (2025-03-26)
+
+
+### Features
+
+* **deps:** bump golang.org/x/net from 0.33.0 to 0.36.0 in /tests ([#152](https://github.com/CloudNationHQ/terraform-azure-sa/issues/152)) ([693161c](https://github.com/CloudNationHQ/terraform-azure-sa/commit/693161c8b3dd3531144c253c61c0145942f6a7b3))
+
+
+### Bug Fixes
+
+* resolve for_each sensitivity issue in containers, queues and local users ([#155](https://github.com/CloudNationHQ/terraform-azure-sa/issues/155)) ([7cc3ef5](https://github.com/CloudNationHQ/terraform-azure-sa/commit/7cc3ef5fecc650e32736dc7e37890b95dfa5877a))
+
 ## [3.4.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.3.1...v3.4.0) (2025-03-24)
 
 
