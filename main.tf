@@ -282,10 +282,14 @@ resource "azurerm_storage_account" "sa" {
     for_each = lookup(var.storage, "identity", null) != null ? [var.storage.identity] : []
     content {
       type = identity.value.type
-      identity_ids = concat(
-        try([azurerm_user_assigned_identity.identity["identity"].id], []),
-        lookup(identity.value, "identity_ids", [])
-      )
+      identity_ids = identity.value.type == "UserAssigned" || identity.value.type == "SystemAssigned, UserAssigned" ? (
+        distinct(flatten(
+          concat(
+            length(azurerm_user_assigned_identity.identity) > 0 ? [azurerm_user_assigned_identity.identity["identity"].id] : [],
+            coalesce(lookup(identity.value, "identity_ids", []), [])
+          )
+        ))
+      ) : null
     }
   }
 }
