@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.6.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.5.2...v3.6.0) (2025-03-28)
+
+
+### Features
+
+* improve contributor visibility ([#161](https://github.com/CloudNationHQ/terraform-azure-sa/issues/161)) ([5331472](https://github.com/CloudNationHQ/terraform-azure-sa/commit/53314720689c406cd7109d56dcae60d91761312e))
+
 ## [3.5.2](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.5.1...v3.5.2) (2025-03-28)
 
 
