@@ -453,14 +453,14 @@ For more information, please see our contribution [guidelines](./CONTRIBUTING.md
 
 MIT Licensed. See [LICENSE](https://github.com/cloudnationhq/terraform-azure-sa/blob/main/LICENSE) for full details.
 
-## Authors
-
-<a href="https://github.com/cloudnationhq/terraform-azure-sa/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=cloudnationhq/terraform-azure-sa" />
-</a>
-
 ## References
 
 - [Documentation](https://learn.microsoft.com/en-us/azure/storage)
 - [Rest Api](https://learn.microsoft.com/en-us/rest/api/storagerp/storage-accounts)
 - [Rest Api Specs](https://github.com/Azure/azure-rest-api-specs/tree/1f449b5a17448f05ce1cd914f8ed75a0b568d130/specification/storage)
+
+## Authors
+
+<a href="https://github.com/cloudnationhq/terraform-azure-sa/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=cloudnationhq/terraform-azure-sa" />
+</a>
