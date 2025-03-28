@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.5.2](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.5.1...v3.5.2) (2025-03-28)
+
+
+### Bug Fixes
+
+* allow storage management policy rules without base_blob action rules ([#157](https://github.com/CloudNationHQ/terraform-azure-sa/issues/157)) ([576ae61](https://github.com/CloudNationHQ/terraform-azure-sa/commit/576ae61ee438a2098be0e28e4ba7638584673b85))
+
 ## [3.5.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.5.0...v3.5.1) (2025-03-27)
 
 
