@@ -455,8 +455,7 @@ MIT Licensed. See [LICENSE](https://github.com/cloudnationhq/terraform-azure-sa/
 
 ## Authors
 
-Module is maintained by [these awesome contributors](https://github.com/cloudnationhq/terraform-azure-sa/graphs/contributors).
-
+Module is maintained by [these awesome contributors](https://github.com/cloudnationhq/terraform-azure-sa/graphs/contributors).<br>
 
 <a href="https://github.com/cloudnationhq/terraform-azure-sa/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=cloudnationhq/terraform-azure-sa" />
