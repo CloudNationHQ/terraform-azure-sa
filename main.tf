@@ -537,30 +537,29 @@ resource "azurerm_storage_management_policy" "mgmt_policy" {
       }
 
       actions {
-        base_blob {
-          tier_to_cool_after_days_since_modification_greater_than        = rule.value.actions.base_blob.tier_to_cool_after_days_since_modification_greater_than
-          tier_to_cool_after_days_since_last_access_time_greater_than    = rule.value.actions.base_blob.tier_to_cool_after_days_since_last_access_time_greater_than
-          tier_to_archive_after_days_since_modification_greater_than     = rule.value.actions.base_blob.tier_to_archive_after_days_since_modification_greater_than
-          tier_to_archive_after_days_since_last_access_time_greater_than = rule.value.actions.base_blob.tier_to_archive_after_days_since_last_access_time_greater_than
-          delete_after_days_since_modification_greater_than              = rule.value.actions.base_blob.delete_after_days_since_modification_greater_than
-          delete_after_days_since_last_access_time_greater_than          = rule.value.actions.base_blob.delete_after_days_since_last_access_time_greater_than
-          auto_tier_to_hot_from_cool_enabled                             = rule.value.actions.base_blob.auto_tier_to_hot_from_cool_enabled
-          delete_after_days_since_creation_greater_than                  = rule.value.actions.base_blob.delete_after_days_since_creation_greater_than
-          tier_to_archive_after_days_since_creation_greater_than         = rule.value.actions.base_blob.tier_to_archive_after_days_since_creation_greater_than
-          tier_to_cool_after_days_since_creation_greater_than            = rule.value.actions.base_blob.tier_to_cool_after_days_since_creation_greater_than
-          tier_to_cold_after_days_since_creation_greater_than            = rule.value.actions.base_blob.tier_to_cold_after_days_since_creation_greater_than
-          tier_to_cold_after_days_since_modification_greater_than        = rule.value.actions.base_blob.tier_to_cold_after_days_since_modification_greater_than
-          tier_to_cold_after_days_since_last_access_time_greater_than    = rule.value.actions.base_blob.tier_to_cold_after_days_since_last_access_time_greater_than
-          tier_to_archive_after_days_since_last_tier_change_greater_than = rule.value.actions.base_blob.tier_to_archive_after_days_since_last_tier_change_greater_than
+        dynamic "base_blob" {
+          for_each = anytrue([for k, v in try(rule.value.actions.base_blob, {}) : v != null && v != ""]) ? ["base_blob"] : []
+
+          content {
+            tier_to_cool_after_days_since_modification_greater_than        = rule.value.actions.base_blob.tier_to_cool_after_days_since_modification_greater_than
+            tier_to_cool_after_days_since_last_access_time_greater_than    = rule.value.actions.base_blob.tier_to_cool_after_days_since_last_access_time_greater_than
+            tier_to_archive_after_days_since_modification_greater_than     = rule.value.actions.base_blob.tier_to_archive_after_days_since_modification_greater_than
+            tier_to_archive_after_days_since_last_access_time_greater_than = rule.value.actions.base_blob.tier_to_archive_after_days_since_last_access_time_greater_than
+            delete_after_days_since_modification_greater_than              = rule.value.actions.base_blob.delete_after_days_since_modification_greater_than
+            delete_after_days_since_last_access_time_greater_than          = rule.value.actions.base_blob.delete_after_days_since_last_access_time_greater_than
+            auto_tier_to_hot_from_cool_enabled                             = rule.value.actions.base_blob.auto_tier_to_hot_from_cool_enabled
+            delete_after_days_since_creation_greater_than                  = rule.value.actions.base_blob.delete_after_days_since_creation_greater_than
+            tier_to_archive_after_days_since_creation_greater_than         = rule.value.actions.base_blob.tier_to_archive_after_days_since_creation_greater_than
+            tier_to_cool_after_days_since_creation_greater_than            = rule.value.actions.base_blob.tier_to_cool_after_days_since_creation_greater_than
+            tier_to_cold_after_days_since_creation_greater_than            = rule.value.actions.base_blob.tier_to_cold_after_days_since_creation_greater_than
+            tier_to_cold_after_days_since_modification_greater_than        = rule.value.actions.base_blob.tier_to_cold_after_days_since_modification_greater_than
+            tier_to_cold_after_days_since_last_access_time_greater_than    = rule.value.actions.base_blob.tier_to_cold_after_days_since_last_access_time_greater_than
+            tier_to_archive_after_days_since_last_tier_change_greater_than = rule.value.actions.base_blob.tier_to_archive_after_days_since_last_tier_change_greater_than
+          }
         }
 
         dynamic "snapshot" {
-          for_each = lookup(rule.value.actions, "snapshot", null) != null ? (
-            anytrue([
-              for k, v in lookup(rule.value.actions, "snapshot", {}) :
-              v != null && v != ""
-            ]) ? ["snapshot"] : []
-          ) : []
+          for_each = anytrue([for k, v in try(rule.value.actions.snapshot, {}) : v != null && v != ""]) ? ["snapshot"] : []
 
           content {
             change_tier_to_archive_after_days_since_creation               = rule.value.actions.snapshot.change_tier_to_archive_after_days_since_creation
@@ -572,12 +571,7 @@ resource "azurerm_storage_management_policy" "mgmt_policy" {
         }
 
         dynamic "version" {
-          for_each = lookup(rule.value.actions, "version", null) != null ? (
-            anytrue([
-              for k, v in lookup(rule.value.actions, "version", {}) :
-              v != null && v != ""
-            ]) ? ["version"] : []
-          ) : []
+          for_each = anytrue([for k, v in try(rule.value.actions.version, {}) : v != null && v != ""]) ? ["version"] : []
 
           content {
             change_tier_to_archive_after_days_since_creation               = rule.value.actions.version.change_tier_to_archive_after_days_since_creation
