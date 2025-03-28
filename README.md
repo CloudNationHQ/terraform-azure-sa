@@ -352,7 +352,7 @@ object({
     }), null)
     identity = optional(object({
       type         = string
-      identity_ids = optional(list(string), [])
+      identity_ids = optional(list(string), null)
       name         = optional(string, null)
     }), null)
   })
