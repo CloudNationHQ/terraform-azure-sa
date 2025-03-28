@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.5.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.5.0...v3.5.1) (2025-03-27)
+
+
+### Bug Fixes
+
+* change default value identity_ids in user assigned identity ([#158](https://github.com/CloudNationHQ/terraform-azure-sa/issues/158)) ([23b8f9b](https://github.com/CloudNationHQ/terraform-azure-sa/commit/23b8f9b3192d2cc8382daaccb92e4e13e3e198a6))
+
 ## [3.5.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.4.0...v3.5.0) (2025-03-26)
 
 
