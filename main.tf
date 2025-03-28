@@ -522,7 +522,7 @@ resource "azurerm_storage_data_lake_gen2_path" "pa" {
 
 # management policies
 resource "azurerm_storage_management_policy" "mgmt_policy" {
-  for_each = try(var.storage.management_policy, null) != null ? { "default" = var.storage.management_policy } : {}
+  for_each = length(try(var.management_policy.rules, {})) > 0 ? { "default" = var.storage.management_policy } : {}
 
   storage_account_id = azurerm_storage_account.sa.id
 
