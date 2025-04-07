@@ -433,7 +433,7 @@ resource "azurerm_storage_share" "sh" {
       id = acl.key
 
       dynamic "access_policy" {
-        for_each = can(acl.value.access_policy) ? [acl.value.access_policy] : []
+        for_each = try([acl.value.access_policy], [])
 
         content {
           permissions = access_policy.value.permissions
@@ -469,7 +469,7 @@ resource "azurerm_storage_table" "st" {
       id = acl.key
 
       dynamic "access_policy" {
-        for_each = can(acl.value.access_policy) ? [acl.value.access_policy] : []
+        for_each = try([acl.value.access_policy], [])
 
         content {
           permissions = access_policy.value.permissions
