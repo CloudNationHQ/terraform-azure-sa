@@ -227,7 +227,7 @@ variable "storage" {
           blob_types   = optional(list(string), [])
           match_blob_index_tag = optional(map(object({
             name      = optional(string, null)
-            operation = optional(string, null)
+            operation = optional(string, "==")
             value     = optional(string, null)
           })), {})
         }), {})
