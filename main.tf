@@ -307,8 +307,8 @@ resource "azurerm_storage_container" "sc" {
   )
   storage_account_id                = azurerm_storage_account.sa.id
   container_access_type             = var.storage.blob_properties.containers[each.key].access_type
-  default_encryption_scope          = try(var.storage.blob_properties.containers[each.key].default_encryption_scope, null)
-  encryption_scope_override_enabled = var.storage.blob_properties.containers[each.key].default_encryption_scope != null ? try(var.storage.blob_properties.containers[each.key].encryption_scope_override_enabled, true) : null
+  default_encryption_scope          = var.storage.blob_properties.containers[each.key].default_encryption_scope
+  encryption_scope_override_enabled = var.storage.blob_properties.containers[each.key].default_encryption_scope != null ? var.storage.blob_properties.containers[each.key].encryption_scope_override_enabled : null
   metadata                          = var.storage.blob_properties.containers[each.key].metadata
 }
 
@@ -566,7 +566,7 @@ resource "azurerm_storage_management_policy" "mgmt_policy" {
 
           content {
             name      = match_blob_index_tag.value.name
-            operation = try(match_blob_index_tag.value.operation, "==")
+            operation = match_blob_index_tag.value.operation
             value     = match_blob_index_tag.value.value
           }
         }
@@ -640,14 +640,14 @@ resource "azurerm_role_assignment" "managed_identity" {
   for_each = lookup(var.storage, "customer_managed_key", null) != null ? { "identity" = var.storage.customer_managed_key } : {}
 
   scope                                  = each.value.key_vault_id
-  name                                   = try(var.storage.customer_managed_key.role_assignment_name, null)
+  name                                   = var.storage.customer_managed_key.role_assignment_name
   role_definition_name                   = "Key Vault Crypto Officer"
   principal_id                           = azurerm_user_assigned_identity.identity["identity"].principal_id
-  condition                              = try(var.storage.customer_managed_key.condition, null)
-  condition_version                      = try(var.storage.customer_managed_key.condition_version, null)
+  condition                              = var.storage.customer_managed_key.condition
+  condition_version                      = var.storage.customer_managed_key.condition_version
   description                            = "Key Vault Crypto Officer role assignment for storage account"
-  delegated_managed_identity_resource_id = try(var.storage.customer_managed_key.delegated_managed_identity_resource_id, null)
-  skip_service_principal_aad_check       = try(var.storage.customer_managed_key.skip_service_principal_aad_check, false)
+  delegated_managed_identity_resource_id = var.storage.customer_managed_key.delegated_managed_identity_resource_id
+  skip_service_principal_aad_check       = var.storage.customer_managed_key.skip_service_principal_aad_check
   principal_type                         = "ServicePrincipal"
 }
 
