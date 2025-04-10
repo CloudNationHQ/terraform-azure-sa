@@ -127,9 +127,11 @@ object({
         days = optional(number, 7)
       }), null)
       containers = optional(map(object({
-        name        = optional(string)
-        access_type = optional(string, "private")
-        metadata    = optional(map(string), {})
+        name                              = optional(string)
+        access_type                       = optional(string, "private")
+        default_encryption_scope          = optional(string, null)
+        encryption_scope_override_enabled = optional(bool, true)
+        metadata                          = optional(map(string), {})
         local_users = optional(map(object({
           name                 = optional(string)
           home_directory       = optional(string, null)
@@ -249,6 +251,13 @@ object({
     }), null)
     tables = optional(map(object({
       name = optional(string)
+      acl = optional(map(object({
+        access_policy = optional(object({
+          permissions = string
+          start       = optional(string, null)
+          expiry      = optional(string, null)
+        }), null)
+      })), {})
     })), {})
     file_systems = optional(map(object({
       name                     = optional(string)
@@ -283,7 +292,7 @@ object({
           blob_types   = optional(list(string), [])
           match_blob_index_tag = optional(map(object({
             name      = optional(string, null)
-            operation = optional(string, null)
+            operation = optional(string, "==")
             value     = optional(string, null)
           })), {})
         }), {})
@@ -342,9 +351,14 @@ object({
       use_subdomain = optional(bool, null)
     }), null)
     customer_managed_key = optional(object({
-      key_vault_key_id   = optional(string, null)
-      managed_hsm_key_id = optional(string, null)
-      key_vault_id       = string
+      key_vault_key_id                       = optional(string, null)
+      managed_hsm_key_id                     = optional(string, null)
+      key_vault_id                           = string
+      role_assignment_name                   = optional(string, null)
+      condition                              = optional(string, null)
+      condition_version                      = optional(string, null)
+      delegated_managed_identity_resource_id = optional(string, null)
+      skip_service_principal_aad_check       = optional(bool, false)
     }), null)
     static_website = optional(object({
       index_document     = optional(string, null)
