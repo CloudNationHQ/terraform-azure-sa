@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.7.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.6.0...v3.7.0) (2025-04-10)
+
+
+### Features
+
+* add missing properties ([#164](https://github.com/CloudNationHQ/terraform-azure-sa/issues/164)) ([e5665bb](https://github.com/CloudNationHQ/terraform-azure-sa/commit/e5665bbde6a6253e046e2ebd5b731d4327f3a43f))
+
 ## [3.6.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.5.2...v3.6.0) (2025-03-28)
 
 
