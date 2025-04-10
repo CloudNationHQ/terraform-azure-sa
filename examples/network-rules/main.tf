@@ -40,15 +40,40 @@ module "network" {
   }
 }
 
-module "acr" {
-  source  = "cloudnationhq/acr/azure"
-  version = "~> 4.0"
+module "law" {
+  source  = "cloudnationhq/law/azure"
+  version = "~> 2.0"
 
-  registry = {
-    name           = module.naming.container_registry.name_unique
+  workspace = {
+    name           = module.naming.log_analytics_workspace.name
     location       = module.rg.groups.demo.location
     resource_group = module.rg.groups.demo.name
-    sku            = "Basic"
+  }
+}
+
+module "dcr" {
+  source  = "cloudnationhq/dcr/azure"
+  version = "~> 2.0"
+
+  rule = {
+    name           = module.naming.data_collection_rule.name
+    location       = module.rg.groups.demo.location
+    resource_group = module.rg.groups.demo.name
+
+    data_flow = {
+      df1 = {
+        streams      = ["Microsoft-InsightsMetrics"]
+        destinations = ["la1"]
+      }
+    }
+
+    destinations = {
+      log_analytics = {
+        la1 = {
+          workspace_resource_id = module.law.workspace.id
+        }
+      }
+    }
   }
 }
 
@@ -64,8 +89,8 @@ module "storage" {
     network_rules = {
       virtual_network_subnet_ids = [module.network.subnets.sn1.id]
       private_link_access = {
-        registry_endpoint = {
-          endpoint_resource_id = module.acr.registry.id
+        dcr = {
+          endpoint_resource_id = module.dcr.rule.default.id
         }
       }
     }
