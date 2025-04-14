@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.7.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.7.0...v3.7.1) (2025-04-14)
+
+
+### Bug Fixes
+
+* fix submodule generation from makefile ([#167](https://github.com/CloudNationHQ/terraform-azure-sa/issues/167)) ([50e0a9b](https://github.com/CloudNationHQ/terraform-azure-sa/commit/50e0a9b6e562d3f3a073357cc0deeadf2fb19f7f))
+
 ## [3.7.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.6.0...v3.7.0) (2025-04-10)
 
 
