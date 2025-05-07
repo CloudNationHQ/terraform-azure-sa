@@ -11,6 +11,13 @@
 
 * small refactor ([#170](https://github.com/CloudNationHQ/terraform-azure-sa/issues/170)) ([a0a2dd8](https://github.com/CloudNationHQ/terraform-azure-sa/commit/a0a2dd8f86d1c112af8f7fee501fabe281d2eab4))
 
+### Upgrade from v3.7.1 to v4.0.0:
+
+- Update module reference to: `version = "~> 4.0"`
+- The user assigned identity is removed from the module.
+  - For identity we created a separate module as shown in the examples.
+- The property and variable resource_group is renamed to resource_group_name
+
 ## [3.7.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.7.0...v3.7.1) (2025-04-14)
 
 
