@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.7.1...v4.0.0) (2025-05-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* The data structure changed, causing a recreate on existing resources.
+
+### Features
+
+* small refactor ([#170](https://github.com/CloudNationHQ/terraform-azure-sa/issues/170)) ([a0a2dd8](https://github.com/CloudNationHQ/terraform-azure-sa/commit/a0a2dd8f86d1c112af8f7fee501fabe281d2eab4))
+
 ## [3.7.1](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v3.7.0...v3.7.1) (2025-04-14)
 
 
