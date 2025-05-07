@@ -52,7 +52,6 @@ The following resources are used by this module:
 - [azurerm_storage_queue.sq](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_queue) (resource)
 - [azurerm_storage_share.sh](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_share) (resource)
 - [azurerm_storage_table.st](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_table) (resource)
-- [azurerm_user_assigned_identity.identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) (resource)
 
 ## Required Inputs
 
@@ -67,7 +66,7 @@ Type:
 ```hcl
 object({
     name                              = string
-    resource_group                    = optional(string, null)
+    resource_group_name               = optional(string, null)
     location                          = optional(string, null)
     account_tier                      = optional(string, "Standard")
     account_replication_type          = optional(string, "GRS")
@@ -91,7 +90,7 @@ object({
     local_user_enabled                = optional(bool, null)
     dns_endpoint_type                 = optional(string, null)
     default_to_oauth_authentication   = optional(bool, false)
-    tags                              = optional(map(string), null)
+    tags                              = optional(map(string))
     threat_protection                 = optional(bool, false)
     network_rules = optional(object({
       bypass                     = optional(list(string), ["None"])
@@ -359,6 +358,8 @@ object({
       condition_version                      = optional(string, null)
       delegated_managed_identity_resource_id = optional(string, null)
       skip_service_principal_aad_check       = optional(bool, false)
+      principal_id                           = string
+      user_assigned_identity_id              = string
     }), null)
     static_website = optional(object({
       index_document     = optional(string, null)
@@ -392,7 +393,7 @@ Type: `map(string)`
 
 Default: `{}`
 
-### <a name="input_resource_group"></a> [resource\_group](#input\_resource\_group)
+### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
 
 Description: default resource group to be used.
 

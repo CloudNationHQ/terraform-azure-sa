@@ -1,6 +1,6 @@
 module "naming" {
   source  = "cloudnationhq/naming/azure"
-  version = "~> 0.23"
+  version = "~> 0.24"
 
   suffix = ["demo", "dev"]
 }
@@ -19,16 +19,16 @@ module "rg" {
 
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   naming = local.naming
 
   storage = {
-    name           = module.naming.storage_account.name_unique
-    location       = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
-    is_hns_enabled = true
-    sftp_enabled   = true
+    name                = module.naming.storage_account.name_unique
+    location            = module.rg.groups.demo.location
+    resource_group_name = module.rg.groups.demo.name
+    is_hns_enabled      = true
+    sftp_enabled        = true
 
     file_systems = {
       fs1 = {
