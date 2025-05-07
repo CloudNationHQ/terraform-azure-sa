@@ -3,8 +3,8 @@ resource "azurerm_storage_account" "sa" {
 
   resource_group_name = coalesce(
     lookup(
-      var.storage, "resource_group", null
-    ), var.resource_group
+      var.storage, "resource_group_name", null
+    ), var.resource_group_name
   )
 
   location = coalesce(
@@ -36,8 +36,8 @@ resource "azurerm_storage_account" "sa" {
   dns_endpoint_type                 = var.storage.dns_endpoint_type
   default_to_oauth_authentication   = var.storage.default_to_oauth_authentication
 
-  tags = try(
-    var.storage.tags, var.tags, null
+  tags = coalesce(
+    var.storage.tags, var.tags
   )
 
   dynamic "network_rules" {
@@ -265,7 +265,7 @@ resource "azurerm_storage_account" "sa" {
     content {
       key_vault_key_id          = customer_managed_key.value.key_vault_key_id
       managed_hsm_key_id        = customer_managed_key.value.managed_hsm_key_id
-      user_assigned_identity_id = azurerm_user_assigned_identity.identity["identity"].id
+      user_assigned_identity_id = customer_managed_key.value.user_assigned_identity_id
     }
   }
 
@@ -280,18 +280,13 @@ resource "azurerm_storage_account" "sa" {
 
   dynamic "identity" {
     for_each = lookup(var.storage, "identity", null) != null ? [var.storage.identity] : []
+
     content {
-      type = identity.value.type
-      identity_ids = identity.value.type == "UserAssigned" || identity.value.type == "SystemAssigned, UserAssigned" ? (
-        distinct(flatten(
-          concat(
-            length(azurerm_user_assigned_identity.identity) > 0 ? [azurerm_user_assigned_identity.identity["identity"].id] : [],
-            coalesce(lookup(identity.value, "identity_ids", []), [])
-          )
-        ))
-      ) : null
+      type         = identity.value.type
+      identity_ids = identity.value.identity_ids
     }
   }
+  depends_on = [azurerm_role_assignment.managed_identity]
 }
 
 # containers
@@ -305,6 +300,7 @@ resource "azurerm_storage_container" "sc" {
     var.storage.blob_properties.containers[each.key].name,
     join("-", [var.naming.storage_container, each.key])
   )
+
   storage_account_id                = azurerm_storage_account.sa.id
   container_access_type             = var.storage.blob_properties.containers[each.key].access_type
   default_encryption_scope          = var.storage.blob_properties.containers[each.key].default_encryption_scope
@@ -623,26 +619,13 @@ resource "azurerm_storage_management_policy" "mgmt_policy" {
   depends_on = [azurerm_storage_container.sc]
 }
 
-resource "azurerm_user_assigned_identity" "identity" {
-  for_each = lookup(var.storage, "identity", null) != null ? (
-    (lookup(var.storage.identity, "type", null) == "UserAssigned" ||
-    lookup(var.storage.identity, "type", null) == "SystemAssigned, UserAssigned") &&
-    lookup(var.storage.identity, "identity_ids", null) == null ? { "identity" = var.storage.identity } : {}
-  ) : {}
-
-  name                = try(each.value.name, "uai-${var.storage.name}")
-  resource_group_name = var.storage.resource_group
-  location            = var.storage.location
-  tags                = try(each.value.tags, var.tags, null)
-}
-
 resource "azurerm_role_assignment" "managed_identity" {
   for_each = lookup(var.storage, "customer_managed_key", null) != null ? { "identity" = var.storage.customer_managed_key } : {}
 
-  scope                                  = each.value.key_vault_id
+  scope                                  = var.storage.customer_managed_key.key_vault_id
   name                                   = var.storage.customer_managed_key.role_assignment_name
   role_definition_name                   = "Key Vault Crypto Officer"
-  principal_id                           = azurerm_user_assigned_identity.identity["identity"].principal_id
+  principal_id                           = var.storage.customer_managed_key.principal_id
   condition                              = var.storage.customer_managed_key.condition
   condition_version                      = var.storage.customer_managed_key.condition_version
   description                            = "Key Vault Crypto Officer role assignment for storage account"

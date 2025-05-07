@@ -2,7 +2,7 @@ variable "storage" {
   description = "Contains all storage configuration"
   type = object({
     name                              = string
-    resource_group                    = optional(string, null)
+    resource_group_name               = optional(string, null)
     location                          = optional(string, null)
     account_tier                      = optional(string, "Standard")
     account_replication_type          = optional(string, "GRS")
@@ -26,7 +26,7 @@ variable "storage" {
     local_user_enabled                = optional(bool, null)
     dns_endpoint_type                 = optional(string, null)
     default_to_oauth_authentication   = optional(bool, false)
-    tags                              = optional(map(string), null)
+    tags                              = optional(map(string))
     threat_protection                 = optional(bool, false)
     network_rules = optional(object({
       bypass                     = optional(list(string), ["None"])
@@ -294,6 +294,8 @@ variable "storage" {
       condition_version                      = optional(string, null)
       delegated_managed_identity_resource_id = optional(string, null)
       skip_service_principal_aad_check       = optional(bool, false)
+      principal_id                           = string
+      user_assigned_identity_id              = string
     }), null)
     static_website = optional(object({
       index_document     = optional(string, null)
@@ -312,7 +314,7 @@ variable "storage" {
   }
 
   validation {
-    condition     = var.storage.resource_group != null || var.resource_group != null
+    condition     = var.storage.resource_group_name != null || var.resource_group_name != null
     error_message = "resource group name must be provided either in the storage object or as a separate variable."
   }
 }
@@ -329,7 +331,7 @@ variable "location" {
   default     = null
 }
 
-variable "resource_group" {
+variable "resource_group_name" {
   description = "default resource group to be used."
   type        = string
   default     = null
