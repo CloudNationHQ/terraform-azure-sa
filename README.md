@@ -35,13 +35,12 @@ The following requirements are needed by this module:
 
 The following providers are used by this module:
 
-- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 4.0)
+- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (4.29.0)
 
 ## Resources
 
 The following resources are used by this module:
 
-- [azurerm_advanced_threat_protection.prot](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/advanced_threat_protection) (resource)
 - [azurerm_role_assignment.managed_identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
 - [azurerm_storage_account.sa](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) (resource)
 - [azurerm_storage_account_local_user.lu](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account_local_user) (resource)
@@ -91,7 +90,6 @@ object({
     dns_endpoint_type                 = optional(string, null)
     default_to_oauth_authentication   = optional(bool, false)
     tags                              = optional(map(string))
-    threat_protection                 = optional(bool, false)
     network_rules = optional(object({
       bypass                     = optional(list(string), ["None"])
       default_action             = optional(string, "Deny")

@@ -27,7 +27,6 @@ variable "storage" {
     dns_endpoint_type                 = optional(string, null)
     default_to_oauth_authentication   = optional(bool, false)
     tags                              = optional(map(string))
-    threat_protection                 = optional(bool, false)
     network_rules = optional(object({
       bypass                     = optional(list(string), ["None"])
       default_action             = optional(string, "Deny")
