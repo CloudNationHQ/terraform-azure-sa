@@ -298,7 +298,8 @@ resource "azurerm_storage_container" "sc" {
 
   name = coalesce(
     var.storage.blob_properties.containers[each.key].name,
-    join("-", [var.naming.storage_container, each.key])
+    try(join("-", [var.naming.storage_container, each.key]), null),
+    each.key
   )
 
   storage_account_id                = azurerm_storage_account.sa.id
@@ -316,7 +317,9 @@ resource "azurerm_storage_queue" "sq" {
   ))
 
   name = coalesce(
-    each.value.name, join("-", [var.naming.storage_queue, each.key])
+    each.value.name,
+    try(join("-", [var.naming.storage_queue, each.key]), null),
+    each.key
   )
 
   storage_account_name = azurerm_storage_account.sa.name
@@ -411,7 +414,8 @@ resource "azurerm_storage_share" "sh" {
 
   name = coalesce(
     each.value.name,
-    join("-", [var.naming.storage_share, each.key])
+    try(join("-", [var.naming.storage_share, each.key]), null),
+    each.key
   )
 
   storage_account_id = azurerm_storage_account.sa.id
@@ -453,7 +457,12 @@ resource "azurerm_storage_table" "st" {
     var.storage.tables, {}
   )
 
-  name                 = try(each.value.name, join("-", [var.naming.storage_table, each.key]))
+  name = coalesce(
+    each.value.name,
+    try(join("-", [var.naming.storage_table, each.key]), null),
+    each.key
+  )
+
   storage_account_name = azurerm_storage_account.sa.name
 
   dynamic "acl" {
@@ -484,7 +493,9 @@ resource "azurerm_storage_data_lake_gen2_filesystem" "fs" {
   )
 
   name = coalesce(
-    each.value.name, join("-", [var.naming.storage_data_lake_gen2_filesystem, each.key])
+    each.value.name,
+    try(join("-", [var.naming.storage_data_lake_gen2_filesystem, each.key]), null),
+    each.key
   )
 
   storage_account_id       = azurerm_storage_account.sa.id
