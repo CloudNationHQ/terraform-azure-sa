@@ -35,7 +35,7 @@ module "storage" {
       }
 
       queues = {
-        q1 = {
+        qu1 = {
           metadata = {
             environment = "dev"
             owner       = "finance team"
