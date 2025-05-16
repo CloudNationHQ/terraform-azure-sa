@@ -644,11 +644,3 @@ resource "azurerm_role_assignment" "managed_identity" {
   skip_service_principal_aad_check       = var.storage.customer_managed_key.skip_service_principal_aad_check
   principal_type                         = "ServicePrincipal"
 }
-
-# advanced threat protection
-resource "azurerm_advanced_threat_protection" "prot" {
-  for_each = try(var.storage.threat_protection, false) ? { "threat_protection" = true } : {}
-
-  target_resource_id = azurerm_storage_account.sa.id
-  enabled            = true
-}

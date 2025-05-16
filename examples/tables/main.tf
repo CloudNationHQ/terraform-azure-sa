@@ -26,10 +26,25 @@ module "storage" {
     location            = module.rg.groups.demo.location
     resource_group_name = module.rg.groups.demo.name
 
-    blob_properties = {
-      last_access_time_enabled = true
+    tables = {
+      tb1 = {
+        acl = {
+          acl1 = {
+            access_policy = {
+              permissions = "r"
+              start       = "2025-07-02T09:38:21Z"
+              expiry      = "2026-07-02T10:38:21Z"
+            }
+          }
+          acl2 = {
+            access_policy = {
+              permissions = "raud" #Read, Add, Update, Delete
+              start       = "2025-08-01T09:38:21Z"
+              expiry      = "2026-08-01T10:38:21Z"
+            }
+          }
+        }
+      }
     }
-
-    management_policy = local.management_policies
   }
 }
