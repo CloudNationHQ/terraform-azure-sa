@@ -105,18 +105,6 @@ variable "storage" {
         multichannel_enabled            = optional(bool, false)
         kerberos_ticket_encryption_type = optional(list(string), [])
       }), null)
-      azure_files_authentication = optional(object({
-        directory_type                 = optional(string, "AD")
-        default_share_level_permission = optional(string, null)
-        active_directory = optional(object({
-          domain_name         = string
-          domain_guid         = string
-          forest_name         = optional(string, null)
-          domain_sid          = optional(string, null)
-          storage_sid         = optional(string, null)
-          netbios_domain_name = optional(string, null)
-        }), null)
-      }), null)
       shares = optional(map(object({
         name        = optional(string)
         quota       = number
@@ -150,6 +138,18 @@ variable "storage" {
           }), null)
         })), {})
       })), {})
+    }), null)
+    azure_files_authentication = optional(object({
+      directory_type                 = optional(string, "AD")
+      default_share_level_permission = optional(string, null)
+      active_directory = optional(object({
+        domain_name         = string
+        domain_guid         = string
+        forest_name         = optional(string, null)
+        domain_sid          = optional(string, null)
+        storage_sid         = optional(string, null)
+        netbios_domain_name = optional(string, null)
+      }), null)
     }), null)
     queue_properties = optional(object({
       cors_rules = optional(map(object({
