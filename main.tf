@@ -148,7 +148,7 @@ resource "azurerm_storage_account" "sa" {
   }
 
   dynamic "azure_files_authentication" {
-    for_each = try(var.storage.azure_files_authentication, null) != null ? { auth = var.storage.azure_files_authentication } : {}
+    for_each = try(var.storage.azure_files_authentication != null ? [ var.storage.azure_files_authentication] : [], [])
 
     content {
       directory_type                 = azure_files_authentication.value.directory_type
