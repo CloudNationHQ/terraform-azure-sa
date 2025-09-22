@@ -19,15 +19,15 @@ module "rg" {
 
 module "network" {
   source  = "cloudnationhq/vnet/azure"
-  version = "~> 8.0"
+  version = "~> 9.0"
 
   naming = local.naming
 
   vnet = {
-    name           = module.naming.virtual_network.name
-    location       = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
-    address_space  = ["10.19.0.0/16"]
+    name                = module.naming.virtual_network.name
+    location            = module.rg.groups.demo.location
+    resource_group_name = module.rg.groups.demo.name
+    address_space       = ["10.19.0.0/16"]
 
     subnets = {
       sn1 = {
@@ -74,18 +74,24 @@ module "private_dns" {
 
 module "privatelink" {
   source  = "cloudnationhq/pe/azure"
-  version = "~> 1.0"
+  version = "~> 2.0"
 
-  resource_group = module.rg.groups.demo.name
-  location       = module.rg.groups.demo.location
+  resource_group_name = module.rg.groups.demo.name
+  location            = module.rg.groups.demo.location
 
   endpoints = {
     blob = {
-      name                           = module.naming.private_endpoint.name
-      subnet_id                      = module.network.subnets.sn1.id
-      private_connection_resource_id = module.storage.account.id
-      private_dns_zone_ids           = [module.private_dns.private_zones.blob.id]
-      subresource_names              = ["blob"]
+      name      = module.naming.private_endpoint.name
+      subnet_id = module.network.subnets.sn1.id
+
+      private_dns_group = {
+        private_dns_zone_ids = [module.private_dns.private_zones.blob.id]
+      }
+
+      private_service_connection = {
+        private_connection_resource_id = module.storage.account.id
+        subresource_names              = ["blob"]
+      }
     }
   }
 }
