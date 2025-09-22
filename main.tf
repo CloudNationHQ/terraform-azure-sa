@@ -330,6 +330,7 @@ resource "azurerm_storage_container_immutability_policy" "immutability_policy" {
   immutability_period_in_days           = each.value.immutability_policy.immutability_period_in_days
   protected_append_writes_enabled       = each.value.immutability_policy.protected_append_writes_enabled
   protected_append_writes_all_enabled   = each.value.immutability_policy.protected_append_writes_all_enabled
+  locked                                = each.value.immutability_policy.locked
 }
 
 # queues

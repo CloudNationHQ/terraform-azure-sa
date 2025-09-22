@@ -71,6 +71,7 @@ variable "storage" {
           immutability_period_in_days         = number
           protected_append_writes_enabled     = optional(bool)
           protected_append_writes_all_enabled = optional(bool)
+          locked                              = optional(bool)
         }))
         local_users = optional(map(object({
           name                 = optional(string)
