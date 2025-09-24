@@ -53,12 +53,12 @@ module "kv" {
 
 module "identity" {
   source  = "cloudnationhq/uai/azure"
-  version = "~> 1.0"
+  version = "~> 2.0"
 
   config = {
-    name           = module.naming.user_assigned_identity.name
-    location       = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
+    name                = module.naming.user_assigned_identity.name
+    location            = module.rg.groups.demo.location
+    resource_group_name = module.rg.groups.demo.name
   }
 }
 

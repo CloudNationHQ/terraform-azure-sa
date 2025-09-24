@@ -19,15 +19,15 @@ module "rg" {
 
 module "network" {
   source  = "cloudnationhq/vnet/azure"
-  version = "~> 8.0"
+  version = "~> 9.0"
 
   naming = local.naming
 
   vnet = {
-    name           = module.naming.virtual_network.name
-    location       = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
-    address_space  = ["10.19.0.0/16"]
+    name                = module.naming.virtual_network.name
+    location            = module.rg.groups.demo.location
+    resource_group_name = module.rg.groups.demo.name
+    address_space       = ["10.19.0.0/16"]
 
     subnets = {
       sn1 = {
@@ -42,12 +42,12 @@ module "network" {
 
 module "law" {
   source  = "cloudnationhq/law/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   workspace = {
-    name           = module.naming.log_analytics_workspace.name
-    location       = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
+    name                = module.naming.log_analytics_workspace.name_unique
+    location            = module.rg.groups.demo.location
+    resource_group_name = module.rg.groups.demo.name
   }
 }
 

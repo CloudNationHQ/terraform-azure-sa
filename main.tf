@@ -35,13 +35,14 @@ resource "azurerm_storage_account" "sa" {
   local_user_enabled                = var.storage.local_user_enabled
   dns_endpoint_type                 = var.storage.dns_endpoint_type
   default_to_oauth_authentication   = var.storage.default_to_oauth_authentication
+  provisioned_billing_model_version = var.storage.provisioned_billing_model_version
 
   tags = coalesce(
     var.storage.tags, var.tags
   )
 
   dynamic "network_rules" {
-    for_each = try(var.storage.network_rules, null) != null ? [var.storage.network_rules] : []
+    for_each = var.storage.network_rules != null ? [var.storage.network_rules] : []
 
     content {
       bypass                     = network_rules.value.bypass
@@ -50,7 +51,7 @@ resource "azurerm_storage_account" "sa" {
       virtual_network_subnet_ids = network_rules.value.virtual_network_subnet_ids
 
       dynamic "private_link_access" {
-        for_each = { for key, pla in try(var.storage.network_rules.private_link_access, {}) : key => pla }
+        for_each = { for key, pla in lookup(network_rules.value, "private_link_access", {}) : key => pla }
 
         content {
           endpoint_resource_id = private_link_access.value.endpoint_resource_id
@@ -61,17 +62,19 @@ resource "azurerm_storage_account" "sa" {
   }
 
   dynamic "blob_properties" {
-    for_each = try(var.storage.blob_properties, null) != null ? [1] : []
+    for_each = var.storage.blob_properties != null ? [var.storage.blob_properties] : []
 
     content {
-      last_access_time_enabled      = var.storage.blob_properties.last_access_time_enabled
-      versioning_enabled            = var.storage.blob_properties.versioning_enabled
-      change_feed_enabled           = var.storage.blob_properties.change_feed_enabled
-      change_feed_retention_in_days = var.storage.blob_properties.change_feed_retention_in_days
-      default_service_version       = var.storage.blob_properties.default_service_version
+      last_access_time_enabled      = blob_properties.value.last_access_time_enabled
+      versioning_enabled            = blob_properties.value.versioning_enabled
+      change_feed_enabled           = blob_properties.value.change_feed_enabled
+      change_feed_retention_in_days = blob_properties.value.change_feed_retention_in_days
+      default_service_version       = blob_properties.value.default_service_version
 
       dynamic "cors_rule" {
-        for_each = lookup(var.storage.blob_properties, "cors_rules", {})
+        for_each = lookup(
+          blob_properties.value, "cors_rules", {}
+        )
 
         content {
           allowed_headers    = cors_rule.value.allowed_headers
@@ -83,7 +86,7 @@ resource "azurerm_storage_account" "sa" {
       }
 
       dynamic "delete_retention_policy" {
-        for_each = try(var.storage.blob_properties.delete_retention_policy != null ? [var.storage.blob_properties.delete_retention_policy] : [], [])
+        for_each = var.storage.blob_properties.delete_retention_policy != null ? [var.storage.blob_properties.delete_retention_policy] : []
 
         content {
           days                     = delete_retention_policy.value.days
@@ -92,29 +95,31 @@ resource "azurerm_storage_account" "sa" {
       }
 
       dynamic "restore_policy" {
-        for_each = try(var.storage.blob_properties.restore_policy != null ? [var.storage.blob_properties.restore_policy] : [], [])
+        for_each = var.storage.blob_properties.restore_policy != null ? [var.storage.blob_properties.restore_policy] : []
 
         content {
-          days = var.storage.blob_properties.restore_policy.days
+          days = restore_policy.value.days
         }
       }
 
       dynamic "container_delete_retention_policy" {
-        for_each = try(var.storage.blob_properties.container_delete_retention_policy != null ? [var.storage.blob_properties.container_delete_retention_policy] : [], [])
+        for_each = var.storage.blob_properties.container_delete_retention_policy != null ? [var.storage.blob_properties.container_delete_retention_policy] : []
 
         content {
-          days = var.storage.blob_properties.container_delete_retention_policy.days
+          days = container_delete_retention_policy.value.days
         }
       }
     }
   }
 
   dynamic "share_properties" {
-    for_each = try(var.storage.share_properties, null) != null ? [1] : []
-    content {
+    for_each = var.storage.share_properties != null ? [var.storage.share_properties] : []
 
+    content {
       dynamic "cors_rule" {
-        for_each = lookup(var.storage.share_properties, "cors_rules", {})
+        for_each = lookup(
+          share_properties.value, "cors_rules", {}
+        )
 
         content {
           allowed_headers    = cors_rule.value.allowed_headers
@@ -126,29 +131,29 @@ resource "azurerm_storage_account" "sa" {
       }
 
       dynamic "retention_policy" {
-        for_each = try(var.storage.share_properties.retention_policy != null ? [var.storage.share_properties.retention_policy] : [], [])
+        for_each = share_properties.value.retention_policy != null ? [share_properties.value.retention_policy] : []
 
         content {
-          days = var.storage.share_properties.retention_policy.days
+          days = retention_policy.value.days
         }
       }
 
       dynamic "smb" {
-        for_each = try(var.storage.share_properties.smb != null ? [var.storage.share_properties.smb] : [], [])
+        for_each = share_properties.value.smb != null ? [share_properties.value.smb] : []
 
         content {
-          versions                        = var.storage.share_properties.smb.versions
-          authentication_types            = var.storage.share_properties.smb.authentication_types
-          channel_encryption_type         = var.storage.share_properties.smb.channel_encryption_type
-          multichannel_enabled            = var.storage.share_properties.smb.multichannel_enabled
-          kerberos_ticket_encryption_type = var.storage.share_properties.smb.kerberos_ticket_encryption_type
+          versions                        = smb.value.versions
+          authentication_types            = smb.value.authentication_types
+          channel_encryption_type         = smb.value.channel_encryption_type
+          multichannel_enabled            = smb.value.multichannel_enabled
+          kerberos_ticket_encryption_type = smb.value.kerberos_ticket_encryption_type
         }
       }
     }
   }
 
   dynamic "azure_files_authentication" {
-    for_each = try(var.storage.share_properties.azure_files_authentication, null) != null ? { auth = var.storage.share_properties.azure_files_authentication } : {}
+    for_each = var.storage.share_properties.azure_files_authentication != null ? [var.storage.share_properties.azure_files_authentication] : []
 
     content {
       directory_type                 = azure_files_authentication.value.directory_type
@@ -170,11 +175,13 @@ resource "azurerm_storage_account" "sa" {
   }
 
   dynamic "queue_properties" {
-    for_each = try(var.storage.queue_properties, null) != null ? [1] : []
-    content {
+    for_each = var.storage.queue_properties != null ? [var.storage.queue_properties] : []
 
+    content {
       dynamic "cors_rule" {
-        for_each = lookup(var.storage.queue_properties, "cors_rules", {})
+        for_each = lookup(
+          queue_properties.value, "cors_rules", {}
+        )
 
         content {
           allowed_headers    = cors_rule.value.allowed_headers
@@ -186,43 +193,43 @@ resource "azurerm_storage_account" "sa" {
       }
 
       dynamic "logging" {
-        for_each = try(var.storage.queue_properties.logging != null ? [var.storage.queue_properties.logging] : [], [])
+        for_each = queue_properties.value.logging != null ? [queue_properties.value.logging] : []
 
         content {
-          version               = var.storage.queue_properties.logging.version
-          delete                = var.storage.queue_properties.logging.delete
-          read                  = var.storage.queue_properties.logging.read
-          write                 = var.storage.queue_properties.logging.write
-          retention_policy_days = var.storage.queue_properties.logging.retention_policy_days
+          version               = logging.value.version
+          delete                = logging.value.delete
+          read                  = logging.value.read
+          write                 = logging.value.write
+          retention_policy_days = logging.value.retention_policy_days
         }
       }
 
       dynamic "minute_metrics" {
-        for_each = try(var.storage.queue_properties.minute_metrics != null ? [var.storage.queue_properties.minute_metrics] : [], [])
+        for_each = queue_properties.value.minute_metrics != null ? [queue_properties.value.minute_metrics] : []
 
         content {
-          enabled               = var.storage.queue_properties.minute_metrics.enabled
-          version               = var.storage.queue_properties.minute_metrics.version
-          include_apis          = var.storage.queue_properties.minute_metrics.include_apis
-          retention_policy_days = var.storage.queue_properties.minute_metrics.retention_policy_days
+          enabled               = minute_metrics.value.enabled
+          version               = minute_metrics.value.version
+          include_apis          = minute_metrics.value.include_apis
+          retention_policy_days = minute_metrics.value.retention_policy_days
         }
       }
 
       dynamic "hour_metrics" {
-        for_each = try(var.storage.queue_properties.hour_metrics != null ? [var.storage.queue_properties.hour_metrics] : [], [])
+        for_each = queue_properties.value.hour_metrics != null ? [queue_properties.value.hour_metrics] : []
 
         content {
-          enabled               = var.storage.queue_properties.hour_metrics.enabled
-          version               = var.storage.queue_properties.hour_metrics.version
-          include_apis          = var.storage.queue_properties.hour_metrics.include_apis
-          retention_policy_days = var.storage.queue_properties.hour_metrics.retention_policy_days
+          enabled               = hour_metrics.value.enabled
+          version               = hour_metrics.value.version
+          include_apis          = hour_metrics.value.include_apis
+          retention_policy_days = hour_metrics.value.retention_policy_days
         }
       }
     }
   }
 
   dynamic "sas_policy" {
-    for_each = try(var.storage.policy.sas, null) != null ? { "default" = var.storage.policy.sas } : {}
+    for_each = var.storage.policy.sas != null ? [var.storage.policy.sas] : []
 
     content {
       expiration_action = sas_policy.value.expiration_action
@@ -231,7 +238,7 @@ resource "azurerm_storage_account" "sa" {
   }
 
   dynamic "routing" {
-    for_each = try(var.storage.routing, null) != null ? { "default" = var.storage.routing } : {}
+    for_each = var.storage.routing != null ? [var.storage.routing] : []
 
     content {
       choice                      = routing.value.choice
@@ -241,7 +248,7 @@ resource "azurerm_storage_account" "sa" {
   }
 
   dynamic "immutability_policy" {
-    for_each = try(var.storage.policy.immutability, null) != null ? { "default" = var.storage.policy.immutability } : {}
+    for_each = var.storage.policy.immutability != null ? [var.storage.policy.immutability] : []
 
     content {
       state                         = immutability_policy.value.state
@@ -251,7 +258,7 @@ resource "azurerm_storage_account" "sa" {
   }
 
   dynamic "custom_domain" {
-    for_each = try(var.storage.custom_domain, null) != null ? { "default" = var.storage.custom_domain } : {}
+    for_each = var.storage.custom_domain != null ? [var.storage.custom_domain] : []
 
     content {
       name          = custom_domain.value.name
@@ -260,7 +267,7 @@ resource "azurerm_storage_account" "sa" {
   }
 
   dynamic "customer_managed_key" {
-    for_each = lookup(var.storage, "customer_managed_key", null) != null ? { "default" = var.storage.customer_managed_key } : {}
+    for_each = var.storage.customer_managed_key != null ? [var.storage.customer_managed_key] : []
 
     content {
       key_vault_key_id          = customer_managed_key.value.key_vault_key_id
@@ -270,7 +277,7 @@ resource "azurerm_storage_account" "sa" {
   }
 
   dynamic "static_website" {
-    for_each = try(var.storage.static_website, null) != null ? [1] : []
+    for_each = var.storage.static_website != null ? [var.storage.static_website] : []
 
     content {
       index_document     = static_website.value.index_document
@@ -279,7 +286,7 @@ resource "azurerm_storage_account" "sa" {
   }
 
   dynamic "identity" {
-    for_each = lookup(var.storage, "identity", null) != null ? [var.storage.identity] : []
+    for_each = var.storage.identity != null ? [var.storage.identity] : []
 
     content {
       type         = identity.value.type
@@ -307,6 +314,23 @@ resource "azurerm_storage_container" "sc" {
   default_encryption_scope          = var.storage.blob_properties.containers[each.key].default_encryption_scope
   encryption_scope_override_enabled = var.storage.blob_properties.containers[each.key].default_encryption_scope != null ? var.storage.blob_properties.containers[each.key].encryption_scope_override_enabled : null
   metadata                          = var.storage.blob_properties.containers[each.key].metadata
+}
+
+# container immutability policies
+resource "azurerm_storage_container_immutability_policy" "immutability_policy" {
+  for_each = {
+    for key, container in coalesce(
+      var.storage.blob_properties != null ? var.storage.blob_properties.containers : {},
+      {}
+    ) : key => container
+    if container.immutability_policy != null
+  }
+
+  storage_container_resource_manager_id = azurerm_storage_container.sc[each.key].resource_manager_id
+  immutability_period_in_days           = each.value.immutability_policy.immutability_period_in_days
+  protected_append_writes_enabled       = each.value.immutability_policy.protected_append_writes_enabled
+  protected_append_writes_all_enabled   = each.value.immutability_policy.protected_append_writes_all_enabled
+  locked                                = each.value.immutability_policy.locked
 }
 
 # queues
@@ -386,6 +410,7 @@ resource "azurerm_storage_account_local_user" "lu" {
     for_each = try(
       each.value.ssh_authorized_keys, {}
     )
+
     content {
       description = ssh_authorized_key.value.description
       key         = ssh_authorized_key.value.key
@@ -395,6 +420,7 @@ resource "azurerm_storage_account_local_user" "lu" {
   permission_scope {
     service       = each.value.service
     resource_name = each.value.resource_name
+
     permissions {
       read   = each.value.permissions.read
       write  = each.value.permissions.write
@@ -474,7 +500,9 @@ resource "azurerm_storage_table" "st" {
       id = acl.key
 
       dynamic "access_policy" {
-        for_each = try([acl.value.access_policy], [])
+        for_each = try([
+          acl.value.access_policy], []
+        )
 
         content {
           permissions = access_policy.value.permissions
@@ -523,6 +551,7 @@ resource "azurerm_storage_data_lake_gen2_path" "pa" {
         storage_account_id = azurerm_storage_account.sa.id
         owner              = pa.owner
         group              = pa.group
+        resource           = pa.resource
         ace                = pa.ace
         path = coalesce(
           pa.path, pa_key
@@ -536,10 +565,13 @@ resource "azurerm_storage_data_lake_gen2_path" "pa" {
   storage_account_id = each.value.storage_account_id
   owner              = each.value.owner
   group              = each.value.group
-  resource           = "directory" # currently only directory is supported
+  resource           = each.value.resource
 
   dynamic "ace" {
-    for_each = try(each.value.ace, {})
+    for_each = try(
+      each.value.ace, {}
+    )
+
     content {
       permissions = ace.value.permissions
       type        = ace.value.type
@@ -551,7 +583,7 @@ resource "azurerm_storage_data_lake_gen2_path" "pa" {
 
 # management policies
 resource "azurerm_storage_management_policy" "mgmt_policy" {
-  for_each = try(var.storage.management_policy, null) != null ? { "default" = var.storage.management_policy } : {}
+  for_each = var.storage.management_policy != null ? { "default" = var.storage.management_policy } : {}
 
   storage_account_id = azurerm_storage_account.sa.id
 
@@ -561,7 +593,7 @@ resource "azurerm_storage_management_policy" "mgmt_policy" {
     )
 
     content {
-      name    = rule.key
+      name    = coalesce(rule.value.name, rule.key)
       enabled = rule.value.enabled
 
       filters {
@@ -569,7 +601,9 @@ resource "azurerm_storage_management_policy" "mgmt_policy" {
         blob_types   = rule.value.filters.blob_types
 
         dynamic "match_blob_index_tag" {
-          for_each = try(rule.value.filters.match_blob_index_tag, {})
+          for_each = try(
+            rule.value.filters.match_blob_index_tag, {}
+          )
 
           content {
             name      = match_blob_index_tag.value.name
@@ -579,49 +613,53 @@ resource "azurerm_storage_management_policy" "mgmt_policy" {
         }
       }
 
-      actions {
-        dynamic "base_blob" {
-          for_each = anytrue([for k, v in try(rule.value.actions.base_blob, {}) : v != null && v != ""]) ? ["base_blob"] : []
+      dynamic "actions" {
+        for_each = rule.value.actions != null ? [rule.value.actions] : []
 
-          content {
-            tier_to_cool_after_days_since_modification_greater_than        = rule.value.actions.base_blob.tier_to_cool_after_days_since_modification_greater_than
-            tier_to_cool_after_days_since_last_access_time_greater_than    = rule.value.actions.base_blob.tier_to_cool_after_days_since_last_access_time_greater_than
-            tier_to_archive_after_days_since_modification_greater_than     = rule.value.actions.base_blob.tier_to_archive_after_days_since_modification_greater_than
-            tier_to_archive_after_days_since_last_access_time_greater_than = rule.value.actions.base_blob.tier_to_archive_after_days_since_last_access_time_greater_than
-            delete_after_days_since_modification_greater_than              = rule.value.actions.base_blob.delete_after_days_since_modification_greater_than
-            delete_after_days_since_last_access_time_greater_than          = rule.value.actions.base_blob.delete_after_days_since_last_access_time_greater_than
-            auto_tier_to_hot_from_cool_enabled                             = rule.value.actions.base_blob.auto_tier_to_hot_from_cool_enabled
-            delete_after_days_since_creation_greater_than                  = rule.value.actions.base_blob.delete_after_days_since_creation_greater_than
-            tier_to_archive_after_days_since_creation_greater_than         = rule.value.actions.base_blob.tier_to_archive_after_days_since_creation_greater_than
-            tier_to_cool_after_days_since_creation_greater_than            = rule.value.actions.base_blob.tier_to_cool_after_days_since_creation_greater_than
-            tier_to_cold_after_days_since_creation_greater_than            = rule.value.actions.base_blob.tier_to_cold_after_days_since_creation_greater_than
-            tier_to_cold_after_days_since_modification_greater_than        = rule.value.actions.base_blob.tier_to_cold_after_days_since_modification_greater_than
-            tier_to_cold_after_days_since_last_access_time_greater_than    = rule.value.actions.base_blob.tier_to_cold_after_days_since_last_access_time_greater_than
-            tier_to_archive_after_days_since_last_tier_change_greater_than = rule.value.actions.base_blob.tier_to_archive_after_days_since_last_tier_change_greater_than
+        content {
+          dynamic "base_blob" {
+            for_each = actions.value.base_blob != null ? [actions.value.base_blob] : []
+
+            content {
+              tier_to_cool_after_days_since_modification_greater_than        = base_blob.value.tier_to_cool_after_days_since_modification_greater_than
+              tier_to_cool_after_days_since_last_access_time_greater_than    = base_blob.value.tier_to_cool_after_days_since_last_access_time_greater_than
+              tier_to_archive_after_days_since_modification_greater_than     = base_blob.value.tier_to_archive_after_days_since_modification_greater_than
+              tier_to_archive_after_days_since_last_access_time_greater_than = base_blob.value.tier_to_archive_after_days_since_last_access_time_greater_than
+              delete_after_days_since_modification_greater_than              = base_blob.value.delete_after_days_since_modification_greater_than
+              delete_after_days_since_last_access_time_greater_than          = base_blob.value.delete_after_days_since_last_access_time_greater_than
+              auto_tier_to_hot_from_cool_enabled                             = base_blob.value.auto_tier_to_hot_from_cool_enabled
+              delete_after_days_since_creation_greater_than                  = base_blob.value.delete_after_days_since_creation_greater_than
+              tier_to_archive_after_days_since_creation_greater_than         = base_blob.value.tier_to_archive_after_days_since_creation_greater_than
+              tier_to_cool_after_days_since_creation_greater_than            = base_blob.value.tier_to_cool_after_days_since_creation_greater_than
+              tier_to_cold_after_days_since_creation_greater_than            = base_blob.value.tier_to_cold_after_days_since_creation_greater_than
+              tier_to_cold_after_days_since_modification_greater_than        = base_blob.value.tier_to_cold_after_days_since_modification_greater_than
+              tier_to_cold_after_days_since_last_access_time_greater_than    = base_blob.value.tier_to_cold_after_days_since_last_access_time_greater_than
+              tier_to_archive_after_days_since_last_tier_change_greater_than = base_blob.value.tier_to_archive_after_days_since_last_tier_change_greater_than
+            }
           }
-        }
 
-        dynamic "snapshot" {
-          for_each = anytrue([for k, v in try(rule.value.actions.snapshot, {}) : v != null && v != ""]) ? ["snapshot"] : []
+          dynamic "snapshot" {
+            for_each = actions.value.snapshot != null ? [actions.value.snapshot] : []
 
-          content {
-            change_tier_to_archive_after_days_since_creation               = rule.value.actions.snapshot.change_tier_to_archive_after_days_since_creation
-            change_tier_to_cool_after_days_since_creation                  = rule.value.actions.snapshot.change_tier_to_cool_after_days_since_creation
-            delete_after_days_since_creation_greater_than                  = rule.value.actions.snapshot.delete_after_days_since_creation_greater_than
-            tier_to_archive_after_days_since_last_tier_change_greater_than = rule.value.actions.snapshot.tier_to_archive_after_days_since_last_tier_change_greater_than
-            tier_to_cold_after_days_since_creation_greater_than            = rule.value.actions.snapshot.tier_to_cold_after_days_since_creation_greater_than
+            content {
+              change_tier_to_archive_after_days_since_creation               = snapshot.value.change_tier_to_archive_after_days_since_creation
+              change_tier_to_cool_after_days_since_creation                  = snapshot.value.change_tier_to_cool_after_days_since_creation
+              delete_after_days_since_creation_greater_than                  = snapshot.value.delete_after_days_since_creation_greater_than
+              tier_to_archive_after_days_since_last_tier_change_greater_than = snapshot.value.tier_to_archive_after_days_since_last_tier_change_greater_than
+              tier_to_cold_after_days_since_creation_greater_than            = snapshot.value.tier_to_cold_after_days_since_creation_greater_than
+            }
           }
-        }
 
-        dynamic "version" {
-          for_each = anytrue([for k, v in try(rule.value.actions.version, {}) : v != null && v != ""]) ? ["version"] : []
+          dynamic "version" {
+            for_each = actions.value.version != null ? [actions.value.version] : []
 
-          content {
-            change_tier_to_archive_after_days_since_creation               = rule.value.actions.version.change_tier_to_archive_after_days_since_creation
-            change_tier_to_cool_after_days_since_creation                  = rule.value.actions.version.change_tier_to_cool_after_days_since_creation
-            delete_after_days_since_creation                               = rule.value.actions.version.delete_after_days_since_creation
-            tier_to_cold_after_days_since_creation_greater_than            = rule.value.actions.version.tier_to_cold_after_days_since_creation_greater_than
-            tier_to_archive_after_days_since_last_tier_change_greater_than = rule.value.actions.version.tier_to_archive_after_days_since_last_tier_change_greater_than
+            content {
+              change_tier_to_archive_after_days_since_creation               = version.value.change_tier_to_archive_after_days_since_creation
+              change_tier_to_cool_after_days_since_creation                  = version.value.change_tier_to_cool_after_days_since_creation
+              delete_after_days_since_creation                               = version.value.delete_after_days_since_creation
+              tier_to_cold_after_days_since_creation_greater_than            = version.value.tier_to_cold_after_days_since_creation_greater_than
+              tier_to_archive_after_days_since_last_tier_change_greater_than = version.value.tier_to_archive_after_days_since_last_tier_change_greater_than
+            }
           }
         }
       }
@@ -635,12 +673,13 @@ resource "azurerm_role_assignment" "managed_identity" {
 
   scope                                  = var.storage.customer_managed_key.key_vault_id
   name                                   = var.storage.customer_managed_key.role_assignment_name
-  role_definition_name                   = "Key Vault Crypto Officer"
+  role_definition_name                   = var.storage.customer_managed_key.role_definition_name
+  role_definition_id                     = var.storage.customer_managed_key.role_definition_id
   principal_id                           = var.storage.customer_managed_key.principal_id
   condition                              = var.storage.customer_managed_key.condition
   condition_version                      = var.storage.customer_managed_key.condition_version
-  description                            = "Key Vault Crypto Officer role assignment for storage account"
+  description                            = var.storage.customer_managed_key.description
   delegated_managed_identity_resource_id = var.storage.customer_managed_key.delegated_managed_identity_resource_id
   skip_service_principal_aad_check       = var.storage.customer_managed_key.skip_service_principal_aad_check
-  principal_type                         = "ServicePrincipal"
+  principal_type                         = var.storage.customer_managed_key.principal_type
 }

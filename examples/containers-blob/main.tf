@@ -33,10 +33,6 @@ module "storage" {
       last_access_time_enabled = true
       change_feed_enabled      = true
 
-      restore_policy = {
-        days = 8
-      }
-
       delete_retention_policy = {
         days                     = 10
         permanent_delete_enabled = false
@@ -51,6 +47,11 @@ module "storage" {
           metadata = {
             project = "marketing"
             owner   = "marketing team"
+          }
+          immutability_policy = {
+            immutability_period_in_days         = 30
+            protected_append_writes_enabled     = true
+            protected_append_writes_all_enabled = false
           }
         }
       }
