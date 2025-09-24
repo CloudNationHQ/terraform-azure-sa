@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v4.1.0...v4.2.0) (2025-09-24)
+
+
+### Features
+
+* improve type definitions and added container immutability policy support ([#184](https://github.com/CloudNationHQ/terraform-azure-sa/issues/184)) ([8391909](https://github.com/CloudNationHQ/terraform-azure-sa/commit/839190945e17515cec7ee12c17e25fc456712da0))
+
 ## [4.1.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v4.0.0...v4.1.0) (2025-05-16)
 
 
