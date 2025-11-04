@@ -671,15 +671,15 @@ resource "azurerm_storage_management_policy" "mgmt_policy" {
 resource "azurerm_role_assignment" "managed_identity" {
   for_each = lookup(var.storage, "customer_managed_key", null) != null ? { "identity" = var.storage.customer_managed_key } : {}
 
-  scope                                  = var.storage.customer_managed_key.key_vault_id
-  name                                   = var.storage.customer_managed_key.role_assignment_name
-  role_definition_name                   = var.storage.customer_managed_key.role_definition_name
-  role_definition_id                     = var.storage.customer_managed_key.role_definition_id
-  principal_id                           = var.storage.customer_managed_key.principal_id
-  condition                              = var.storage.customer_managed_key.condition
-  condition_version                      = var.storage.customer_managed_key.condition_version
-  description                            = var.storage.customer_managed_key.description
-  delegated_managed_identity_resource_id = var.storage.customer_managed_key.delegated_managed_identity_resource_id
-  skip_service_principal_aad_check       = var.storage.customer_managed_key.skip_service_principal_aad_check
-  principal_type                         = var.storage.customer_managed_key.principal_type
+  scope                                  = each.value.key_vault_id
+  name                                   = each.value.role_assignment_name
+  role_definition_name                   = each.value.role_definition_name
+  role_definition_id                     = each.value.role_definition_id
+  principal_id                           = each.value.principal_id
+  condition                              = each.value.condition
+  condition_version                      = each.value.condition_version
+  description                            = each.value.description
+  delegated_managed_identity_resource_id = each.value.delegated_managed_identity_resource_id
+  skip_service_principal_aad_check       = each.value.skip_service_principal_aad_check
+  principal_type                         = each.value.principal_type
 }
