@@ -346,8 +346,8 @@ resource "azurerm_storage_queue" "sq" {
     each.key
   )
 
-  storage_account_name = azurerm_storage_account.sa.name
-  metadata             = each.value.metadata
+  storage_account_id = azurerm_storage_account.sa.id
+  metadata           = each.value.metadata
 }
 
 resource "azurerm_storage_account_local_user" "lu" {
