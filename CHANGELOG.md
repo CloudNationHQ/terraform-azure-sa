@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.3.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v4.2.0...v4.3.0) (2025-11-04)
+
+
+### Features
+
+* **deps:** bump github.com/cloudnationhq/az-cn-go-validor in /tests ([#188](https://github.com/CloudNationHQ/terraform-azure-sa/issues/188)) ([6b9f74f](https://github.com/CloudNationHQ/terraform-azure-sa/commit/6b9f74f3b27d59258dc5d058e949a4a7ff649f4b))
+* **deps:** bump github.com/ulikunitz/xz from 0.5.10 to 0.5.14 in /tests ([#181](https://github.com/CloudNationHQ/terraform-azure-sa/issues/181)) ([f246a3f](https://github.com/CloudNationHQ/terraform-azure-sa/commit/f246a3f8412d1cd45f0e4854a443c341255594d4))
+* simplify role assignment by using each value instead of var reference ([#191](https://github.com/CloudNationHQ/terraform-azure-sa/issues/191)) ([b1c8e13](https://github.com/CloudNationHQ/terraform-azure-sa/commit/b1c8e138100cfa477d1864b344c446781cb9fca2))
+
+
+### Bug Fixes
+
+* replace deprecated property in storage queue ([#189](https://github.com/CloudNationHQ/terraform-azure-sa/issues/189)) ([86bf0b2](https://github.com/CloudNationHQ/terraform-azure-sa/commit/86bf0b2bc967c202a0a462d4fdbead5e7acfec2d))
+
 ## [4.2.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v4.1.0...v4.2.0) (2025-09-24)
 
 
