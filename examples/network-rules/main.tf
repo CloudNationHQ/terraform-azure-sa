@@ -1,6 +1,6 @@
 module "naming" {
   source  = "cloudnationhq/naming/azure"
-  version = "~> 0.24"
+  version = "~> 0.25"
 
   suffix = ["demo", "dev"]
 }
@@ -53,12 +53,12 @@ module "law" {
 
 module "dcr" {
   source  = "cloudnationhq/dcr/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   rule = {
-    name           = module.naming.data_collection_rule.name
-    location       = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
+    name                = module.naming.data_collection_rule.name
+    location            = module.rg.groups.demo.location
+    resource_group_name = module.rg.groups.demo.name
 
     data_flow = {
       df1 = {
