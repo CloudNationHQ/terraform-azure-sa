@@ -1,6 +1,6 @@
 module "naming" {
   source  = "cloudnationhq/naming/azure"
-  version = "~> 0.24"
+  version = "~> 0.25"
 
   suffix = ["demo", "dev"]
 }
@@ -53,9 +53,9 @@ module "storage" {
 
 module "private_dns" {
   source  = "cloudnationhq/pdns/azure"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
-  resource_group = module.rg.groups.demo.name
+  resource_group_name = module.rg.groups.demo.name
 
   zones = {
     private = {
