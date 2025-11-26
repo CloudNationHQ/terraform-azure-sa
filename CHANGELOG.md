@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.4.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v4.3.0...v4.4.0) (2025-11-26)
+
+
+### Features
+
+* **deps:** bump github.com/cloudnationhq/az-cn-go-validor in /tests ([#192](https://github.com/CloudNationHQ/terraform-azure-sa/issues/192)) ([8b08762](https://github.com/CloudNationHQ/terraform-azure-sa/commit/8b0876299c830c385587c7fff7cdb579793ee6d5))
+* **deps:** bump golang.org/x/crypto from 0.36.0 to 0.45.0 in /tests ([#193](https://github.com/CloudNationHQ/terraform-azure-sa/issues/193)) ([008ee34](https://github.com/CloudNationHQ/terraform-azure-sa/commit/008ee34e8d25af38f6941521971df9ac43f60fe3))
+* increment all module versions to the latest ([#194](https://github.com/CloudNationHQ/terraform-azure-sa/issues/194)) ([b662f70](https://github.com/CloudNationHQ/terraform-azure-sa/commit/b662f70d66d8affe6f7eac96502dd7cbafdf5798))
+
 ## [4.3.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v4.2.0...v4.3.0) (2025-11-04)
 
 
