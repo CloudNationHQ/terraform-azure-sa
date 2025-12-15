@@ -16,7 +16,6 @@ resource "azurerm_storage_account" "sa" {
   account_tier                      = var.storage.account_tier
   account_replication_type          = var.storage.account_replication_type
   account_kind                      = var.storage.account_kind
-  access_tier                       = var.storage.access_tier
   infrastructure_encryption_enabled = var.storage.infrastructure_encryption_enabled
   https_traffic_only_enabled        = var.storage.https_traffic_only_enabled
   min_tls_version                   = var.storage.min_tls_version
@@ -36,6 +35,10 @@ resource "azurerm_storage_account" "sa" {
   dns_endpoint_type                 = var.storage.dns_endpoint_type
   default_to_oauth_authentication   = var.storage.default_to_oauth_authentication
   provisioned_billing_model_version = var.storage.provisioned_billing_model_version
+
+  access_tier = var.storage.account_kind == "BlockBlobStorage" ? null : coalesce(
+    var.storage.access_tier, "Hot"
+  )
 
   tags = coalesce(
     var.storage.tags, var.tags
@@ -153,7 +156,7 @@ resource "azurerm_storage_account" "sa" {
   }
 
   dynamic "azure_files_authentication" {
-    for_each = var.storage.share_properties.azure_files_authentication != null ? [var.storage.share_properties.azure_files_authentication] : []
+    for_each = try(var.storage.share_properties.azure_files_authentication, null) != null ? [var.storage.share_properties.azure_files_authentication] : []
 
     content {
       directory_type                 = azure_files_authentication.value.directory_type

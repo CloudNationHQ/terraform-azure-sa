@@ -7,7 +7,7 @@ variable "storage" {
     account_tier                      = optional(string, "Standard")
     account_replication_type          = optional(string, "GRS")
     account_kind                      = optional(string, "StorageV2")
-    access_tier                       = optional(string, "Hot")
+    access_tier                       = optional(string)
     infrastructure_encryption_enabled = optional(bool, false)
     https_traffic_only_enabled        = optional(bool, true)
     min_tls_version                   = optional(string, "TLS1_2")
@@ -157,7 +157,7 @@ variable "storage" {
           }))
         })), {})
       })), {})
-    }), {})
+    }))
     queue_properties = optional(object({
       cors_rules = optional(map(object({
         allowed_headers    = list(string)
