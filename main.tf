@@ -450,7 +450,7 @@ resource "azurerm_storage_share" "sh" {
   storage_account_id = azurerm_storage_account.sa.id
   quota              = each.value.quota
   metadata           = each.value.metadata
-  access_tier        = each.value.access_tier
+  access_tier        = contains(["FileStorage"], var.storage.account_kind) ? null : each.value.access_tier
   enabled_protocol   = each.value.protocol
 
   dynamic "acl" {
