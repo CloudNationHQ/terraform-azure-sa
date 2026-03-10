@@ -36,7 +36,7 @@ resource "azurerm_storage_account" "sa" {
   default_to_oauth_authentication   = var.storage.default_to_oauth_authentication
   provisioned_billing_model_version = var.storage.provisioned_billing_model_version
 
-  access_tier = var.storage.account_kind == "BlockBlobStorage" ? null : coalesce(
+  access_tier = contains(["BlockBlobStorage", "FileStorage"], var.storage.account_kind) ? null : coalesce(
     var.storage.access_tier, "Hot"
   )
 
