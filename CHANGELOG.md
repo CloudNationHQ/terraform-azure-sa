@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.7.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v4.6.0...v4.7.0) (2026-04-03)
+
+
+### Features
+
+* add missing outputs ([#207](https://github.com/CloudNationHQ/terraform-azure-sa/issues/207)) ([6d0cfba](https://github.com/CloudNationHQ/terraform-azure-sa/commit/6d0cfba358867f60675bd51eb56769da0b4a989b))
+* **deps:** bump github.com/cloudnationhq/az-cn-go-validor in /tests ([#205](https://github.com/CloudNationHQ/terraform-azure-sa/issues/205)) ([e0e099f](https://github.com/CloudNationHQ/terraform-azure-sa/commit/e0e099ff61e93ada74cf4ab5873abfe950c68c1f))
+
 ## [4.6.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v4.5.0...v4.6.0) (2026-03-10)
 
 
