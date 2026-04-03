@@ -430,6 +430,10 @@ The following outputs are exported:
 
 Description: storage account details
 
+### <a name="output_container_immutability_policies"></a> [container\_immutability\_policies](#output\_container\_immutability\_policies)
+
+Description: container immutability policy configuration specifics
+
 ### <a name="output_containers"></a> [containers](#output\_containers)
 
 Description: container configuration specifics
@@ -442,9 +446,21 @@ Description: file system paths configuration specifics
 
 Description: file systems configuration specifics
 
+### <a name="output_local_users"></a> [local\_users](#output\_local\_users)
+
+Description: local user configuration specifics
+
+### <a name="output_management_policy"></a> [management\_policy](#output\_management\_policy)
+
+Description: management policy configuration specifics
+
 ### <a name="output_queues"></a> [queues](#output\_queues)
 
 Description: queues configuration specifics
+
+### <a name="output_role_assignments"></a> [role\_assignments](#output\_role\_assignments)
+
+Description: role assignment configuration specifics
 
 ### <a name="output_shares"></a> [shares](#output\_shares)
 
