@@ -38,19 +38,6 @@ module "network" {
   }
 }
 
-module "storage" {
-  source  = "cloudnationhq/sa/azure"
-  version = "~> 4.0"
-
-  storage = {
-    name                = module.naming.storage_account.name_unique
-    location            = module.rg.groups.demo.location
-    resource_group_name = module.rg.groups.demo.name
-
-    public_network_access_enabled = false
-  }
-}
-
 module "private_dns" {
   source  = "cloudnationhq/pdns/azure"
   version = "~> 4.0"
@@ -72,25 +59,22 @@ module "private_dns" {
   }
 }
 
-module "privatelink" {
-  source  = "cloudnationhq/pe/azure"
-  version = "~> 2.0"
+module "storage" {
+  source  = "cloudnationhq/sa/azure"
+  version = "~> 5.0"
 
-  resource_group_name = module.rg.groups.demo.name
-  location            = module.rg.groups.demo.location
+  storage = {
+    name                = module.naming.storage_account.name_unique
+    location            = module.rg.groups.demo.location
+    resource_group_name = module.rg.groups.demo.name
 
-  endpoints = {
-    blob = {
-      name      = module.naming.private_endpoint.name
-      subnet_id = module.network.subnets.sn1.id
+    public_network_access_enabled = false
 
-      private_dns_group = {
-        private_dns_zone_ids = [module.private_dns.private_zones.blob.id]
-      }
-
-      private_service_connection = {
-        private_connection_resource_id = module.storage.account.id
-        subresource_names              = ["blob"]
+    private_endpoints = {
+      blob = {
+        subnet_resource_id            = module.network.subnets.sn1.id
+        subresource_name              = "blob"
+        private_dns_zone_resource_ids = [module.private_dns.private_zones.blob.id]
       }
     }
   }

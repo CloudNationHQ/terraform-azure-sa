@@ -19,7 +19,7 @@ module "rg" {
 
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   storage = {
     name                = module.naming.storage_account.name_unique
@@ -38,7 +38,7 @@ module "storage" {
           }
           acl2 = {
             access_policy = {
-              permissions = "raud" #Read, Add, Update, Delete
+              permissions = "raud"
               start       = "2025-08-01T09:38:21Z"
               expiry      = "2026-08-01T10:38:21Z"
             }

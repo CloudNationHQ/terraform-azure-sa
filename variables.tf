@@ -8,24 +8,24 @@ variable "storage" {
     account_replication_type          = optional(string, "GRS")
     account_kind                      = optional(string, "StorageV2")
     access_tier                       = optional(string)
-    infrastructure_encryption_enabled = optional(bool, false)
-    https_traffic_only_enabled        = optional(bool, true)
+    infrastructure_encryption_enabled = optional(bool)
+    https_traffic_only_enabled        = optional(bool)
     min_tls_version                   = optional(string, "TLS1_2")
     edge_zone                         = optional(string)
     table_encryption_key_type         = optional(string)
     queue_encryption_key_type         = optional(string)
     allowed_copy_scope                = optional(string)
-    large_file_share_enabled          = optional(bool, false)
+    large_file_share_enabled          = optional(bool)
     allow_nested_items_to_be_public   = optional(bool, false)
-    shared_access_key_enabled         = optional(bool, true)
-    public_network_access_enabled     = optional(bool, true)
+    shared_access_key_enabled         = optional(bool)
+    public_network_access_enabled     = optional(bool)
     is_hns_enabled                    = optional(bool, false)
-    sftp_enabled                      = optional(bool, false)
-    nfsv3_enabled                     = optional(bool, false)
-    cross_tenant_replication_enabled  = optional(bool, false)
+    sftp_enabled                      = optional(bool)
+    nfsv3_enabled                     = optional(bool)
+    cross_tenant_replication_enabled  = optional(bool)
     local_user_enabled                = optional(bool)
     dns_endpoint_type                 = optional(string)
-    default_to_oauth_authentication   = optional(bool, false)
+    default_to_oauth_authentication   = optional(bool)
     provisioned_billing_model_version = optional(string)
     tags                              = optional(map(string))
     network_rules = optional(object({
@@ -38,10 +38,28 @@ variable "storage" {
         endpoint_tenant_id   = optional(string)
       })), {})
     }))
+    private_endpoints = optional(map(object({
+      name                              = optional(string)
+      subnet_resource_id                = string
+      subresource_name                  = optional(string)
+      private_dns_zone_resource_ids     = optional(list(string))
+      custom_network_interface_name     = optional(string)
+      tags                              = optional(map(string))
+      private_service_connection_name   = optional(string)
+      private_connection_resource_alias = optional(string)
+      is_manual_connection              = optional(bool, false)
+      request_message                   = optional(string)
+      ip_configurations = optional(map(object({
+        name               = optional(string)
+        private_ip_address = optional(string)
+        member_name        = optional(string)
+        subresource_name   = optional(string)
+      })))
+    })))
     blob_properties = optional(object({
-      last_access_time_enabled      = optional(bool, false)
-      versioning_enabled            = optional(bool, false)
-      change_feed_enabled           = optional(bool, false)
+      last_access_time_enabled      = optional(bool)
+      versioning_enabled            = optional(bool)
+      change_feed_enabled           = optional(bool)
       change_feed_retention_in_days = optional(number)
       default_service_version       = optional(string)
       cors_rules = optional(map(object({
@@ -52,20 +70,20 @@ variable "storage" {
         max_age_in_seconds = number
       })), {})
       delete_retention_policy = optional(object({
-        days                     = optional(number, 7)
+        days                     = optional(number)
         permanent_delete_enabled = optional(bool)
       }))
       restore_policy = optional(object({
         days = optional(number, 7)
       }))
       container_delete_retention_policy = optional(object({
-        days = optional(number, 7)
+        days = optional(number)
       }))
       containers = optional(map(object({
         name                              = optional(string)
-        access_type                       = optional(string, "private")
+        access_type                       = optional(string)
         default_encryption_scope          = optional(string)
-        encryption_scope_override_enabled = optional(bool, true)
+        encryption_scope_override_enabled = optional(bool)
         metadata                          = optional(map(string), {})
         immutability_policy = optional(object({
           immutability_period_in_days         = number
@@ -76,19 +94,19 @@ variable "storage" {
         local_users = optional(map(object({
           name                 = optional(string)
           home_directory       = optional(string)
-          ssh_key_enabled      = optional(bool, false)
-          ssh_password_enabled = optional(bool, false)
+          ssh_key_enabled      = optional(bool)
+          ssh_password_enabled = optional(bool)
           ssh_authorized_keys = optional(map(object({
             description = optional(string)
             key         = string
           })), {})
           permission_scope = optional(object({
             permissions = optional(object({
-              read   = optional(bool, false)
-              write  = optional(bool, false)
-              list   = optional(bool, false)
-              create = optional(bool, false)
-              delete = optional(bool, false)
+              read   = optional(bool)
+              write  = optional(bool)
+              list   = optional(bool)
+              create = optional(bool)
+              delete = optional(bool)
             }), {})
           }))
         })), {})
@@ -103,13 +121,13 @@ variable "storage" {
         max_age_in_seconds = number
       })), {})
       retention_policy = optional(object({
-        days = optional(number, 7)
+        days = optional(number)
       }))
       smb = optional(object({
         versions                        = optional(list(string), [])
         authentication_types            = optional(list(string), [])
         channel_encryption_type         = optional(list(string), [])
-        multichannel_enabled            = optional(bool, false)
+        multichannel_enabled            = optional(bool)
         kerberos_ticket_encryption_type = optional(list(string), [])
       }))
       azure_files_authentication = optional(object({
@@ -128,7 +146,7 @@ variable "storage" {
         name        = optional(string)
         quota       = number
         access_tier = optional(string, "Hot")
-        protocol    = optional(string, "SMB")
+        protocol    = optional(string)
         metadata    = optional(map(string), {})
         acl = optional(map(object({
           access_policy = optional(object({
@@ -140,19 +158,19 @@ variable "storage" {
         local_users = optional(map(object({
           name                 = optional(string)
           home_directory       = optional(string)
-          ssh_key_enabled      = optional(bool, false)
-          ssh_password_enabled = optional(bool, false)
+          ssh_key_enabled      = optional(bool)
+          ssh_password_enabled = optional(bool)
           ssh_authorized_keys = optional(map(object({
             description = optional(string)
             key         = string
           })), {})
           permission_scope = optional(object({
             permissions = optional(object({
-              read   = optional(bool, false)
-              write  = optional(bool, false)
-              list   = optional(bool, false)
-              create = optional(bool, false)
-              delete = optional(bool, false)
+              read   = optional(bool)
+              write  = optional(bool)
+              list   = optional(bool)
+              create = optional(bool)
+              delete = optional(bool)
             }), {})
           }))
         })), {})
@@ -174,13 +192,11 @@ variable "storage" {
         retention_policy_days = optional(number, 7)
       }))
       minute_metrics = optional(object({
-        enabled               = optional(bool, false)
         version               = optional(string, "1.0")
         include_apis          = optional(bool, false)
         retention_policy_days = optional(number, 7)
       }))
       hour_metrics = optional(object({
-        enabled               = optional(bool, false)
         version               = optional(string, "1.0")
         include_apis          = optional(bool, false)
         retention_policy_days = optional(number, 7)
@@ -234,7 +250,7 @@ variable "storage" {
           blob_types   = optional(list(string), [])
           match_blob_index_tag = optional(map(object({
             name      = optional(string)
-            operation = optional(string, "==")
+            operation = optional(string)
             value     = optional(string)
           })), {})
         }), {})
@@ -284,9 +300,9 @@ variable "storage" {
       }))
     }), {})
     routing = optional(object({
-      choice                      = optional(string, "MicrosoftRouting")
-      publish_internet_endpoints  = optional(bool, false)
-      publish_microsoft_endpoints = optional(bool, false)
+      choice                      = optional(string)
+      publish_internet_endpoints  = optional(bool)
+      publish_microsoft_endpoints = optional(bool)
     }))
     custom_domain = optional(object({
       name          = string
@@ -294,7 +310,6 @@ variable "storage" {
     }))
     customer_managed_key = optional(object({
       key_vault_key_id                       = optional(string)
-      managed_hsm_key_id                     = optional(string)
       key_vault_id                           = string
       role_assignment_name                   = optional(string)
       role_definition_name                   = optional(string, "Key Vault Crypto Officer")
@@ -328,12 +343,6 @@ variable "storage" {
     condition     = var.storage.resource_group_name != null || var.resource_group_name != null
     error_message = "resource group name must be provided either in the storage object or as a separate variable."
   }
-}
-
-variable "naming" {
-  description = "contains naming convention"
-  type        = map(string)
-  default     = {}
 }
 
 variable "location" {

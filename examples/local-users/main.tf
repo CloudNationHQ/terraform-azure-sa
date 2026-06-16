@@ -19,7 +19,7 @@ module "rg" {
 
 module "kv" {
   source  = "cloudnationhq/kv/azure"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   naming = local.naming
 
@@ -56,8 +56,6 @@ module "kv" {
 module "storage" {
   source  = "cloudnationhq/sa/azure"
   version = "~> 4.0"
-
-  naming = local.naming
 
   storage = {
     name                = module.naming.storage_account.name_unique

@@ -43,17 +43,19 @@ The following providers are used by this module:
 
 The following resources are used by this module:
 
-- [azurerm_role_assignment.managed_identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
-- [azurerm_storage_account.sa](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) (resource)
-- [azurerm_storage_account_local_user.lu](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account_local_user) (resource)
-- [azurerm_storage_container.sc](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container) (resource)
-- [azurerm_storage_container_immutability_policy.immutability_policy](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container_immutability_policy) (resource)
-- [azurerm_storage_data_lake_gen2_filesystem.fs](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_data_lake_gen2_filesystem) (resource)
-- [azurerm_storage_data_lake_gen2_path.pa](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_data_lake_gen2_path) (resource)
-- [azurerm_storage_management_policy.mgmt_policy](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_management_policy) (resource)
-- [azurerm_storage_queue.sq](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_queue) (resource)
-- [azurerm_storage_share.sh](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_share) (resource)
-- [azurerm_storage_table.st](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_table) (resource)
+- [azurerm_private_endpoint.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint) (resource)
+- [azurerm_role_assignment.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
+- [azurerm_storage_account.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) (resource)
+- [azurerm_storage_account_local_user.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account_local_user) (resource)
+- [azurerm_storage_account_queue_properties.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account_queue_properties) (resource)
+- [azurerm_storage_container.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container) (resource)
+- [azurerm_storage_container_immutability_policy.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container_immutability_policy) (resource)
+- [azurerm_storage_data_lake_gen2_filesystem.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_data_lake_gen2_filesystem) (resource)
+- [azurerm_storage_data_lake_gen2_path.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_data_lake_gen2_path) (resource)
+- [azurerm_storage_management_policy.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_management_policy) (resource)
+- [azurerm_storage_queue.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_queue) (resource)
+- [azurerm_storage_share.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_share) (resource)
+- [azurerm_storage_table.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_table) (resource)
 
 ## Required Inputs
 
@@ -74,24 +76,24 @@ object({
     account_replication_type          = optional(string, "GRS")
     account_kind                      = optional(string, "StorageV2")
     access_tier                       = optional(string)
-    infrastructure_encryption_enabled = optional(bool, false)
-    https_traffic_only_enabled        = optional(bool, true)
+    infrastructure_encryption_enabled = optional(bool)
+    https_traffic_only_enabled        = optional(bool)
     min_tls_version                   = optional(string, "TLS1_2")
     edge_zone                         = optional(string)
     table_encryption_key_type         = optional(string)
     queue_encryption_key_type         = optional(string)
     allowed_copy_scope                = optional(string)
-    large_file_share_enabled          = optional(bool, false)
+    large_file_share_enabled          = optional(bool)
     allow_nested_items_to_be_public   = optional(bool, false)
-    shared_access_key_enabled         = optional(bool, true)
-    public_network_access_enabled     = optional(bool, true)
+    shared_access_key_enabled         = optional(bool)
+    public_network_access_enabled     = optional(bool)
     is_hns_enabled                    = optional(bool, false)
-    sftp_enabled                      = optional(bool, false)
-    nfsv3_enabled                     = optional(bool, false)
-    cross_tenant_replication_enabled  = optional(bool, false)
+    sftp_enabled                      = optional(bool)
+    nfsv3_enabled                     = optional(bool)
+    cross_tenant_replication_enabled  = optional(bool)
     local_user_enabled                = optional(bool)
     dns_endpoint_type                 = optional(string)
-    default_to_oauth_authentication   = optional(bool, false)
+    default_to_oauth_authentication   = optional(bool)
     provisioned_billing_model_version = optional(string)
     tags                              = optional(map(string))
     network_rules = optional(object({
@@ -104,10 +106,28 @@ object({
         endpoint_tenant_id   = optional(string)
       })), {})
     }))
+    private_endpoints = optional(map(object({
+      name                              = optional(string)
+      subnet_resource_id                = string
+      subresource_name                  = optional(string)
+      private_dns_zone_resource_ids     = optional(list(string))
+      custom_network_interface_name     = optional(string)
+      tags                              = optional(map(string))
+      private_service_connection_name   = optional(string)
+      private_connection_resource_alias = optional(string)
+      is_manual_connection              = optional(bool, false)
+      request_message                   = optional(string)
+      ip_configurations = optional(map(object({
+        name               = optional(string)
+        private_ip_address = optional(string)
+        member_name        = optional(string)
+        subresource_name   = optional(string)
+      })))
+    })))
     blob_properties = optional(object({
-      last_access_time_enabled      = optional(bool, false)
-      versioning_enabled            = optional(bool, false)
-      change_feed_enabled           = optional(bool, false)
+      last_access_time_enabled      = optional(bool)
+      versioning_enabled            = optional(bool)
+      change_feed_enabled           = optional(bool)
       change_feed_retention_in_days = optional(number)
       default_service_version       = optional(string)
       cors_rules = optional(map(object({
@@ -118,20 +138,20 @@ object({
         max_age_in_seconds = number
       })), {})
       delete_retention_policy = optional(object({
-        days                     = optional(number, 7)
+        days                     = optional(number)
         permanent_delete_enabled = optional(bool)
       }))
       restore_policy = optional(object({
         days = optional(number, 7)
       }))
       container_delete_retention_policy = optional(object({
-        days = optional(number, 7)
+        days = optional(number)
       }))
       containers = optional(map(object({
         name                              = optional(string)
-        access_type                       = optional(string, "private")
+        access_type                       = optional(string)
         default_encryption_scope          = optional(string)
-        encryption_scope_override_enabled = optional(bool, true)
+        encryption_scope_override_enabled = optional(bool)
         metadata                          = optional(map(string), {})
         immutability_policy = optional(object({
           immutability_period_in_days         = number
@@ -142,19 +162,19 @@ object({
         local_users = optional(map(object({
           name                 = optional(string)
           home_directory       = optional(string)
-          ssh_key_enabled      = optional(bool, false)
-          ssh_password_enabled = optional(bool, false)
+          ssh_key_enabled      = optional(bool)
+          ssh_password_enabled = optional(bool)
           ssh_authorized_keys = optional(map(object({
             description = optional(string)
             key         = string
           })), {})
           permission_scope = optional(object({
             permissions = optional(object({
-              read   = optional(bool, false)
-              write  = optional(bool, false)
-              list   = optional(bool, false)
-              create = optional(bool, false)
-              delete = optional(bool, false)
+              read   = optional(bool)
+              write  = optional(bool)
+              list   = optional(bool)
+              create = optional(bool)
+              delete = optional(bool)
             }), {})
           }))
         })), {})
@@ -169,13 +189,13 @@ object({
         max_age_in_seconds = number
       })), {})
       retention_policy = optional(object({
-        days = optional(number, 7)
+        days = optional(number)
       }))
       smb = optional(object({
         versions                        = optional(list(string), [])
         authentication_types            = optional(list(string), [])
         channel_encryption_type         = optional(list(string), [])
-        multichannel_enabled            = optional(bool, false)
+        multichannel_enabled            = optional(bool)
         kerberos_ticket_encryption_type = optional(list(string), [])
       }))
       azure_files_authentication = optional(object({
@@ -194,7 +214,7 @@ object({
         name        = optional(string)
         quota       = number
         access_tier = optional(string, "Hot")
-        protocol    = optional(string, "SMB")
+        protocol    = optional(string)
         metadata    = optional(map(string), {})
         acl = optional(map(object({
           access_policy = optional(object({
@@ -206,19 +226,19 @@ object({
         local_users = optional(map(object({
           name                 = optional(string)
           home_directory       = optional(string)
-          ssh_key_enabled      = optional(bool, false)
-          ssh_password_enabled = optional(bool, false)
+          ssh_key_enabled      = optional(bool)
+          ssh_password_enabled = optional(bool)
           ssh_authorized_keys = optional(map(object({
             description = optional(string)
             key         = string
           })), {})
           permission_scope = optional(object({
             permissions = optional(object({
-              read   = optional(bool, false)
-              write  = optional(bool, false)
-              list   = optional(bool, false)
-              create = optional(bool, false)
-              delete = optional(bool, false)
+              read   = optional(bool)
+              write  = optional(bool)
+              list   = optional(bool)
+              create = optional(bool)
+              delete = optional(bool)
             }), {})
           }))
         })), {})
@@ -240,13 +260,11 @@ object({
         retention_policy_days = optional(number, 7)
       }))
       minute_metrics = optional(object({
-        enabled               = optional(bool, false)
         version               = optional(string, "1.0")
         include_apis          = optional(bool, false)
         retention_policy_days = optional(number, 7)
       }))
       hour_metrics = optional(object({
-        enabled               = optional(bool, false)
         version               = optional(string, "1.0")
         include_apis          = optional(bool, false)
         retention_policy_days = optional(number, 7)
@@ -300,7 +318,7 @@ object({
           blob_types   = optional(list(string), [])
           match_blob_index_tag = optional(map(object({
             name      = optional(string)
-            operation = optional(string, "==")
+            operation = optional(string)
             value     = optional(string)
           })), {})
         }), {})
@@ -350,9 +368,9 @@ object({
       }))
     }), {})
     routing = optional(object({
-      choice                      = optional(string, "MicrosoftRouting")
-      publish_internet_endpoints  = optional(bool, false)
-      publish_microsoft_endpoints = optional(bool, false)
+      choice                      = optional(string)
+      publish_internet_endpoints  = optional(bool)
+      publish_microsoft_endpoints = optional(bool)
     }))
     custom_domain = optional(object({
       name          = string
@@ -360,7 +378,6 @@ object({
     }))
     customer_managed_key = optional(object({
       key_vault_key_id                       = optional(string)
-      managed_hsm_key_id                     = optional(string)
       key_vault_id                           = string
       role_assignment_name                   = optional(string)
       role_definition_name                   = optional(string, "Key Vault Crypto Officer")
@@ -398,14 +415,6 @@ Type: `string`
 
 Default: `null`
 
-### <a name="input_naming"></a> [naming](#input\_naming)
-
-Description: contains naming convention
-
-Type: `map(string)`
-
-Default: `{}`
-
 ### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
 
 Description: default resource group to be used.
@@ -425,10 +434,6 @@ Default: `{}`
 ## Outputs
 
 The following outputs are exported:
-
-### <a name="output_account"></a> [account](#output\_account)
-
-Description: storage account details
 
 ### <a name="output_container_immutability_policies"></a> [container\_immutability\_policies](#output\_container\_immutability\_policies)
 
@@ -454,6 +459,14 @@ Description: local user configuration specifics
 
 Description: management policy configuration specifics
 
+### <a name="output_private_endpoints"></a> [private\_endpoints](#output\_private\_endpoints)
+
+Description: private endpoint configuration specifics
+
+### <a name="output_queue_properties"></a> [queue\_properties](#output\_queue\_properties)
+
+Description: queue properties configuration specifics
+
 ### <a name="output_queues"></a> [queues](#output\_queues)
 
 Description: queues configuration specifics
@@ -465,6 +478,10 @@ Description: role assignment configuration specifics
 ### <a name="output_shares"></a> [shares](#output\_shares)
 
 Description: shares configuration specifics
+
+### <a name="output_storage"></a> [storage](#output\_storage)
+
+Description: storage account details
 
 ### <a name="output_tables"></a> [tables](#output\_tables)
 
