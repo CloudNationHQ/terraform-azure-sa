@@ -7,7 +7,7 @@ module "naming" {
 
 module "rg" {
   source  = "cloudnationhq/rg/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   groups = {
     demo = {
@@ -19,14 +19,13 @@ module "rg" {
 
 module "kv" {
   source  = "cloudnationhq/kv/azure"
-  version = "~> 4.0"
-
-  naming = local.naming
+  version = "~> 6.0"
 
   vault = {
-    name                = module.naming.key_vault.name_unique
-    location            = module.rg.groups.demo.location
-    resource_group_name = module.rg.groups.demo.name
+    name                     = module.naming.key_vault.name_unique
+    location                 = module.rg.groups.demo.location
+    resource_group_name      = module.rg.groups.demo.name
+    purge_protection_enabled = true
 
     keys = {
       example = {
@@ -53,9 +52,9 @@ module "kv" {
 
 module "identity" {
   source  = "cloudnationhq/uai/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
-  config = {
+  identity = {
     name                = module.naming.user_assigned_identity.name
     location            = module.rg.groups.demo.location
     resource_group_name = module.rg.groups.demo.name
@@ -64,7 +63,7 @@ module "identity" {
 
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   storage = {
     name                = module.naming.storage_account.name_unique
@@ -73,14 +72,14 @@ module "storage" {
 
     identity = {
       type         = "UserAssigned"
-      identity_ids = [module.identity.config.id]
+      identity_ids = [module.identity.identity.id]
     }
 
     customer_managed_key = {
       key_vault_id              = module.kv.vault.id
       key_vault_key_id          = module.kv.keys.example.id
-      principal_id              = module.identity.config.principal_id
-      user_assigned_identity_id = module.identity.config.id
+      principal_id              = module.identity.identity.principal_id
+      user_assigned_identity_id = module.identity.identity.id
     }
   }
 }

@@ -31,29 +31,32 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.0)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 5.0)
 
 ## Providers
 
 The following providers are used by this module:
 
-- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 4.0)
+- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 5.0)
 
 ## Resources
 
 The following resources are used by this module:
 
-- [azurerm_role_assignment.managed_identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
-- [azurerm_storage_account.sa](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) (resource)
-- [azurerm_storage_account_local_user.lu](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account_local_user) (resource)
-- [azurerm_storage_container.sc](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container) (resource)
-- [azurerm_storage_container_immutability_policy.immutability_policy](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container_immutability_policy) (resource)
-- [azurerm_storage_data_lake_gen2_filesystem.fs](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_data_lake_gen2_filesystem) (resource)
-- [azurerm_storage_data_lake_gen2_path.pa](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_data_lake_gen2_path) (resource)
-- [azurerm_storage_management_policy.mgmt_policy](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_management_policy) (resource)
-- [azurerm_storage_queue.sq](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_queue) (resource)
-- [azurerm_storage_share.sh](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_share) (resource)
-- [azurerm_storage_table.st](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_table) (resource)
+- [azurerm_private_endpoint.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint) (resource)
+- [azurerm_role_assignment.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
+- [azurerm_storage_account.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) (resource)
+- [azurerm_storage_account_local_user.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account_local_user) (resource)
+- [azurerm_storage_account_queue_properties.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account_queue_properties) (resource)
+- [azurerm_storage_account_static_website.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account_static_website) (resource)
+- [azurerm_storage_container.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container) (resource)
+- [azurerm_storage_container_immutability_policy.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container_immutability_policy) (resource)
+- [azurerm_storage_data_lake_gen2_filesystem.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_data_lake_gen2_filesystem) (resource)
+- [azurerm_storage_data_lake_gen2_path.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_data_lake_gen2_path) (resource)
+- [azurerm_storage_management_policy.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_management_policy) (resource)
+- [azurerm_storage_queue.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_queue) (resource)
+- [azurerm_storage_share.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_share) (resource)
+- [azurerm_storage_table.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_table) (resource)
 
 ## Required Inputs
 
@@ -74,24 +77,24 @@ object({
     account_replication_type          = optional(string, "GRS")
     account_kind                      = optional(string, "StorageV2")
     access_tier                       = optional(string)
-    infrastructure_encryption_enabled = optional(bool, false)
-    https_traffic_only_enabled        = optional(bool, true)
-    min_tls_version                   = optional(string, "TLS1_2")
+    infrastructure_encryption_enabled = optional(bool)
+    https_traffic_only_enabled        = optional(bool)
+    min_tls_version                   = optional(string)
     edge_zone                         = optional(string)
     table_encryption_key_type         = optional(string)
     queue_encryption_key_type         = optional(string)
     allowed_copy_scope                = optional(string)
-    large_file_share_enabled          = optional(bool, false)
-    allow_nested_items_to_be_public   = optional(bool, false)
-    shared_access_key_enabled         = optional(bool, true)
-    public_network_access_enabled     = optional(bool, true)
-    is_hns_enabled                    = optional(bool, false)
-    sftp_enabled                      = optional(bool, false)
-    nfsv3_enabled                     = optional(bool, false)
-    cross_tenant_replication_enabled  = optional(bool, false)
+    large_file_share_enabled          = optional(bool)
+    allow_nested_items_to_be_public   = optional(bool)
+    shared_access_key_enabled         = optional(bool)
+    public_network_access_enabled     = optional(bool)
+    is_hns_enabled                    = optional(bool)
+    sftp_enabled                      = optional(bool)
+    nfsv3_enabled                     = optional(bool)
+    cross_tenant_replication_enabled  = optional(bool)
     local_user_enabled                = optional(bool)
     dns_endpoint_type                 = optional(string)
-    default_to_oauth_authentication   = optional(bool, false)
+    default_to_oauth_authentication   = optional(bool)
     provisioned_billing_model_version = optional(string)
     tags                              = optional(map(string))
     network_rules = optional(object({
@@ -131,7 +134,7 @@ object({
         name                              = optional(string)
         access_type                       = optional(string, "private")
         default_encryption_scope          = optional(string)
-        encryption_scope_override_enabled = optional(bool, true)
+        encryption_scope_override_enabled = optional(bool)
         metadata                          = optional(map(string), {})
         immutability_policy = optional(object({
           immutability_period_in_days         = number
@@ -240,13 +243,11 @@ object({
         retention_policy_days = optional(number, 7)
       }))
       minute_metrics = optional(object({
-        enabled               = optional(bool, false)
         version               = optional(string, "1.0")
         include_apis          = optional(bool, false)
         retention_policy_days = optional(number, 7)
       }))
       hour_metrics = optional(object({
-        enabled               = optional(bool, false)
         version               = optional(string, "1.0")
         include_apis          = optional(bool, false)
         retention_policy_days = optional(number, 7)
@@ -294,7 +295,7 @@ object({
     management_policy = optional(object({
       rules = optional(map(object({
         name    = optional(string)
-        enabled = optional(bool, true)
+        enabled = optional(bool)
         filters = optional(object({
           prefix_match = optional(list(string))
           blob_types   = optional(list(string), [])
@@ -360,7 +361,6 @@ object({
     }))
     customer_managed_key = optional(object({
       key_vault_key_id                       = optional(string)
-      managed_hsm_key_id                     = optional(string)
       key_vault_id                           = string
       role_assignment_name                   = optional(string)
       role_definition_name                   = optional(string, "Key Vault Crypto Officer")
@@ -383,6 +383,25 @@ object({
       identity_ids = optional(list(string))
       name         = optional(string)
     }))
+    private_endpoints = optional(map(object({
+      name                              = optional(string)
+      subnet_resource_id                = string
+      subresource_name                  = optional(string)
+      private_dns_zone_resource_ids     = optional(list(string))
+      private_dns_zone_group_name       = optional(string)
+      custom_network_interface_name     = optional(string)
+      tags                              = optional(map(string))
+      private_service_connection_name   = optional(string)
+      private_connection_resource_alias = optional(string)
+      is_manual_connection              = optional(bool, false)
+      request_message                   = optional(string)
+      ip_configurations = optional(map(object({
+        name               = optional(string)
+        private_ip_address = optional(string)
+        member_name        = optional(string)
+        subresource_name   = optional(string)
+      })))
+    })))
   })
 ```
 
@@ -397,14 +416,6 @@ Description: default azure region to be used.
 Type: `string`
 
 Default: `null`
-
-### <a name="input_naming"></a> [naming](#input\_naming)
-
-Description: contains naming convention
-
-Type: `map(string)`
-
-Default: `{}`
 
 ### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
 
@@ -454,6 +465,14 @@ Description: local user configuration specifics
 
 Description: management policy configuration specifics
 
+### <a name="output_private_endpoints"></a> [private\_endpoints](#output\_private\_endpoints)
+
+Description: private endpoint configuration specifics
+
+### <a name="output_queue_properties"></a> [queue\_properties](#output\_queue\_properties)
+
+Description: queue properties configuration specifics
+
 ### <a name="output_queues"></a> [queues](#output\_queues)
 
 Description: queues configuration specifics
@@ -465,6 +484,10 @@ Description: role assignment configuration specifics
 ### <a name="output_shares"></a> [shares](#output\_shares)
 
 Description: shares configuration specifics
+
+### <a name="output_static_website"></a> [static\_website](#output\_static\_website)
+
+Description: static website configuration specifics
 
 ### <a name="output_tables"></a> [tables](#output\_tables)
 

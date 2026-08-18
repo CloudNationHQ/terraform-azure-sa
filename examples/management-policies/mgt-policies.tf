@@ -2,6 +2,7 @@ locals {
   management_policies = {
     rules = {
       rule1 = {
+        enabled = true
         filters = {
           prefix_match = ["container1/prefix1"]
           blob_types   = ["blockBlob"]
@@ -25,6 +26,7 @@ locals {
         }
       },
       rule2 = {
+        enabled = true
         filters = {
           prefix_match = ["container1/prefix3"]
           blob_types   = ["blockBlob"]
