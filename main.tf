@@ -227,7 +227,9 @@ resource "azurerm_storage_account" "this" {
       identity_ids = identity.value.identity_ids
     }
   }
-  depends_on = [azurerm_role_assignment.this]
+  depends_on = [
+    azurerm_role_assignment.this
+  ]
 }
 
 # queue properties
@@ -281,6 +283,10 @@ resource "azurerm_storage_account_queue_properties" "this" {
       retention_policy_days = hour_metrics.value.retention_policy_days
     }
   }
+
+  depends_on = [
+    azurerm_private_endpoint.this
+  ]
 }
 
 # static website
@@ -290,6 +296,10 @@ resource "azurerm_storage_account_static_website" "this" {
   storage_account_id = azurerm_storage_account.this.id
   index_document     = each.value.index_document
   error_404_document = each.value.error_404_document
+
+  depends_on = [
+    azurerm_private_endpoint.this
+  ]
 }
 
 # private endpoints
@@ -546,6 +556,10 @@ resource "azurerm_storage_table" "this" {
       }
     }
   }
+
+  depends_on = [
+    azurerm_private_endpoint.this
+  ]
 }
 
 # file systems
@@ -574,6 +588,10 @@ resource "azurerm_storage_data_lake_gen2_filesystem" "this" {
       scope       = ace.value.scope
     }
   }
+
+  depends_on = [
+    azurerm_private_endpoint.this
+  ]
 }
 
 resource "azurerm_storage_data_lake_gen2_path" "this" {
@@ -698,7 +716,9 @@ resource "azurerm_storage_management_policy" "this" {
       }
     }
   }
-  depends_on = [azurerm_storage_container.this]
+  depends_on = [
+    azurerm_storage_container.this
+  ]
 }
 
 resource "azurerm_role_assignment" "this" {
