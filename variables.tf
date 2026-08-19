@@ -8,24 +8,24 @@ variable "storage" {
     account_replication_type          = optional(string, "GRS")
     account_kind                      = optional(string, "StorageV2")
     access_tier                       = optional(string)
-    infrastructure_encryption_enabled = optional(bool, false)
-    https_traffic_only_enabled        = optional(bool, true)
-    min_tls_version                   = optional(string, "TLS1_2")
+    infrastructure_encryption_enabled = optional(bool)
+    https_traffic_only_enabled        = optional(bool)
+    min_tls_version                   = optional(string)
     edge_zone                         = optional(string)
     table_encryption_key_type         = optional(string)
     queue_encryption_key_type         = optional(string)
     allowed_copy_scope                = optional(string)
-    large_file_share_enabled          = optional(bool, false)
-    allow_nested_items_to_be_public   = optional(bool, false)
-    shared_access_key_enabled         = optional(bool, true)
-    public_network_access_enabled     = optional(bool, true)
-    is_hns_enabled                    = optional(bool, false)
-    sftp_enabled                      = optional(bool, false)
-    nfsv3_enabled                     = optional(bool, false)
-    cross_tenant_replication_enabled  = optional(bool, false)
+    large_file_share_enabled          = optional(bool)
+    allow_nested_items_to_be_public   = optional(bool)
+    shared_access_key_enabled         = optional(bool)
+    public_network_access_enabled     = optional(bool)
+    is_hns_enabled                    = optional(bool)
+    sftp_enabled                      = optional(bool)
+    nfsv3_enabled                     = optional(bool)
+    cross_tenant_replication_enabled  = optional(bool)
     local_user_enabled                = optional(bool)
     dns_endpoint_type                 = optional(string)
-    default_to_oauth_authentication   = optional(bool, false)
+    default_to_oauth_authentication   = optional(bool)
     provisioned_billing_model_version = optional(string)
     tags                              = optional(map(string))
     network_rules = optional(object({
@@ -65,7 +65,7 @@ variable "storage" {
         name                              = optional(string)
         access_type                       = optional(string, "private")
         default_encryption_scope          = optional(string)
-        encryption_scope_override_enabled = optional(bool, true)
+        encryption_scope_override_enabled = optional(bool)
         metadata                          = optional(map(string), {})
         immutability_policy = optional(object({
           immutability_period_in_days         = number
@@ -174,13 +174,11 @@ variable "storage" {
         retention_policy_days = optional(number, 7)
       }))
       minute_metrics = optional(object({
-        enabled               = optional(bool, false)
         version               = optional(string, "1.0")
         include_apis          = optional(bool, false)
         retention_policy_days = optional(number, 7)
       }))
       hour_metrics = optional(object({
-        enabled               = optional(bool, false)
         version               = optional(string, "1.0")
         include_apis          = optional(bool, false)
         retention_policy_days = optional(number, 7)
@@ -228,7 +226,7 @@ variable "storage" {
     management_policy = optional(object({
       rules = optional(map(object({
         name    = optional(string)
-        enabled = optional(bool, true)
+        enabled = optional(bool)
         filters = optional(object({
           prefix_match = optional(list(string))
           blob_types   = optional(list(string), [])
@@ -294,7 +292,6 @@ variable "storage" {
     }))
     customer_managed_key = optional(object({
       key_vault_key_id                       = optional(string)
-      managed_hsm_key_id                     = optional(string)
       key_vault_id                           = string
       role_assignment_name                   = optional(string)
       role_definition_name                   = optional(string, "Key Vault Crypto Officer")
@@ -317,23 +314,36 @@ variable "storage" {
       identity_ids = optional(list(string))
       name         = optional(string)
     }))
+    private_endpoints = optional(map(object({
+      name                              = optional(string)
+      subnet_resource_id                = string
+      subresource_name                  = optional(string)
+      private_dns_zone_resource_ids     = optional(list(string))
+      private_dns_zone_group_name       = optional(string)
+      custom_network_interface_name     = optional(string)
+      tags                              = optional(map(string))
+      private_service_connection_name   = optional(string)
+      private_connection_resource_alias = optional(string)
+      is_manual_connection              = optional(bool, false)
+      request_message                   = optional(string)
+      ip_configurations = optional(map(object({
+        name               = optional(string)
+        private_ip_address = optional(string)
+        member_name        = optional(string)
+        subresource_name   = optional(string)
+      })))
+    })))
   })
 
   validation {
-    condition     = var.storage.location != null || var.location != null
+    condition     = lookup(var.storage, "location", null) != null || var.location != null
     error_message = "location must be provided either in the storage object or as a separate variable."
   }
 
   validation {
-    condition     = var.storage.resource_group_name != null || var.resource_group_name != null
+    condition     = lookup(var.storage, "resource_group_name", null) != null || var.resource_group_name != null
     error_message = "resource group name must be provided either in the storage object or as a separate variable."
   }
-}
-
-variable "naming" {
-  description = "contains naming convention"
-  type        = map(string)
-  default     = {}
 }
 
 variable "location" {

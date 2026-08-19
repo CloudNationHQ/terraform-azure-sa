@@ -7,7 +7,7 @@ module "naming" {
 
 module "rg" {
   source  = "cloudnationhq/rg/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   groups = {
     demo = {
@@ -19,9 +19,7 @@ module "rg" {
 
 module "kv" {
   source  = "cloudnationhq/kv/azure"
-  version = "~> 4.0"
-
-  naming = local.naming
+  version = "~> 6.0"
 
   vault = {
     name                = module.naming.key_vault.name_unique
@@ -55,15 +53,12 @@ module "kv" {
 
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 4.0"
-
-  naming = local.naming
+  version = "~> 5.0"
 
   storage = {
     name                = module.naming.storage_account.name_unique
     location            = module.rg.groups.demo.location
     resource_group_name = module.rg.groups.demo.name
-
 
     blob_properties = {
       versioning_enabled       = true

@@ -7,7 +7,7 @@ module "naming" {
 
 module "rg" {
   source  = "cloudnationhq/rg/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   groups = {
     demo = {
@@ -19,9 +19,7 @@ module "rg" {
 
 module "network" {
   source  = "cloudnationhq/vnet/azure"
-  version = "~> 9.0"
-
-  naming = local.naming
+  version = "~> 10.0"
 
   vnet = {
     name                = module.naming.virtual_network.name
@@ -40,46 +38,9 @@ module "network" {
   }
 }
 
-module "law" {
-  source  = "cloudnationhq/law/azure"
-  version = "~> 3.0"
-
-  workspace = {
-    name                = module.naming.log_analytics_workspace.name_unique
-    location            = module.rg.groups.demo.location
-    resource_group_name = module.rg.groups.demo.name
-  }
-}
-
-module "dcr" {
-  source  = "cloudnationhq/dcr/azure"
-  version = "~> 3.0"
-
-  rule = {
-    name                = module.naming.data_collection_rule.name
-    location            = module.rg.groups.demo.location
-    resource_group_name = module.rg.groups.demo.name
-
-    data_flow = {
-      df1 = {
-        streams      = ["Microsoft-InsightsMetrics"]
-        destinations = ["la1"]
-      }
-    }
-
-    destinations = {
-      log_analytics = {
-        la1 = {
-          workspace_resource_id = module.law.workspace.id
-        }
-      }
-    }
-  }
-}
-
 module "storage" {
   source  = "cloudnationhq/sa/azure"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   storage = {
     name                = module.naming.storage_account.name_unique
@@ -88,11 +49,6 @@ module "storage" {
 
     network_rules = {
       virtual_network_subnet_ids = [module.network.subnets.sn1.id]
-      private_link_access = {
-        dcr = {
-          endpoint_resource_id = module.dcr.rule.default.id
-        }
-      }
     }
   }
 }
