@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v5.0.0...v5.1.0) (2026-10-20)
+
+
+### Features
+
+* **deps:** bump github.com/klauspost/compress in /tests ([#215](https://github.com/CloudNationHQ/terraform-azure-sa/issues/215)) ([5a2ba3d](https://github.com/CloudNationHQ/terraform-azure-sa/commit/5a2ba3d82ba53167ecefc7271b90f4cf9bb4642c))
+
 ## [5.0.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v4.7.0...v5.0.0) (2026-08-19)
 
 
