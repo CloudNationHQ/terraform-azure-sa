@@ -33,6 +33,7 @@ resource "azurerm_storage_account" "this" {
   dns_endpoint_type                 = var.storage.dns_endpoint_type
   default_to_oauth_authentication   = var.storage.default_to_oauth_authentication
   provisioned_billing_model_version = var.storage.provisioned_billing_model_version
+  smb_oauth_enabled                 = var.storage.smb_oauth_enabled
 
   access_tier = contains(["BlockBlobStorage", "FileStorage"], var.storage.account_kind) ? null : var.storage.access_tier
 
