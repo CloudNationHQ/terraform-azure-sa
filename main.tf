@@ -23,7 +23,6 @@ resource "azurerm_storage_account" "this" {
   large_file_share_enabled          = var.storage.large_file_share_enabled
   allow_nested_items_to_be_public   = var.storage.allow_nested_items_to_be_public
   shared_access_key_enabled         = var.storage.shared_access_key_enabled
-  public_network_access_enabled     = var.storage.public_network_access_enabled
   public_network_access             = var.storage.public_network_access
   is_hns_enabled                    = var.storage.is_hns_enabled
   sftp_enabled                      = var.storage.sftp_enabled
