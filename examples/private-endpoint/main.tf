@@ -66,7 +66,7 @@ module "storage" {
     location            = module.rg.groups.demo.location
     resource_group_name = module.rg.groups.demo.name
 
-    public_network_access_enabled = false
+    public_network_access = "Disabled"
 
     private_endpoints = {
       blob = {

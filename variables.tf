@@ -18,7 +18,6 @@ variable "storage" {
     large_file_share_enabled          = optional(bool)
     allow_nested_items_to_be_public   = optional(bool)
     shared_access_key_enabled         = optional(bool)
-    public_network_access_enabled     = optional(bool)
     public_network_access             = optional(string)
     is_hns_enabled                    = optional(bool)
     sftp_enabled                      = optional(bool)
