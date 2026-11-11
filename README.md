@@ -96,6 +96,7 @@ object({
     dns_endpoint_type                 = optional(string)
     default_to_oauth_authentication   = optional(bool)
     provisioned_billing_model_version = optional(string)
+    smb_oauth_enabled                 = optional(bool)
     tags                              = optional(map(string))
     network_rules = optional(object({
       bypass                     = optional(set(string), ["None"])
