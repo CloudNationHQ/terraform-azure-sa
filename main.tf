@@ -24,6 +24,7 @@ resource "azurerm_storage_account" "this" {
   allow_nested_items_to_be_public   = var.storage.allow_nested_items_to_be_public
   shared_access_key_enabled         = var.storage.shared_access_key_enabled
   public_network_access_enabled     = var.storage.public_network_access_enabled
+  public_network_access             = var.storage.public_network_access
   is_hns_enabled                    = var.storage.is_hns_enabled
   sftp_enabled                      = var.storage.sftp_enabled
   nfsv3_enabled                     = var.storage.nfsv3_enabled
@@ -312,6 +313,7 @@ resource "azurerm_private_endpoint" "this" {
   name                          = coalesce(each.value.name, each.key)
   subnet_id                     = each.value.subnet_resource_id
   custom_network_interface_name = each.value.custom_network_interface_name
+  edge_zone                     = each.value.edge_zone
   tags                          = coalesce(each.value.tags, var.tags)
 
   private_service_connection {
