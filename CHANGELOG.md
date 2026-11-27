@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.1.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v5.0.0...v5.1.0) (2026-11-11)
+
+
+### Features
+
+* add edge_zone to private endpoints and public_network_access to storage account ([#217](https://github.com/CloudNationHQ/terraform-azure-sa/issues/217)) ([cffe134](https://github.com/CloudNationHQ/terraform-azure-sa/commit/cffe134b70c4cf7926a5c81be12a12044976ad43))
+* add smb_oauth_enabled to storage account ([#220](https://github.com/CloudNationHQ/terraform-azure-sa/issues/220)) ([be983ea](https://github.com/CloudNationHQ/terraform-azure-sa/commit/be983ea2836b20a54d1b4f02b6ca1a0aa064fbd1))
+* **deps:** bump github.com/klauspost/compress in /tests ([#215](https://github.com/CloudNationHQ/terraform-azure-sa/issues/215)) ([5a2ba3d](https://github.com/CloudNationHQ/terraform-azure-sa/commit/5a2ba3d82ba53167ecefc7271b90f4cf9bb4642c))
+
 ## [5.0.0](https://github.com/CloudNationHQ/terraform-azure-sa/compare/v4.7.0...v5.0.0) (2026-08-19)
 
 
